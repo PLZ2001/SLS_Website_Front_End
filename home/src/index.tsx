@@ -1,14 +1,40 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {
+    createBrowserRouter,
+    RouterProvider,
+} from "react-router-dom";
+
+import HomePage from './home_page/HomePage';
+import ErrorPage from './error_page/ErrorPage';
+import SignupPage from './signup_page/SignupPage';
+import LoginPage from './login_page/LoginPage';
+
+// 定义多页面的路由
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <HomePage/>,
+        errorElement: <ErrorPage/>,
+    },
+    {
+        path: "/signup",
+        element: <SignupPage/>,
+    },
+    {
+        path: "/login",
+        element: <LoginPage/>,
+    },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <App />
+      <RouterProvider router={router} />
   </React.StrictMode>
 );
 

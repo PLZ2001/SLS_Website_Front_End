@@ -6,7 +6,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import {SERVER_URL} from './config';
+import {SERVER_URL} from '../config';
 
 function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string}) {
     return (
@@ -17,7 +17,7 @@ function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, desc
                         <img
                             src={item.image}
                             alt={item.name}
-                            style={{paddingTop: '3%', paddingBottom: '3%'}}
+                            style={{paddingTop: '3%', paddingBottom: '3%', borderRadius: "40px"}}
                             width={p.photo_width}
                             loading="lazy"
                         />
