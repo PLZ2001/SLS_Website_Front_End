@@ -1,21 +1,26 @@
 import React from 'react';
 import {ThemeProvider} from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import * as Cookie from "react-cookie";
 
 import TopBar from '../home_page/TopBar';
 import BottomBar from "../home_page/BottomBar";
-import {THEME} from "../config";
-import SignupContent from "./SignupContent";
+import {SERVER_URL, THEME} from "../config";
+import LoginContent from "./LoginContent";
+import {CookieSetOptions} from "universal-cookie";
 
 
-function SignupPage() {
+function LoginPage() {
+    const [cookies, setCookies] = Cookie.useCookies(["token"])
+
+
     return (
         <ThemeProvider theme={THEME}>
             <Box sx={{width: '100%', backgroundColor: '#ffffff'}}>
                 {/*顶部栏*/}
-                <TopBar/>
-                {/*注册面板*/}
-                <SignupContent/>
+                <TopBar cookies={cookies} setCookies={setCookies}/>
+                {/*登录面板*/}
+                <LoginContent setCookies={setCookies}/>
                 {/*底部栏*/}
                 <BottomBar/>
             </Box>
@@ -23,4 +28,4 @@ function SignupPage() {
     );
 }
 
-export default SignupPage;
+export default LoginPage;

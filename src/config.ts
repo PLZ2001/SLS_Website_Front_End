@@ -5,6 +5,9 @@ import * as CryptoJS from "crypto-js";
 const SERVER_URL = '127.0.0.1';
 const SERVER_PORT = '4000';
 
+// API返回状态
+enum API_STATUS {SUCCESS, FAILURE_WITH_REASONS, FAILURE_WITHOUT_REASONS}
+
 // 主题
 const THEME = createTheme({
     // 调色板
@@ -44,4 +47,4 @@ function _hash(data: string) {
     return CryptoJS.SHA256(CryptoJS.enc.Hex.parse(data)).toString(CryptoJS.enc.Hex);
 }
 
-export {THEME, SERVER_URL, SERVER_PORT, _hash};
+export {THEME, SERVER_URL, SERVER_PORT, _hash, API_STATUS};

@@ -6,7 +6,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import {SERVER_URL} from '../config';
+import {API_STATUS, SERVER_URL} from '../config';
 
 function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string}) {
     return (
@@ -55,14 +55,26 @@ function SlsMembers() {
 
     const api_get_sls_members = async () => {
         try {
-            const response = await fetch('http://'+SERVER_URL+':4000/get_sls_members',{method: 'GET', mode: 'cors'})
+            const response = await fetch('http://'+SERVER_URL+':4000/get_sls_members',{method: 'GET', mode: 'cors', credentials: 'include'})
             const result = await response.json()
-            set_sls_members(result);
+            if (result.status == "SUCCESS") {
+                return {"status":API_STATUS.SUCCESS, "data":result.data};
+            } else if (result.status == "FAILURE_WITH_REASONS"){
+                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
+            } else {
+                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
+            }
         } catch (error: any) {
-            alert(error)
+            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
         }
     }
-    useEffect(()=>{api_get_sls_members()}, []);
+    useEffect(()=>{
+        api_get_sls_members().then((result)=>{
+            if (result.status == API_STATUS.SUCCESS) {
+                set_sls_members(result.data);
+            }
+        });
+    }, []);
     const sls_teachers = sls_members.teachers;
     const sls_students = sls_members.students;
     const sls_graduates = sls_members.graduates;
@@ -127,15 +139,27 @@ function PhotoWall() {
 
     const api_read_image_files_in_folder = async () => {
         try {
-            const response = await fetch('http://'+SERVER_URL+':4000/read_image_files_in_folder',{method: 'GET', mode: 'cors'})
+            const response = await fetch('http://'+SERVER_URL+':4000/read_image_files_in_folder',{method: 'GET', mode: 'cors', credentials: 'include'})
             const result = await response.json()
-            set_photo_wall(result);
+            if (result.status == "SUCCESS") {
+                return {"status":API_STATUS.SUCCESS, "data":result.data};
+            } else if (result.status == "FAILURE_WITH_REASONS"){
+                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
+            } else {
+                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
+            }
         } catch (error: any) {
-            alert(error)
+            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
         }
     }
 
-    useEffect(()=>{api_read_image_files_in_folder()},[])
+    useEffect(()=>{
+        api_read_image_files_in_folder().then((result)=>{
+            if (result.status == API_STATUS.SUCCESS) {
+                set_photo_wall(result.data);
+            }
+        })
+    },[])
 
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>

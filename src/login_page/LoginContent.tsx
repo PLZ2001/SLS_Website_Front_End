@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Box from "@mui/material/Box";
-import {SERVER_PORT, SERVER_URL} from "../config";
+import {_hash, API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
 import TopMenu from "../home_page/TopMenu";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -8,72 +8,57 @@ import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import SendIcon from '@mui/icons-material/Send';
 import CircularProgress from '@mui/material/CircularProgress';
 import {Link} from "react-router-dom";
-import {_hash} from "../config";
+import {CookieSetOptions} from 'universal-cookie';
 
-function SignUp() {
-    const [name, set_name] = useState("");
-    const [name_error_text, set_name_error_text] = useState("");
-    const [grade, set_grade] = useState("");
-    const [grade_error_text, set_grade_error_text] = useState("");
+function Login(p:{setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
+    const [student_id, set_student_id] = useState("");
+    const [student_id_error_text, set_student_id_error_text] = useState("");
     const [password, set_password] = useState("");
     const [password_error_text, set_password_error_text] = useState("");
-    const [signup_submitted, set_signup_submitted] = useState(false);
-    const [signup_success, set_signup_success] = useState(false);
+    const [login_clicked, set_login_clicked] = useState(false);
+    const [login_success, set_login_success] = useState(false);
 
-    const check_name = (name:string) => {
-        if (name.length > 50) {
-            set_name_error_text("姓名长度不可超过50字")
-        } else if (name.length == 0) {
-            set_name_error_text("姓名不能为空")
+    const check_student_id = (name:string) => {
+        if (name.length == 0) {
+            set_student_id_error_text("学号不能为空")
         } else {
-            set_name_error_text("")
-        }
-    }
-
-    const check_grade = (grade:string) => {
-        if (grade.length > 50) {
-            set_grade_error_text("年级长度不可超过50字")
-        } else if (grade.length == 0) {
-            set_grade_error_text("年级不能为空")
-        } else {
-            set_grade_error_text("")
+            set_student_id_error_text("")
         }
     }
 
     const check_password = (password:string) => {
-        if (password.length < 6 || password.length > 24) {
-            set_password_error_text("密码长度应保持在6-24位之间")
+        if (password.length == 0) {
+            set_password_error_text("密码不能为空")
         } else {
             set_password_error_text("")
         }
     }
 
-    const handleSignUpInfo = async () => {
-        check_name(name)
-        check_grade(grade)
+    const handleLoginInfo = async () => {
+        check_student_id(student_id)
         check_password(password)
-        // 检查合法，是否允许注册
-        if (name_error_text.length==0 && grade_error_text.length==0 && password_error_text.length==0 &&
-            name.length>0 && grade.length>0 && password.length>0) {
-            set_signup_submitted(true);
-            if (await api_submit_signup_info(name, grade, _hash(password))) {
-                set_signup_success(true);
-                set_signup_submitted(false);
+        // 检查合法，是否允许登录
+        if (student_id_error_text.length==0 && password_error_text.length==0 && student_id.length>0 && password.length>0) {
+            set_login_clicked(true);
+            const result = await api_submit_login_info(student_id, _hash(password));
+            if (result.status == API_STATUS.SUCCESS) {
+                p.setCookies("token", result.data.token, {path: "/", sameSite: 'none', secure: true})
+                set_login_success(true);
+                set_login_clicked(false);
             } else {
-                set_signup_success(false);
-                set_signup_submitted(false);
+                set_login_success(false);
+                set_login_clicked(false);
             }
         } else {
-            set_signup_submitted(false);
+            set_login_clicked(false);
         }
     }
 
-    const api_submit_signup_info = async (name:string, grade:string, password:string) => {
+    const api_submit_login_info = async (student_id:string, password:string) => {
         try {
-            const response = await fetch('http://'+SERVER_URL+':4000/submit_signup_info',
+            const response = await fetch('http://'+SERVER_URL+':4000/submit_login_info',
                 {method: 'POST',
                     mode: 'cors',
                     headers: {
@@ -81,16 +66,22 @@ function SignUp() {
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*',
                     },
-                    body: JSON.stringify({"name":name, "grade":grade, "password":password})})
-            await response.json()
-            return true;
+                    credentials: 'include',
+                    body: JSON.stringify({"student_id":student_id, "password":password})})
+            const result = await response.json()
+            if (result.status == "SUCCESS") {
+                return {"status":API_STATUS.SUCCESS, "data":result.data};
+            } else if (result.status == "FAILURE_WITH_REASONS"){
+                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
+            } else {
+                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
+            }
         } catch (error: any) {
-            alert(error);
-            return false;
+            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
         }
     }
 
-    if (signup_success) {
+    if (login_success) {
         return (
             <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
                 <Box sx={{height: '40px', width: '100%'}}/>
@@ -98,19 +89,19 @@ function SignUp() {
                      sx={{width: '100%'}}>
                     <Typography
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
-                        您已注册成功，欢迎加入山林寺课题组
+                        登录成功
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
-                        You've Signed Up Successfully. Welcome to Our Research Group!
+                        You've Logined Successfully
                     </Typography>
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Link to={`/login`}>
-                        <Button variant="contained" sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>马上登录</Button>
+                    <Link to={`/`}>
+                        <Button variant="contained" sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>返回首页</Button>
                     </Link>
                 </Box>
                 <Box sx={{height: '40px', width: '100%'}}/>
@@ -121,7 +112,7 @@ function SignUp() {
             <div>
                 <Backdrop
                     sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                    open={signup_submitted}
+                    open={login_clicked}
                 >
                     <CircularProgress color="inherit" />
                 </Backdrop>
@@ -131,13 +122,13 @@ function SignUp() {
                          sx={{width: '100%'}}>
                         <Typography
                             sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
-                            注册你第一个山林寺账号
+                            登录你的山林寺账号
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="center" alignItems="center"
                          sx={{width: '100%'}}>
                         <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
-                            Sign up Your First SLS Account
+                            Login with Your SLS Account
                         </Typography>
                     </Box>
                     <Box sx={{height: '30px', width: '100%'}}/>
@@ -150,34 +141,20 @@ function SignUp() {
                                 <TextField
                                     required
                                     id="outlined-required"
-                                    label="真实姓名"
+                                    label="学号"
                                     defaultValue=""
                                     margin="normal"
                                     fullWidth
                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                        set_name(event.target.value);
-                                        check_name(event.target.value)
+                                        set_student_id(event.target.value);
+                                        check_student_id(event.target.value);
                                     }}
-                                    error={name_error_text.length == 0 ? false : true}
-                                    helperText={name_error_text}
-                                />
-                                <TextField
-                                    required
-                                    id="outlined-required"
-                                    label="年级（例如23级硕士生）"
-                                    defaultValue=""
-                                    margin="normal"
-                                    fullWidth
-                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                        set_grade(event.target.value);
-                                        check_grade(event.target.value);
-                                    }}
-                                    error={grade_error_text.length == 0 ? false : true}
-                                    helperText={grade_error_text}
+                                    error={student_id_error_text.length == 0 ? false : true}
+                                    helperText={student_id_error_text}
                                 />
                                 <TextField
                                     id="outlined-password-input"
-                                    label="设置密码（6-24位）"
+                                    label="密码"
                                     type="password"
                                     autoComplete="current-password"
                                     margin="normal"
@@ -191,11 +168,11 @@ function SignUp() {
                                 />
                                 <Box sx={{height: '30px', width: '100%'}}/>
                                 <Button onClick={() => {
-                                    handleSignUpInfo()
-                                }} endIcon={<SendIcon/>} variant="contained" sx={{
+                                    handleLoginInfo()
+                                }} variant="contained" sx={{
                                     fontSize: 'subtitle1.fontSize',
                                     letterSpacing: 3
-                                }}>注册账号</Button>
+                                }}>登录</Button>
                             </Stack>
                         </Box>
                     </Box>
@@ -206,7 +183,7 @@ function SignUp() {
     }
 }
 
-function SignupContent() {
+function LoginContent(p:{setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
     return (
         <Box sx={{width: '100%', background:'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)', borderRadius:'20px'}}>
             <Box sx={{width: '100%', backgroundImage: String('url('+'http://'+SERVER_URL+':'+SERVER_PORT+'/images/others/home_sls_1.png'+')'), backgroundSize: '100% auto', backgroundRepeat:'no-repeat', borderRadius:'20px'}}>
@@ -218,7 +195,7 @@ function SignupContent() {
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                     <Stack spacing={2} sx={{width: '80%'}}>
                         <Box sx={{height: '10px', width: '100%'}}/>
-                        <SignUp/>
+                        <Login setCookies={p.setCookies}/>
                         <Box sx={{height: '50px', width: '100%'}}/>
                     </Stack>
                 </Box>
@@ -227,4 +204,4 @@ function SignupContent() {
     )
 }
 
-export default SignupContent;
+export default LoginContent;
