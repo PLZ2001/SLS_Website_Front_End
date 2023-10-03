@@ -9,10 +9,13 @@ import TextField from "@mui/material/TextField";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
 import CircularProgress from '@mui/material/CircularProgress';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {CookieSetOptions} from 'universal-cookie';
 
+
 function Login(p:{setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
+    const navigate = useNavigate()
+
     const [student_id, set_student_id] = useState("");
     const [student_id_error_text, set_student_id_error_text] = useState("");
     const [password, set_password] = useState("");
@@ -47,11 +50,17 @@ function Login(p:{setCookies:(name: "token", value: any, options?: (CookieSetOpt
                 p.setCookies("token", result.data.token, {path: "/", sameSite: 'none', secure: true})
                 set_login_success(true);
                 set_login_clicked(false);
-            } else {
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS){
                 set_login_success(false);
                 set_login_clicked(false);
+                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                set_login_success(false);
+                set_login_clicked(false);
+                navigate(`/error`, { replace: false, state: { error:null } })
             }
         } else {
+            set_login_success(false);
             set_login_clicked(false);
         }
     }

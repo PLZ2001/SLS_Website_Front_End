@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import {API_STATUS, SERVER_URL} from '../config';
+import {useNavigate} from 'react-router-dom'
 
 function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string}) {
     return (
@@ -35,6 +36,8 @@ function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, desc
 }
 
 function SlsMembers() {
+    const navigate = useNavigate()
+
     const [sls_members, set_sls_members] = useState({
         teachers:[{
             name:"",
@@ -72,6 +75,10 @@ function SlsMembers() {
         api_get_sls_members().then((result)=>{
             if (result.status == API_STATUS.SUCCESS) {
                 set_sls_members(result.data);
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:null } })
             }
         });
     }, []);
@@ -135,6 +142,8 @@ function SlsMembers() {
 }
 
 function PhotoWall() {
+    const navigate = useNavigate()
+
     const [photo_wall, set_photo_wall] = useState([{image:"", title:""}]);
 
     const api_read_image_files_in_folder = async () => {
@@ -157,6 +166,10 @@ function PhotoWall() {
         api_read_image_files_in_folder().then((result)=>{
             if (result.status == API_STATUS.SUCCESS) {
                 set_photo_wall(result.data);
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:null } })
             }
         })
     },[])

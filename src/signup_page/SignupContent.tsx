@@ -10,9 +10,12 @@ import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
 import SendIcon from '@mui/icons-material/Send';
 import CircularProgress from '@mui/material/CircularProgress';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+
 
 function SignUp() {
+    const navigate = useNavigate()
+
     const [student_id, set_student_id] = useState("");
     const [student_id_error_text, set_student_id_error_text] = useState("");
     const [name, set_name] = useState("");
@@ -75,11 +78,17 @@ function SignUp() {
             if (result.status == API_STATUS.SUCCESS) {
                 set_signup_success(true);
                 set_signup_submitted(false);
-            } else {
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 set_signup_success(false);
                 set_signup_submitted(false);
+                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                set_signup_success(false);
+                set_signup_submitted(false);
+                navigate(`/error`, { replace: false, state: { error:null } })
             }
         } else {
+            set_signup_success(false);
             set_signup_submitted(false);
         }
     }

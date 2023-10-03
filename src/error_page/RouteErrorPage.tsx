@@ -7,20 +7,18 @@ import BottomBar from "../home_page/BottomBar";
 import ErrorBoard from "./ErrorBoard";
 import {THEME} from "../config";
 import * as Cookie from "react-cookie";
-import {useLocation} from 'react-router-dom';
 
 
-function ErrorPage() {
+function RouteErrorPage() {
     const [cookies, setCookies] = Cookie.useCookies(["token"])
-    // 页面有输入参数error
-    const {state:{error}} = useLocation()
+
     return (
         <ThemeProvider theme={THEME}>
             <Box sx={{width: '100%', backgroundColor: '#ffffff'}}>
                 {/*顶部栏*/}
                 <TopBar cookies={cookies} setCookies={setCookies}/>
                 {/*错误栏*/}
-                <ErrorBoard error={error}/>
+                <ErrorBoard error={null}/>
                 {/*底部栏*/}
                 <BottomBar/>
             </Box>
@@ -28,4 +26,4 @@ function ErrorPage() {
     );
 }
 
-export default ErrorPage;
+export default RouteErrorPage;

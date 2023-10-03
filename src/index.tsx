@@ -8,15 +8,17 @@ import {
 
 import HomePage from './home_page/HomePage';
 import ErrorPage from './error_page/ErrorPage';
+import RouteErrorPage from './error_page/RouteErrorPage';
 import SignupPage from './signup_page/SignupPage';
 import LoginPage from './login_page/LoginPage';
+import ForumPage from './forum_page/ForumPage';
 
 // 定义多页面的路由
 const router = createBrowserRouter([
     {
         path: "/",
         element: <HomePage/>,
-        errorElement: <ErrorPage/>,
+        errorElement: <RouteErrorPage/>,
     },
     {
         path: "/signup",
@@ -25,6 +27,14 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <LoginPage/>,
+    },
+    {
+        path: "/error",
+        element: <ErrorPage/>,
+    },
+    {
+        path: "/forum",
+        element: <ForumPage/>,
     },
 ]);
 

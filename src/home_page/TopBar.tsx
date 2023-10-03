@@ -5,12 +5,13 @@ import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
-import {Link} from "react-router-dom";
-import {SERVER_URL, SERVER_PORT, API_STATUS} from "../config";
+import {Link, useNavigate} from "react-router-dom";
+import {API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
 import {CookieSetOptions} from "universal-cookie";
-import {withCookies} from "react-cookie";
 
 function TopBar(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
+    const navigate = useNavigate()
+
     const [name, set_name] = useState("");
 
     const api_get_user_name = async () => {
@@ -34,14 +35,19 @@ function TopBar(p:{cookies:{token?: any}, setCookies:(name: "token", value: any,
     }
 
     useEffect(()=>{
-        api_get_user_name().then((result)=>{
-            if (result.status == API_STATUS.SUCCESS) {
-                set_name(result.data);
-            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
-            }
-        })
-    },[p.cookies])
+        if (p.cookies.token) {
+            api_get_user_name().then((result)=>{
+                if (result.status == API_STATUS.SUCCESS) {
+                    set_name(result.data);
+                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                    navigate(`/error`, { replace: false, state: { error:null } })
+                }
+            })
+        }
+    },[p.cookies.token])
 
     return (
         <Box sx={{width: '100%', backgroundColor: '#ffffff'}}>
@@ -61,7 +67,7 @@ function TopBar(p:{cookies:{token?: any}, setCookies:(name: "token", value: any,
                     </Stack>
                 </Grid>
                 <Grid xs={2.5} display="flex" justifyContent="end">
-                    {p.cookies.token?
+                    {name.length>0?
                         <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{paddingTop: '5px', height: '30px'}}>
                             <Link to={`/user`}>
                                 <Button sx={{
