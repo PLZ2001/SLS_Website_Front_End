@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import {Link, useNavigate} from "react-router-dom";
 import {API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
 import {CookieSetOptions} from "universal-cookie";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function TopBar(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
     const navigate = useNavigate()
@@ -46,6 +47,8 @@ function TopBar(p:{cookies:{token?: any}, setCookies:(name: "token", value: any,
                     navigate(`/error`, { replace: false, state: { error:null } })
                 }
             })
+        } else {
+            set_name("");
         }
     },[p.cookies.token])
 
@@ -66,39 +69,41 @@ function TopBar(p:{cookies:{token?: any}, setCookies:(name: "token", value: any,
                         {/*</Box>*/}
                     </Stack>
                 </Grid>
-                <Grid xs={2.5} display="flex" justifyContent="end">
-                    {name.length>0?
-                        <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{paddingTop: '5px', height: '30px'}}>
-                            <Link to={`/user`}>
+                <Grid xs={2.5} display="flex" justifyContent="end" alignItems="center">
+                    {p.cookies.token? name.length>0?
+                            <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{height: '30px'}}>
+                                <Link to={`/user`}>
+                                    <Button sx={{
+                                        fontSize: 'subtitle1.fontSize',
+                                        letterSpacing: 3,
+                                        height: "30px"
+                                    }}>{name}</Button>
+                                </Link>
                                 <Button sx={{
                                     fontSize: 'subtitle1.fontSize',
                                     letterSpacing: 3,
                                     height: "30px"
-                                }}>{name}</Button>
-                            </Link>
-                            <Button sx={{
-                                fontSize: 'subtitle1.fontSize',
-                                letterSpacing: 3,
-                                height: "30px"
-                            }} onClick={()=>{p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})}}>退出登录</Button>
-                        </ButtonGroup>
+                                }} onClick={()=>{p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true});}}>退出登录</Button>
+                            </ButtonGroup>
                         :
-                        <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{paddingTop: '5px', height: '30px'}}>
-                            <Link to={`/login`}>
-                                <Button sx={{
-                                    fontSize: 'subtitle1.fontSize',
-                                    letterSpacing: 3,
-                                    height: "30px"
-                                }}>登录</Button>
-                            </Link>
-                            <Link to={`/signup`}>
-                                <Button sx={{
-                                    fontSize: 'subtitle1.fontSize',
-                                    letterSpacing: 3,
-                                    height: "30px"
-                                }}>注册</Button>
-                            </Link>
-                        </ButtonGroup>
+                            <CircularProgress size="30px" color="primary"/>
+                        :
+                            <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{height: '30px'}}>
+                                <Link to={`/login`}>
+                                    <Button sx={{
+                                        fontSize: 'subtitle1.fontSize',
+                                        letterSpacing: 3,
+                                        height: "30px"
+                                    }}>登录</Button>
+                                </Link>
+                                <Link to={`/signup`}>
+                                    <Button sx={{
+                                        fontSize: 'subtitle1.fontSize',
+                                        letterSpacing: 3,
+                                        height: "30px"
+                                    }}>注册</Button>
+                                </Link>
+                            </ButtonGroup>
                     }
                 </Grid>
                 <Grid xs={0.25}/>

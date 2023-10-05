@@ -8,6 +8,7 @@ import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import {API_STATUS, SERVER_URL} from '../config';
 import {useNavigate} from 'react-router-dom'
+import CircularProgress from "@mui/material/CircularProgress";
 
 function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string}) {
     return (
@@ -82,6 +83,7 @@ function SlsMembers() {
             }
         });
     }, []);
+
     const sls_teachers = sls_members.teachers;
     const sls_students = sls_members.students;
     const sls_graduates = sls_members.graduates;
@@ -101,7 +103,17 @@ function SlsMembers() {
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
-                    <SlsMembersGrid sls_members_list={sls_teachers} photo_width={"50%"} col={2} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                    {sls_teachers.length>0?sls_teachers[0].name.length>0?
+                            <SlsMembersGrid sls_members_list={sls_teachers} photo_width={"50%"} col={2} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                        :
+                            <CircularProgress color="primary" />
+                        :
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                    暂无
+                                </Typography>
+                            </Box>
+                    }
                 </Box>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
@@ -117,7 +129,17 @@ function SlsMembers() {
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
-                    <SlsMembersGrid sls_members_list={sls_students} photo_width={"80%"} col={6} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                    {sls_students.length>0?sls_students[0].name.length>0?
+                            <SlsMembersGrid sls_members_list={sls_students} photo_width={"80%"} col={6} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                            :
+                            <CircularProgress color="primary" />
+                        :
+                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                            <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                暂无
+                            </Typography>
+                        </Box>
+                    }
                 </Box>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
@@ -133,7 +155,17 @@ function SlsMembers() {
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
-                    <SlsMembersGrid sls_members_list={sls_graduates} photo_width={"90%"} col={8} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                    {sls_graduates.length>0?sls_graduates[0].name.length>0?
+                            <SlsMembersGrid sls_members_list={sls_graduates} photo_width={"90%"} col={8} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                            :
+                            <CircularProgress color="primary" />
+                        :
+                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                            <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                暂无
+                            </Typography>
+                        </Box>
+                    }
                 </Box>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
@@ -189,19 +221,29 @@ function PhotoWall() {
             </Box>
             <Box sx={{height: '10px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Box sx={{ width: '80%', height: '600px', overflowY: 'scroll' }}>
-                    <ImageList variant="masonry" cols={3} gap={8}>
-                        {photo_wall.map((item) => (
-                            <ImageListItem key={item.image}>
-                                <img
-                                    src={item.image}
-                                    alt={item.title}
-                                    loading="lazy"
-                                />
-                            </ImageListItem>
-                        ))}
-                    </ImageList>
-                </Box>
+                {photo_wall.length>0?photo_wall[0].image.length>0?
+                    <Box sx={{ width: '80%', height: '600px', overflowY: 'scroll' }}>
+                        <ImageList variant="masonry" cols={3} gap={8}>
+                            {photo_wall.map((item) => (
+                                <ImageListItem key={item.image}>
+                                    <img
+                                        src={item.image}
+                                        alt={item.title}
+                                        loading="lazy"
+                                    />
+                                </ImageListItem>
+                            ))}
+                        </ImageList>
+                    </Box>
+                    :
+                    <CircularProgress color="primary" />
+                    :
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                        <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                            暂无
+                        </Typography>
+                    </Box>
+                }
             </Box>
             <Box sx={{height: '60px', width: '100%'}}/>
         </Paper>

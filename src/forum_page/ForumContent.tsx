@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
-import {_hash, API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
+import {_hash, API_STATUS, SERVER_PORT, SERVER_URL, PIECES, CONTENT_LENGTH_LIMIT, _getDate, MAX_PIECES} from "../config";
 import TopMenu from "../home_page/TopMenu";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -24,27 +24,60 @@ import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined
 import {CookieSetOptions} from "universal-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
-import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
-import { styled } from '@mui/material/styles';
-import {stringify} from "querystring";
+import Badge from "@mui/material/Badge";
 
 
-function Post() {
+function Post(p:{post:{post_id:String, title:String, content:String, user_id:String, time:number, stat:{watch:number, like:number, share:number, favorite:number, comment:number}, files:{category:String, name:String}[], comment_ids:String[]}}) {
+    const navigate = useNavigate()
+
+    const [name, set_name] = useState("");
+
+    const api_get_name_with_student_id = async () => {
+        try {
+            const response = await fetch('http://'+SERVER_URL+':4000/get_name_with_student_id/'+p.post.user_id, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+            })
+            const result = await response.json()
+            if (result.status == "SUCCESS") {
+                return {"status":API_STATUS.SUCCESS, "data":result.data};
+            } else if (result.status == "FAILURE_WITH_REASONS"){
+                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
+            } else {
+                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
+            }
+        } catch (error: any) {
+            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    }
+
+    useEffect(()=>{
+        api_get_name_with_student_id().then((result)=> {
+            if (result.status == API_STATUS.SUCCESS) {
+                set_name(result.data);
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                navigate(`/error`, {replace: false, state: {error: result.reasons}})
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                navigate(`/error`, {replace: false, state: {error: null}})
+            }
+        })
+    },[])
+
     return (
         <Card sx={{ width: '100%', borderRadius:'20px'}}>
             <CardActionArea>
                 <Grid container spacing={0}>
-                    <Grid xs={9}>
+                    <Grid xs={p.post.files.filter((val)=>{return val.category=="image"}).length>0?9:12}>
                         <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
                             <Box alignItems="center" sx={{width: '100%'}}>
                                 <Typography sx={{fontSize: 'h6.fontSize'}}>
-                                    迪士尼春游
+                                    {p.post.title}
                                 </Typography>
                             </Box>
                             <Box alignItems="center" sx={{width: '100%'}}>
                                 <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                    充满童趣的一次旅行！
+                                    {p.post.content.length>CONTENT_LENGTH_LIMIT?p.post.content.substring(0,CONTENT_LENGTH_LIMIT)+'...':p.post.content}
                                 </Typography>
                             </Box>
                         </Box>
@@ -56,7 +89,7 @@ function Post() {
                                             <VisibilityOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
                                                 <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    23
+                                                    {p.post.stat.watch}
                                                 </Typography>
                                             </Box>
                                         </Stack>
@@ -66,7 +99,7 @@ function Post() {
                                             <ThumbUpOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
                                                 <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    10
+                                                    {p.post.stat.like}
                                                 </Typography>
                                             </Box>
                                         </Stack>
@@ -76,7 +109,7 @@ function Post() {
                                             <ShareOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
                                                 <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    3
+                                                    {p.post.stat.share}
                                                 </Typography>
                                             </Box>
                                         </Stack>
@@ -86,17 +119,17 @@ function Post() {
                                             <FavoriteBorderOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
                                                 <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    3
+                                                    {p.post.stat.favorite}
                                                 </Typography>
                                             </Box>
                                         </Stack>
                                     </IconButton>
-                                    <IconButton aria-label="favorite" size="small">
+                                    <IconButton aria-label="comment" size="small">
                                         <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
                                             <CommentOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
                                                 <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    2
+                                                    {p.post.stat.comment}
                                                 </Typography>
                                             </Box>
                                         </Stack>
@@ -107,21 +140,27 @@ function Post() {
                                 <Stack display="flex" justifyContent="end" direction="row" spacing={1} sx={{height: '30px', padding: '20px'}}>
                                     <Box display="flex" justifyContent="center" alignItems="center">
                                         <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                            2023年5月1日
+                                            {_getDate(p.post.time)}
                                         </Typography>
                                     </Box>
                                     <Box display="flex" justifyContent="center" alignItems="center">
                                         <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                            方丈
+                                            {name.length>0?
+                                                name
+                                                :
+                                                <CircularProgress size="10px" color="secondary"/>
+                                            }
                                         </Typography>
                                     </Box>
                                 </Stack>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid xs={3}>
-                        <Box sx={{width: '100%', height:'100%', backgroundImage: String('url('+'http://127.0.0.1:4000/images/photo_wall/home_photowall_2.jpg'+')'), backgroundSize: 'cover', backgroundPosition:'center center', backgroundRepeat:'no-repeat', borderTopRightRadius:'20px', borderBottomRightRadius:'20px'}}/>
-                    </Grid>
+                    {p.post.files.filter((val)=>{return val.category=="image"}).length>0 &&
+                        <Grid xs={3}>
+                            <Box sx={{width: '100%', height:'100%', backgroundImage: String('url('+'http://'+SERVER_URL+':'+SERVER_PORT+'/files/'+p.post.post_id+'/'+p.post.files.filter((val)=>{return val.category=="image"})[0].name+')'), backgroundSize: 'cover', backgroundPosition:'center center', backgroundRepeat:'no-repeat', borderTopRightRadius:'20px', borderBottomRightRadius:'20px'}}/>
+                        </Grid>
+                    }
                 </Grid>
             </CardActionArea>
         </Card>
@@ -135,14 +174,8 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
     const [time_stamp, set_time_stamp] = useState(0)
     const get_time_now = async () => {
         const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        const hour = date.getHours();
-        const minute = date.getMinutes();
-        const second = date.getSeconds();
-        const formatted_time = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day} ${hour<10? '0'+ hour:hour}:${minute<10? '0'+ minute:minute}:${second<10? '0'+ second:second}`;
         const time_stamp = date.getTime() / 1000;
+        const formatted_time = _getDate(time_stamp);
         return {"formatted_time":formatted_time, "time_stamp":time_stamp};
     }
     setInterval(() => {
@@ -189,18 +222,24 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
     const [image_files_selected, set_image_files_selected] = useState([{name:"", url:"", file: new File([], "")}])
     const [other_files_selected, set_other_files_selected] = useState([{name:"", url:"", file: new File([], "")}])
 
+    const [image_files_order, set_image_files_order] = useState([0])
+    const [other_files_order, set_other_files_order] = useState([0])
+
     const handleImageFile = async (files:FileList|null) => {
         if (files) {
             if (files.length>0) {
                 let _image_files_selected = [];
+                let _image_files_order = [];
                 for (let i = 0; i < files.length; i++) {
                     _image_files_selected.push({
                         name: files[i].name,
                         url: URL.createObjectURL(files[i]),
                         file: files[i]
                     })
+                    _image_files_order.push(i);
                 }
                 set_image_files_selected(_image_files_selected)
+                set_image_files_order(_image_files_order)
             }
         }
     }
@@ -209,28 +248,55 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         if (files) {
             if (files.length>0) {
                 let _other_files_selected = [];
+                let _other_files_order = [];
                 for (let i=0;i<files.length;i++) {
                     _other_files_selected.push({name:files[i].name, url:URL.createObjectURL(files[i]), file:files[i]})
+                    _other_files_order.push(i);
                 }
                 set_other_files_selected(_other_files_selected)
+                set_other_files_order(_other_files_order)
             }
         }
     }
 
+    const handleImageFileOrder = async (idx:number) => {
+        let _image_files_order = image_files_order;
+        if (_image_files_order.includes(idx)) {
+            _image_files_order = _image_files_order.filter((v)=>{return v!=idx})
+        } else {
+            _image_files_order.push(idx)
+        }
+        set_image_files_order(_image_files_order)
+    }
+
+    const handleOtherFileOrder = async (idx:number) => {
+        let _other_files_order = other_files_order;
+        if (_other_files_order.includes(idx)) {
+            _other_files_order = _other_files_order.filter((v)=>{return v!=idx})
+        } else {
+            _other_files_order.push(idx)
+        }
+        set_other_files_order(_other_files_order)
+    }
+
+
+
     useEffect(()=>{
         let _files = []
         if (image_files_selected[0].name.length>0) {
-            for (let i=0;i<image_files_selected.length;i++) {
-                _files.push({category:"image", name:image_files_selected[i].name})
+            for (let i=0;i<image_files_order.length;i++) {
+                _files.push({category:"image", name:image_files_selected[image_files_order[i]].name})
             }
         }
         if (other_files_selected[0].name.length>0) {
-            for (let i=0;i<other_files_selected.length;i++) {
-                _files.push({category:"other", name:other_files_selected[i].name})
+            for (let i=0;i<other_files_order.length;i++) {
+                _files.push({category:"other", name:other_files_selected[other_files_order[i]].name})
             }
         }
         set_files(_files)
-    },[image_files_selected, other_files_selected])
+    },[image_files_selected, other_files_selected, image_files_order, other_files_order])
+
+
 
     const [title, set_title] = useState("");
     const [title_error_text, set_title_error_text] = useState("");
@@ -266,10 +332,11 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
             navigate(`/error`, { replace: false, state: { error:"抱歉，请登录后再试" } })
         } else if (title_error_text.length==0 && content_error_text.length==0 && title.length>0 && content.length>0) {
             set_submit_clicked(true);
+            const post_id = _hash(title+time_stamp.toString());
             if (files.length>0) {
-                const result = await api_submit_files(image_files_selected.concat(other_files_selected));
+                const result = await api_submit_files(post_id, image_files_selected.concat(other_files_selected), image_files_order.concat(other_files_order.map((v)=>{return v+image_files_selected.length})));
                 if (result.status == API_STATUS.SUCCESS) {
-                    const result = await api_submit_new_post(title, content, time_stamp, files);
+                    const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
                     if (result.status == API_STATUS.SUCCESS) {
                         set_submit_success(true);
                         set_submit_clicked(false);
@@ -292,7 +359,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                     navigate(`/error`, { replace: false, state: { error:null } })
                 }
             } else {
-                const result = await api_submit_new_post(title, content, time_stamp, files);
+                const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
                 if (result.status == API_STATUS.SUCCESS) {
                     set_submit_success(true);
                     set_submit_clicked(false);
@@ -312,9 +379,9 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         }
     }
 
-    const api_submit_new_post = async (title:string, content:string, time:number, files:{category:string, name:string}[]) => {
+    const api_submit_new_post = async (post_id:String, title:string, content:string, time:number, files:{category:string, name:string}[]) => {
         try {
-            const response = await fetch('http://'+SERVER_URL+':4000/submit_new_post',
+            const response = await fetch('http://'+SERVER_URL+':4000/submit_new_post/'+post_id,
                 {method: 'POST',
                     mode: 'cors',
                     headers: {
@@ -337,18 +404,17 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         }
     }
 
-    const api_submit_files = async (files:{name:String, url:String, file:File}[]) => {
+    const api_submit_files = async (post_id:String, files:{name:String, url:String, file:File}[], files_order:number[]) => {
         try {
             const form_data = new FormData();
-            for (let i=0;i<files.length;i++) {
-                form_data.append(files[i].name.toString(), files[i].file);
+            for (let i=0;i<files_order.length;i++) {
+                form_data.append(files[files_order[i]].name.toString(), files[files_order[i]].file);
             }
-            const response = await fetch('http://'+SERVER_URL+':4000/submit_files',
+            const response = await fetch('http://'+SERVER_URL+':4000/submit_files/'+post_id,
                 {method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
-                        // 'Content-Type': 'multipart/form-data',
                         'Access-Control-Allow-Origin': '*',
                     },
                     credentials: 'include',
@@ -366,168 +432,329 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         }
     }
 
-    return (
-        <div>
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={submit_clicked}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
+    if (submit_success) {
+        return (
             <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
                 <Box sx={{height: '40px', width: '100%'}}/>
-                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Box sx={{width: '90%'}}>
-                        <Stack spacing={2} sx={{width: '100%'}}>
-                            <Card sx={{ width: '100%', borderRadius:'20px'}}>
-                                <Grid container spacing={0}>
-                                    <Grid xs={9}>
-                                        <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <TextField
-                                                    id="outlined-multiline-flexible"
-                                                    label="标题"
-                                                    multiline
-                                                    maxRows={2}
-                                                    fullWidth
-                                                    size="small"
-                                                    color="primary"
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                        set_title(event.target.value);
-                                                        check_post_title(event.target.value);
-                                                    }}
-                                                    error={title_error_text.length == 0 ? false : true}
-                                                    helperText={title_error_text}
-                                                />
-                                            </Box>
-                                            <Box sx={{height: '10px', width: '100%'}}/>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <TextField
-                                                    id="outlined-multiline-flexible"
-                                                    label="内容"
-                                                    multiline
-                                                    minRows={3}
-                                                    maxRows={5}
-                                                    fullWidth
-                                                    size="small"
-                                                    color="secondary"
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                        set_content(event.target.value);
-                                                        check_post_content(event.target.value);
-                                                    }}
-                                                    error={content_error_text.length == 0 ? false : true}
-                                                    helperText={content_error_text}
-                                                />
-                                            </Box>
-                                            {image_files_selected[0].name.length>0 &&
-                                                <div>
+                <Box display="flex" justifyContent="center" alignItems="center"
+                     sx={{width: '100%'}}>
+                    <Typography
+                        sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
+                        发送成功，请刷新查看
+                    </Typography>
+                </Box>
+                <Box display="flex" justifyContent="center" alignItems="center"
+                     sx={{width: '100%'}}>
+                    <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                        You've Submitted Your Post Successfully. Please Refresh for Check.
+                    </Typography>
+                </Box>
+                <Box sx={{height: '40px', width: '100%'}}/>
+            </Paper>
+        )
+    } else {
+        return (
+            <div>
+                <Backdrop
+                    sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
+                    open={submit_clicked}
+                >
+                    <CircularProgress color="inherit"/>
+                </Backdrop>
+                <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
+                    <Box sx={{height: '40px', width: '100%'}}/>
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                        <Box sx={{width: '90%'}}>
+                            <Stack spacing={2} sx={{width: '100%'}}>
+                                <Card sx={{width: '100%', borderRadius: '20px'}}>
+                                    <Stack spacing={2} sx={{width: '100%'}}>
+                                        <Grid container spacing={0}>
+                                            <Grid xs={9}>
+                                                <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <TextField
+                                                            id="outlined-multiline-flexible"
+                                                            label="标题"
+                                                            multiline
+                                                            maxRows={2}
+                                                            fullWidth
+                                                            size="small"
+                                                            color="primary"
+                                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                set_title(event.target.value);
+                                                                check_post_title(event.target.value);
+                                                            }}
+                                                            error={title_error_text.length == 0 ? false : true}
+                                                            helperText={title_error_text}
+                                                        />
+                                                    </Box>
                                                     <Box sx={{height: '10px', width: '100%'}}/>
-                                                    <Grid container spacing={0}>
-                                                        {image_files_selected.map((image_file)=>{
-                                                            return (
-                                                                <Grid xs={4} display="flex" justifyContent="center" alignItems="center" sx={{height: '150px'}}>
-                                                                    <Box sx={{width: '90%', height:'90%', backgroundImage: String('url('+image_file.url+')'), backgroundSize: 'cover', backgroundPosition:'center center', backgroundRepeat:'no-repeat', borderRadius:'5px'}}/>
-                                                                </Grid>
-                                                            )
-                                                        })}
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <TextField
+                                                            id="outlined-multiline-flexible"
+                                                            label="内容"
+                                                            multiline
+                                                            minRows={1}
+                                                            maxRows={5}
+                                                            fullWidth
+                                                            size="small"
+                                                            color="secondary"
+                                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                set_content(event.target.value);
+                                                                check_post_content(event.target.value);
+                                                            }}
+                                                            error={content_error_text.length == 0 ? false : true}
+                                                            helperText={content_error_text}
+                                                        />
+                                                    </Box>
+                                                </Box>
+                                                <Grid container spacing={0}>
+                                                    <Grid xs={4}>
+                                                        <Stack display="flex" justifyContent="start" direction="row"
+                                                               spacing={1} sx={{height: '30px', padding: '20px'}}>
+                                                            <IconButton aria-label="add photo" size="small">
+                                                                <Stack alignItems="center" display="flex"
+                                                                       justifyContent="start" direction="row" spacing={1}>
+                                                                    <InsertPhotoOutlinedIcon/>
+                                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                                        <Typography color="text.secondary"
+                                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            添加图片
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </Stack>
+                                                                <input
+                                                                    title=""
+                                                                    type="file"
+                                                                    style={{
+                                                                        position: 'absolute',
+                                                                        opacity: 0,
+                                                                        left: "0",
+                                                                        bottom: "0",
+                                                                        width: "100%",
+                                                                        height: "100%"
+                                                                    }}
+                                                                    accept='image/*'
+                                                                    multiple
+                                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                        handleImageFile(event.target.files)
+                                                                    }}
+                                                                />
+                                                            </IconButton>
+                                                            <IconButton aria-label="add file" size="small">
+                                                                <Stack alignItems="center" display="flex"
+                                                                       justifyContent="start" direction="row" spacing={1}>
+                                                                    <FilePresentOutlinedIcon/>
+                                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                                        <Typography color="text.secondary"
+                                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            添加附件
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </Stack>
+                                                                <input
+                                                                    title=""
+                                                                    type="file"
+                                                                    style={{
+                                                                        position: 'absolute',
+                                                                        opacity: 0,
+                                                                        left: "0",
+                                                                        bottom: "0",
+                                                                        width: "100%",
+                                                                        height: "100%"
+                                                                    }}
+                                                                    accept='*'
+                                                                    multiple
+                                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                        handleOtherFile(event.target.files)
+                                                                    }}
+                                                                />
+                                                            </IconButton>
+                                                        </Stack>
                                                     </Grid>
-                                                </div>
-                                            }
-                                            {other_files_selected[0].name.length>0 &&
-                                                <div>
-                                                    <Box sx={{height: '10px', width: '100%'}}/>
-                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                                                        <Stack sx={{width: '97%'}} spacing={1}>
-                                                            {other_files_selected.map((other_file)=>{
+                                                    <Grid xs={8}>
+                                                        <Stack display="flex" justifyContent="end" direction="row"
+                                                               spacing={1} sx={{height: '30px', padding: '20px'}}>
+                                                            <Box display="flex" justifyContent="center" alignItems="center">
+                                                                <Typography color="text.secondary"
+                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                    {formatted_time}
+                                                                </Typography>
+                                                            </Box>
+                                                            <Box display="flex" justifyContent="center" alignItems="center">
+                                                                <Typography color="text.secondary"
+                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                    {name.length > 0 ? name : "发帖需先登录"}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Stack>
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid xs={3}>
+                                                {image_files_selected[0].name.length > 0 && image_files_order.length>0?
+                                                    <Box sx={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        backgroundImage: String('url(' + image_files_selected[image_files_order[0]].url + ')'),
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center center',
+                                                        backgroundRepeat: 'no-repeat',
+                                                        borderTopRightRadius: '20px',
+                                                        borderBottomRightRadius: '20px'
+                                                    }}/>
+                                                    :
+                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%', height:'100%', borderTopRightRadius: '20px', borderBottomRightRadius: '20px'}}>
+                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                            帖子封面默认为第一张图
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                            </Grid>
+                                        </Grid>
+                                        {image_files_selected[0].name.length > 0 &&
+                                            <div>
+                                                <Stack spacing={1} display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Box display="flex" justifyContent="start" alignItems="center" sx={{width:'90%', height:'100%'}}>
+                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                            提示：单击图片调整顺序
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box display="flex" justifyContent="start" alignItems="center"
+                                                         sx={{width: '95%'}}>
+                                                        <Grid container spacing={0}>
+                                                            {image_files_selected.map((image_file, idx) => {
                                                                 return (
-                                                                    <a href={other_file.url} style={{textDecoration:"none"}}>
-                                                                        <Box display="flex" justifyContent="start" alignItems="center" sx={{width: '100%'}}>
-                                                                            <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                    <Grid xs={4} display="flex" justifyContent="center"
+                                                                          alignItems="center" sx={{height: '150px'}}>
+                                                                        <Badge badgeContent={image_files_order.indexOf(idx)+1} color="primary" sx={{width:'90%', height:'90%'}} anchorOrigin={{ horizontal: 'left', vertical: 'top' }}>
+                                                                            <Box onClick={(e)=>{handleImageFileOrder(idx)}} sx={{
+                                                                                width: '100%',
+                                                                                height: '100%',
+                                                                                backgroundImage: String('url(' + image_file.url + ')'),
+                                                                                backgroundSize: 'cover',
+                                                                                backgroundPosition: 'center center',
+                                                                                backgroundRepeat: 'no-repeat',
+                                                                                borderRadius: '5px'
+                                                                            }}/>
+                                                                        </Badge>
+                                                                    </Grid>
+                                                                )
+                                                            })}
+                                                        </Grid>
+                                                    </Box>
+                                                </Stack>
+                                                <Box sx={{height: '10px', width: '100%'}}/>
+                                            </div>
+                                        }
+                                        {other_files_selected[0].name.length > 0 &&
+                                            <div>
+                                                <Stack spacing={2} display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Box display="flex" justifyContent="start" alignItems="center" sx={{width:'90%', height:'100%'}}>
+                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                            提示：单击附件调整顺序
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box display="flex" justifyContent="start" alignItems="center"
+                                                         sx={{width: '90%'}}>
+                                                        <Stack display="flex" justifyContent="start" spacing={2}>
+                                                            {other_files_selected.map((other_file,idx) => {
+                                                                return (
+                                                                    <Badge badgeContent={other_files_order.indexOf(idx)+1} color="primary" anchorOrigin={{ horizontal: 'left', vertical: 'top' }}>
+                                                                        <Box onClick={(e)=>{handleOtherFileOrder(idx)}} display="flex" justifyContent="start"
+                                                                             alignItems="center">
+                                                                            <Typography
+                                                                                sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                                 {other_file.name}
                                                                             </Typography>
                                                                         </Box>
-                                                                    </a>
+                                                                    </Badge>
                                                                 )
                                                             })}
                                                         </Stack>
                                                     </Box>
-                                                </div>
-                                            }
-                                        </Box>
-                                        <Grid container spacing={0}>
-                                            <Grid xs={4}>
-                                                <Stack display="flex" justifyContent="start" direction="row" spacing={1} sx={{height: '30px', padding: '20px'}}>
-                                                    <IconButton aria-label="add photo" size="small">
-                                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
-                                                            <InsertPhotoOutlinedIcon/>
-                                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                    添加图片
-                                                                </Typography>
-                                                            </Box>
-                                                        </Stack>
-                                                        <input
-                                                            title=""
-                                                            type="file"
-                                                            style={{position:'absolute', opacity:0, left:"0", bottom:"0", width:"100%", height:"100%"}}
-                                                            accept='image/*'
-                                                            multiple
-                                                            onChange={(event:React.ChangeEvent<HTMLInputElement>) => {handleImageFile(event.target.files)}}
-                                                        />
-                                                    </IconButton>
-                                                    <IconButton aria-label="add file" size="small">
-                                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
-                                                            <FilePresentOutlinedIcon/>
-                                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                    添加附件
-                                                                </Typography>
-                                                            </Box>
-                                                        </Stack>
-                                                        <input
-                                                            title=""
-                                                            type="file"
-                                                            style={{position:'absolute', opacity:0, left:"0", bottom:"0", width:"100%", height:"100%"}}
-                                                            accept='*'
-                                                            multiple
-                                                            onChange={(event:React.ChangeEvent<HTMLInputElement>) => {handleOtherFile(event.target.files)}}
-                                                        />
-                                                    </IconButton>
                                                 </Stack>
-                                            </Grid>
-                                            <Grid xs={8}>
-                                                <Stack display="flex" justifyContent="end" direction="row" spacing={1} sx={{height: '30px', padding: '20px'}}>
-                                                    <Box display="flex" justifyContent="center" alignItems="center">
-                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                            {formatted_time}
-                                                        </Typography>
-                                                    </Box>
-                                                    <Box display="flex" justifyContent="center" alignItems="center">
-                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                            {name.length>0?name:"发帖需先登录"}
-                                                        </Typography>
-                                                    </Box>
-                                                </Stack>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid xs={3}>
-                                        <Box sx={{width: '100%', height:'100%', backgroundImage: String('url('+(image_files_selected[0].name.length>0?image_files_selected[0].url:'http://127.0.0.1:4000/images/photo_wall/home_photowall_2.jpg')+')'), backgroundSize: 'cover', backgroundPosition:'center center', backgroundRepeat:'no-repeat', borderTopRightRadius:'20px', borderBottomRightRadius:'20px'}}/>
-                                    </Grid>
-                                </Grid>
-                            </Card>
-                            <Button endIcon={<ArrowCircleUpOutlinedIcon/>} variant="contained" sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, borderRadius:'20px'}} onClick={()=>{handlePost()}}>发送新帖</Button>
-                        </Stack>
+                                                <Box sx={{height: '10px', width: '100%'}}/>
+                                            </div>
+                                        }
+                                    </Stack>
+                                </Card>
+                                <Button endIcon={<ArrowCircleUpOutlinedIcon/>} variant="contained"
+                                        sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, borderRadius: '20px'}}
+                                        onClick={() => {
+                                            handlePost()
+                                        }}>发送新帖</Button>
+                            </Stack>
+                        </Box>
                     </Box>
-                </Box>
-                <Box sx={{height: '40px', width: '100%'}}/>
-            </Paper>
-        </div>
-    )
+                    <Box sx={{height: '40px', width: '100%'}}/>
+                </Paper>
+            </div>
+        )
+    }
 }
 
 function Forum() {
     const navigate = useNavigate()
+
+    const [page, setPage] = React.useState(1);
+    const handlePage = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+    };
+
+    const [posts, set_posts] = useState([{post_id:"", title:"", content:"", user_id:"", time:0, stat:{watch:0, like:0, share:0, favorite:0, comment:0}, files:[{category:"", name:""}], comment_ids:[""]}]);
+    const [num_posts, set_num_posts] = useState(0);
+
+    const api_get_posts = async (p:number, s:number) => {
+        try {
+            const response = await fetch('http://'+SERVER_URL+':4000/get_posts',
+                {method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({"pieces":String(p), "sequence":String(s)})})
+            const result = await response.json()
+            if (result.status == "SUCCESS") {
+                return {"status":API_STATUS.SUCCESS, "data":result.data};
+            } else if (result.status == "FAILURE_WITH_REASONS"){
+                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
+            } else {
+                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
+            }
+        } catch (error: any) {
+            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    }
+
+    useEffect(()=>{
+        api_get_posts(PIECES, page).then((result)=>{
+            if (result.status == API_STATUS.SUCCESS) {
+                set_posts(result.data);
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:null } })
+            }
+        })
+    },[page])
+
+    useEffect(()=>{
+        api_get_posts(MAX_PIECES, 1).then((result)=>{
+            if (result.status == API_STATUS.SUCCESS) {
+                set_num_posts(Math.ceil(result.data.length/PIECES));
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                navigate(`/error`, { replace: false, state: { error:null } })
+            }
+        })
+    },[page])
 
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
@@ -545,14 +772,26 @@ function Forum() {
             <Box sx={{height: '20px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Stack spacing={2} sx={{width: '90%'}}>
-                    <Post/>
-                    <Post/>
-                    <Post/>
+                    {posts.length > 0 ? posts[0].post_id.length > 0 ?
+                            posts.map((post) => {
+                                return <Post post={post}/>
+                            })
+                            :
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <CircularProgress color="primary"/>
+                            </Box>
+                        :
+                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                            <Typography color='grey' sx={{fontSize: 'subtitle1.fontSize'}}>
+                                暂无帖子
+                            </Typography>
+                        </Box>
+                    }
                 </Stack>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Pagination count={10} color="primary" />
+                <Pagination showFirstButton showLastButton count={num_posts} page={page} onChange={handlePage} color="primary"/>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
         </Paper>

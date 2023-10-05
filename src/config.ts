@@ -8,6 +8,11 @@ const SERVER_PORT = '4000';
 // API返回状态
 enum API_STATUS {SUCCESS, FAILURE_WITH_REASONS, FAILURE_WITHOUT_REASONS}
 
+// 帖子相关
+const PIECES = 10;
+const MAX_PIECES = 10000;
+const CONTENT_LENGTH_LIMIT = 100;
+
 // 主题
 const THEME = createTheme({
     // 调色板
@@ -24,7 +29,8 @@ const THEME = createTheme({
     // 字
     typography: {
         allVariants: {
-            color: '#1463d8'
+            color: '#1463d8',
+            wordWrap: 'break-word'
         },
     },
     components: {
@@ -47,4 +53,17 @@ function _hash(data: string) {
     return CryptoJS.SHA256(CryptoJS.enc.Hex.parse(data)).toString(CryptoJS.enc.Hex);
 }
 
-export {THEME, SERVER_URL, SERVER_PORT, _hash, API_STATUS};
+// 由时间戳得到时间字符串
+function _getDate(stamp:number) {
+    const date = new Date(1000*stamp);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+    const formatted_time = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day} ${hour<10? '0'+ hour:hour}:${minute<10? '0'+ minute:minute}:${second<10? '0'+ second:second}`;
+    return formatted_time;
+}
+
+export {THEME, SERVER_URL, SERVER_PORT, _hash, API_STATUS, PIECES, CONTENT_LENGTH_LIMIT, _getDate, MAX_PIECES};
