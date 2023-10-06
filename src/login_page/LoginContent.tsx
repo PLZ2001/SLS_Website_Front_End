@@ -11,7 +11,9 @@ import Button from "@mui/material/Button";
 import CircularProgress from '@mui/material/CircularProgress';
 import {Link, useNavigate} from "react-router-dom";
 import {CookieSetOptions} from 'universal-cookie';
-
+import {
+    api_submit_login_info
+} from "../api/api";
 
 function Login(p:{setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
     const navigate = useNavigate()
@@ -65,30 +67,6 @@ function Login(p:{setCookies:(name: "token", value: any, options?: (CookieSetOpt
         }
     }
 
-    const api_submit_login_info = async (student_id:string, password:string) => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/submit_login_info',
-                {method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({"student_id":student_id, "password":password})})
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
 
     if (login_success) {
         return (

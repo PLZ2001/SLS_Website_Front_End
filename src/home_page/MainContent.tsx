@@ -9,6 +9,10 @@ import ImageListItem from "@mui/material/ImageListItem";
 import {API_STATUS, SERVER_URL} from '../config';
 import {useNavigate} from 'react-router-dom'
 import CircularProgress from "@mui/material/CircularProgress";
+import {
+    api_get_sls_members,
+    api_read_image_files_in_folder
+} from "../api/api";
 
 function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string}) {
     return (
@@ -57,21 +61,7 @@ function SlsMembers() {
         }],
     });
 
-    const api_get_sls_members = async () => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/get_sls_members',{method: 'GET', mode: 'cors', credentials: 'include'})
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
+
     useEffect(()=>{
         api_get_sls_members().then((result)=>{
             if (result.status == API_STATUS.SUCCESS) {
@@ -177,22 +167,6 @@ function PhotoWall() {
     const navigate = useNavigate()
 
     const [photo_wall, set_photo_wall] = useState([{image:"", title:""}]);
-
-    const api_read_image_files_in_folder = async () => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/read_image_files_in_folder',{method: 'GET', mode: 'cors', credentials: 'include'})
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
 
     useEffect(()=>{
         api_read_image_files_in_folder().then((result)=>{

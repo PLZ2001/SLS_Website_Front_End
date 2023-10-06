@@ -11,7 +11,9 @@ import Button from "@mui/material/Button";
 import SendIcon from '@mui/icons-material/Send';
 import CircularProgress from '@mui/material/CircularProgress';
 import {Link, useNavigate} from "react-router-dom";
-
+import {
+    api_submit_signup_info
+} from '../api/api';
 
 function SignUp() {
     const navigate = useNavigate()
@@ -93,30 +95,7 @@ function SignUp() {
         }
     }
 
-    const api_submit_signup_info = async (student_id:string, name:string, grade:string, password:string) => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/submit_signup_info',
-                {method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({"student_id":student_id, "name":name, "grade":grade, "password":password})})
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
+
 
     if (signup_success) {
         return (

@@ -12,6 +12,7 @@ import RouteErrorPage from './error_page/RouteErrorPage';
 import SignupPage from './signup_page/SignupPage';
 import LoginPage from './login_page/LoginPage';
 import ForumPage from './forum_page/ForumPage';
+import PostPage from './post_page/PostPage';
 
 // 定义多页面的路由
 const router = createBrowserRouter([
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
     {
         path: "/forum",
         element: <ForumPage/>,
+    },
+    {
+        path: "/post/:post_id",
+        element: <PostPage/>,
     },
 ]);
 

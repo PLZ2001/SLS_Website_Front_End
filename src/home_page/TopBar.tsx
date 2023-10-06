@@ -9,31 +9,15 @@ import {Link, useNavigate} from "react-router-dom";
 import {API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
 import {CookieSetOptions} from "universal-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
+import {
+    api_get_user_name
+} from "../api/api";
 
 function TopBar(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
     const navigate = useNavigate()
 
     const [name, set_name] = useState("");
 
-    const api_get_user_name = async () => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/get_user_name', {
-                method: 'GET',
-                mode: 'cors',
-                credentials: 'include',
-            })
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
 
     useEffect(()=>{
         if (p.cookies.token) {

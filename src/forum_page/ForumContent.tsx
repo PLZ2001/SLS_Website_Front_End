@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
-import {_hash, API_STATUS, SERVER_PORT, SERVER_URL, PIECES, CONTENT_LENGTH_LIMIT, _getDate, MAX_PIECES} from "../config";
+import {_hash, API_STATUS, SERVER_PORT, SERVER_URL, POST_PIECES, CONTENT_LENGTH_LIMIT, _getDate, MAX_PIECES} from "../config";
 import TopMenu from "../home_page/TopMenu";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -25,35 +25,24 @@ import {CookieSetOptions} from "universal-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
+import {
+    api_get_name_with_student_id,
+    api_get_user_name,
+    api_submit_new_post,
+    api_submit_files,
+    api_get_posts
+} from "../api/api";
 
 
-function Post(p:{post:{post_id:String, title:String, content:String, user_id:String, time:number, stat:{watch:number, like:number, share:number, favorite:number, comment:number}, files:{category:String, name:String}[], comment_ids:String[]}}) {
+function Post(p:{post:{post_id:string, title:string, content:string, user_id:string, time:number, stat:{watch:number, like:number, share:number, favorite:number, comment:number}, files:{category:string, name:string}[], comment_ids:string[]}}) {
     const navigate = useNavigate()
 
     const [name, set_name] = useState("");
 
-    const api_get_name_with_student_id = async () => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/get_name_with_student_id/'+p.post.user_id, {
-                method: 'GET',
-                mode: 'cors',
-                credentials: 'include',
-            })
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
+
 
     useEffect(()=>{
-        api_get_name_with_student_id().then((result)=> {
+        api_get_name_with_student_id(p.post.user_id).then((result)=> {
             if (result.status == API_STATUS.SUCCESS) {
                 set_name(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
@@ -64,9 +53,13 @@ function Post(p:{post:{post_id:String, title:String, content:String, user_id:Str
         })
     },[])
 
+    const handleClickingPost = async (post_id:string) => {
+        navigate(`/post/`+post_id, {replace: false})
+    }
+
     return (
-        <Card sx={{ width: '100%', borderRadius:'20px'}}>
-            <CardActionArea>
+        <Card elevation={4} sx={{ width: '100%', borderRadius:'20px'}}>
+            <CardActionArea onClick={(e)=>{handleClickingPost(p.post.post_id)}}>
                 <Grid container spacing={0}>
                     <Grid xs={p.post.files.filter((val)=>{return val.category=="image"}).length>0?9:12}>
                         <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
@@ -167,7 +160,7 @@ function Post(p:{post:{post_id:String, title:String, content:String, user_id:Str
     )
 }
 
-function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
+function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, submit_success:boolean, set_submit_success:(value: (((prevState: boolean) => boolean) | boolean)) => void}) {
     const navigate = useNavigate()
 
     const [formatted_time, set_formatted_time] = useState("")
@@ -184,25 +177,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
 
     const [name, set_name] = useState("");
 
-    const api_get_user_name = async () => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/get_user_name', {
-                method: 'GET',
-                mode: 'cors',
-                credentials: 'include',
-            })
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
+
 
     useEffect(()=>{
         if (p.cookies.token) {
@@ -304,7 +279,6 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
     const [content_error_text, set_content_error_text] = useState("");
     const [files, set_files] = useState([{category:"", name:""}]);
     const [submit_clicked, set_submit_clicked] = useState(false);
-    const [submit_success, set_submit_success] = useState(false);
 
     const check_post_title = (post_title:string) => {
         if (post_title.length == 0) {
@@ -327,7 +301,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         check_post_content(content)
         // 检查合法，是否允许发送
         if (!p.cookies.token) {
-            set_submit_success(false);
+            p.set_submit_success(false);
             set_submit_clicked(false);
             navigate(`/error`, { replace: false, state: { error:"抱歉，请登录后再试" } })
         } else if (title_error_text.length==0 && content_error_text.length==0 && title.length>0 && content.length>0) {
@@ -338,101 +312,48 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                 if (result.status == API_STATUS.SUCCESS) {
                     const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
                     if (result.status == API_STATUS.SUCCESS) {
-                        set_submit_success(true);
+                        p.set_submit_success(true);
                         set_submit_clicked(false);
                     } else if (result.status == API_STATUS.FAILURE_WITH_REASONS){
-                        set_submit_success(false);
+                        p.set_submit_success(false);
                         set_submit_clicked(false);
                         navigate(`/error`, { replace: false, state: { error:result.reasons } })
                     } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                        set_submit_success(false);
+                        p.set_submit_success(false);
                         set_submit_clicked(false);
                         navigate(`/error`, { replace: false, state: { error:null } })
                     }
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS){
-                    set_submit_success(false);
+                    p.set_submit_success(false);
                     set_submit_clicked(false);
                     navigate(`/error`, { replace: false, state: { error:result.reasons } })
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                    set_submit_success(false);
+                    p.set_submit_success(false);
                     set_submit_clicked(false);
                     navigate(`/error`, { replace: false, state: { error:null } })
                 }
             } else {
                 const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_submit_success(true);
+                    p.set_submit_success(true);
                     set_submit_clicked(false);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS){
-                    set_submit_success(false);
+                    p.set_submit_success(false);
                     set_submit_clicked(false);
                     navigate(`/error`, { replace: false, state: { error:result.reasons } })
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                    set_submit_success(false);
+                    p.set_submit_success(false);
                     set_submit_clicked(false);
                     navigate(`/error`, { replace: false, state: { error:null } })
                 }
             }
         } else {
-            set_submit_success(false);
+            p.set_submit_success(false);
             set_submit_clicked(false);
         }
     }
 
-    const api_submit_new_post = async (post_id:String, title:string, content:string, time:number, files:{category:string, name:string}[]) => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/submit_new_post/'+post_id,
-                {method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({"title":title, "content":content, "time": String(time), "files":files})})
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
-
-    const api_submit_files = async (post_id:String, files:{name:String, url:String, file:File}[], files_order:number[]) => {
-        try {
-            const form_data = new FormData();
-            for (let i=0;i<files_order.length;i++) {
-                form_data.append(files[files_order[i]].name.toString(), files[files_order[i]].file);
-            }
-            const response = await fetch('http://'+SERVER_URL+':4000/submit_files/'+post_id,
-                {method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
-                        'Access-Control-Allow-Origin': '*',
-                    },
-                    credentials: 'include',
-                    body: form_data})
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
-
-    if (submit_success) {
+    if (p.submit_success) {
         return (
             <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
                 <Box sx={{height: '40px', width: '100%'}}/>
@@ -440,13 +361,13 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                      sx={{width: '100%'}}>
                     <Typography
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
-                        发送成功，请刷新查看
+                        发送成功
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
-                        You've Submitted Your Post Successfully. Please Refresh for Check.
+                        You've Submitted Your Post Successfully.
                     </Typography>
                 </Box>
                 <Box sx={{height: '40px', width: '100%'}}/>
@@ -464,9 +385,9 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                 <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
                     <Box sx={{height: '40px', width: '100%'}}/>
                     <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                        <Box sx={{width: '90%'}}>
+                        <Box sx={{width: '80%'}}>
                             <Stack spacing={2} sx={{width: '100%'}}>
-                                <Card sx={{width: '100%', borderRadius: '20px'}}>
+                                <Card elevation={4} sx={{width: '100%', borderRadius: '20px'}}>
                                     <Stack spacing={2} sx={{width: '100%'}}>
                                         <Grid container spacing={0}>
                                             <Grid xs={9}>
@@ -626,17 +547,16 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                         <Grid container spacing={0}>
                                                             {image_files_selected.map((image_file, idx) => {
                                                                 return (
-                                                                    <Grid xs={4} display="flex" justifyContent="center"
-                                                                          alignItems="center" sx={{height: '150px'}}>
+                                                                    <Grid xs={image_files_selected.length>1?4:8} display="flex" justifyContent="center"
+                                                                          alignItems="center" sx={image_files_selected.length>1?{height: '150px'}:{height: '300px'}}>
                                                                         <Badge badgeContent={image_files_order.indexOf(idx)+1} color="primary" sx={{width:'90%', height:'90%'}} anchorOrigin={{ horizontal: 'left', vertical: 'top' }}>
-                                                                            <Box onClick={(e)=>{handleImageFileOrder(idx)}} sx={{
+                                                                            <Box border="1px solid grey" onClick={(e)=>{handleImageFileOrder(idx)}} sx={{
                                                                                 width: '100%',
                                                                                 height: '100%',
                                                                                 backgroundImage: String('url(' + image_file.url + ')'),
-                                                                                backgroundSize: 'cover',
+                                                                                backgroundSize: 'contain',
                                                                                 backgroundPosition: 'center center',
                                                                                 backgroundRepeat: 'no-repeat',
-                                                                                borderRadius: '5px'
                                                                             }}/>
                                                                         </Badge>
                                                                     </Grid>
@@ -696,7 +616,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
     }
 }
 
-function Forum() {
+function Forum(p:{submit_success:boolean}) {
     const navigate = useNavigate()
 
     const [page, setPage] = React.useState(1);
@@ -707,33 +627,8 @@ function Forum() {
     const [posts, set_posts] = useState([{post_id:"", title:"", content:"", user_id:"", time:0, stat:{watch:0, like:0, share:0, favorite:0, comment:0}, files:[{category:"", name:""}], comment_ids:[""]}]);
     const [num_posts, set_num_posts] = useState(0);
 
-    const api_get_posts = async (p:number, s:number) => {
-        try {
-            const response = await fetch('http://'+SERVER_URL+':4000/get_posts',
-                {method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({"pieces":String(p), "sequence":String(s)})})
-            const result = await response.json()
-            if (result.status == "SUCCESS") {
-                return {"status":API_STATUS.SUCCESS, "data":result.data};
-            } else if (result.status == "FAILURE_WITH_REASONS"){
-                return {"status":API_STATUS.FAILURE_WITH_REASONS, "reasons":result.reasons};
-            } else {
-                return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-            }
-        } catch (error: any) {
-            return {"status":API_STATUS.FAILURE_WITHOUT_REASONS};
-        }
-    }
-
     useEffect(()=>{
-        api_get_posts(PIECES, page).then((result)=>{
+        api_get_posts(POST_PIECES, page).then((result)=>{
             if (result.status == API_STATUS.SUCCESS) {
                 set_posts(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
@@ -742,22 +637,22 @@ function Forum() {
                 navigate(`/error`, { replace: false, state: { error:null } })
             }
         })
-    },[page])
+    },[page, p.submit_success])
 
     useEffect(()=>{
         api_get_posts(MAX_PIECES, 1).then((result)=>{
             if (result.status == API_STATUS.SUCCESS) {
-                set_num_posts(Math.ceil(result.data.length/PIECES));
+                set_num_posts(Math.ceil(result.data.length/POST_PIECES));
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, { replace: false, state: { error:result.reasons } })
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                 navigate(`/error`, { replace: false, state: { error:null } })
             }
         })
-    },[page])
+    },[page, p.submit_success])
 
     return (
-        <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
+        <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}} color={"p"}>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Typography sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
@@ -771,7 +666,7 @@ function Forum() {
             </Box>
             <Box sx={{height: '20px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Stack spacing={2} sx={{width: '90%'}}>
+                <Stack spacing={2} sx={{width: '80%'}}>
                     {posts.length > 0 ? posts[0].post_id.length > 0 ?
                             posts.map((post) => {
                                 return <Post post={post}/>
@@ -799,6 +694,7 @@ function Forum() {
 }
 
 function ForumContent(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
+    const [submit_success, set_submit_success] = useState(false);
     return (
         <Box sx={{width: '100%', background:'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)', borderRadius:'20px'}}>
             <Box sx={{width: '100%', backgroundImage: String('url('+'http://'+SERVER_URL+':'+SERVER_PORT+'/images/others/home_sls_1.png'+')'), backgroundSize: '100% auto', backgroundRepeat:'no-repeat', borderRadius:'20px'}}>
@@ -808,11 +704,11 @@ function ForumContent(p:{cookies:{token?: any}, setCookies:(name: "token", value
                 </Box>
                 <Box sx={{height: '20px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Stack spacing={2} sx={{width: '90%'}}>
+                    <Stack spacing={2} sx={{width: '80%'}}>
                         <Box sx={{height: '10px', width: '100%'}}/>
-                        <Forum/>
+                        <Forum submit_success={submit_success}/>
                         <Box sx={{height: '10px', width: '100%'}}/>
-                        <SendNewPost cookies={p.cookies} setCookies={p.setCookies}/>
+                        <SendNewPost cookies={p.cookies} setCookies={p.setCookies} submit_success={submit_success} set_submit_success={set_submit_success}/>
                         <Box sx={{height: '50px', width: '100%'}}/>
                     </Stack>
                 </Box>
