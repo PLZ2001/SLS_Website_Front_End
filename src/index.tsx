@@ -10,6 +10,7 @@ import SignupPage from './signup_page/SignupPage';
 import LoginPage from './login_page/LoginPage';
 import ForumPage from './forum_page/ForumPage';
 import PostPage from './post_page/PostPage';
+import UserPage from './user_page/UserPage';
 
 // 定义多页面的路由
 const router = createBrowserRouter([
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
     {
         path: "/post/:post_id",
         element: <PostPage/>,
+    },
+    {
+        path: "/user/:student_id",
+        element: <UserPage/>,
     },
 ]);
 

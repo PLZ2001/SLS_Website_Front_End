@@ -20,8 +20,6 @@ function SignUp() {
     const [student_id_error_text, set_student_id_error_text] = useState("");
     const [name, set_name] = useState("");
     const [name_error_text, set_name_error_text] = useState("");
-    const [grade, set_grade] = useState("");
-    const [grade_error_text, set_grade_error_text] = useState("");
     const [password, set_password] = useState("");
     const [password_error_text, set_password_error_text] = useState("");
     const [signup_submitted, set_signup_submitted] = useState(false);
@@ -29,9 +27,9 @@ function SignUp() {
 
     const check_student_id = (student_id: string) => {
         if (student_id.length > 50) {
-            set_student_id_error_text("学号长度不可超过50位")
+            set_student_id_error_text("账号长度不可超过50位")
         } else if (student_id.length == 0) {
-            set_student_id_error_text("学号不能为空")
+            set_student_id_error_text("账号不能为空")
         } else {
             set_student_id_error_text("")
         }
@@ -39,21 +37,11 @@ function SignUp() {
 
     const check_name = (name: string) => {
         if (name.length > 50) {
-            set_name_error_text("姓名长度不可超过50字")
+            set_name_error_text("昵称长度不可超过50字")
         } else if (name.length == 0) {
-            set_name_error_text("姓名不能为空")
+            set_name_error_text("昵称不能为空")
         } else {
             set_name_error_text("")
-        }
-    }
-
-    const check_grade = (grade: string) => {
-        if (grade.length > 50) {
-            set_grade_error_text("年级长度不可超过50字")
-        } else if (grade.length == 0) {
-            set_grade_error_text("年级不能为空")
-        } else {
-            set_grade_error_text("")
         }
     }
 
@@ -68,13 +56,12 @@ function SignUp() {
     const handleSignUpInfo = async () => {
         check_student_id(student_id)
         check_name(name)
-        check_grade(grade)
         check_password(password)
         // 检查合法，是否允许注册
-        if (student_id_error_text.length == 0 && name_error_text.length == 0 && grade_error_text.length == 0 && password_error_text.length == 0 &&
-            student_id.length > 0 && name.length > 0 && grade.length > 0 && password.length > 0) {
+        if (student_id_error_text.length == 0 && name_error_text.length == 0 && password_error_text.length == 0 &&
+            student_id.length > 0 && name.length > 0 && password.length > 0) {
             set_signup_submitted(true);
-            const result = await api_submit_signup_info(student_id, name, grade, _hash(password));
+            const result = await api_submit_signup_info(student_id, name, _hash(password));
             if (result.status == API_STATUS.SUCCESS) {
                 set_signup_success(true);
                 set_signup_submitted(false);
@@ -102,13 +89,13 @@ function SignUp() {
                      sx={{width: '100%'}}>
                     <Typography
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
-                        注册成功，欢迎加入山林寺课题组
+                        注册成功，欢迎访问山林寺课题组
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
-                        You've Signed Up Successfully. Welcome to Our Research Group!
+                        You've Signed Up Successfully. Welcome to Visit Our Research Group!
                     </Typography>
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>
@@ -157,21 +144,7 @@ function SignUp() {
                                 <TextField
                                     required
                                     id="outlined-required"
-                                    label="学号"
-                                    defaultValue=""
-                                    margin="normal"
-                                    fullWidth
-                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                        set_student_id(event.target.value);
-                                        check_student_id(event.target.value)
-                                    }}
-                                    error={student_id_error_text.length != 0}
-                                    helperText={student_id_error_text}
-                                />
-                                <TextField
-                                    required
-                                    id="outlined-required"
-                                    label="真实姓名"
+                                    label="昵称"
                                     defaultValue=""
                                     margin="normal"
                                     fullWidth
@@ -185,16 +158,16 @@ function SignUp() {
                                 <TextField
                                     required
                                     id="outlined-required"
-                                    label="年级（例如23级硕士生）"
+                                    label="账号"
                                     defaultValue=""
                                     margin="normal"
                                     fullWidth
                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                        set_grade(event.target.value);
-                                        check_grade(event.target.value);
+                                        set_student_id(event.target.value);
+                                        check_student_id(event.target.value)
                                     }}
-                                    error={grade_error_text.length != 0}
-                                    helperText={grade_error_text}
+                                    error={student_id_error_text.length != 0}
+                                    helperText={student_id_error_text}
                                 />
                                 <TextField
                                     id="outlined-password-input"

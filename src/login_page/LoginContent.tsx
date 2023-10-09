@@ -25,7 +25,7 @@ function Login(p: { setCookies: (name: "token", value: any, options?: (CookieSet
 
     const check_student_id = (name: string) => {
         if (name.length == 0) {
-            set_student_id_error_text("学号不能为空")
+            set_student_id_error_text("账号不能为空")
         } else {
             set_student_id_error_text("")
         }
@@ -129,7 +129,7 @@ function Login(p: { setCookies: (name: "token", value: any, options?: (CookieSet
                                 <TextField
                                     required
                                     id="outlined-required"
-                                    label="学号"
+                                    label="账号"
                                     defaultValue=""
                                     margin="normal"
                                     fullWidth

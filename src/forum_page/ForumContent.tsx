@@ -7,7 +7,7 @@ import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
 import {CardActionArea} from '@mui/material';
 import Grid from "@mui/material/Grid";
@@ -25,24 +25,25 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
 import {
-    api_get_name_with_student_id,
+    api_get_user_profile_with_student_id,
     api_get_posts,
-    api_get_user_name,
+    api_get_user_profile,
     api_submit_an_action,
     api_submit_files,
     api_submit_new_post
 } from "../api/api";
+import Avatar from "@mui/material/Avatar";
 
 
 function Post(p: { post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, submit_success: boolean, page: number }) {
     const navigate = useNavigate()
 
-    const [name, set_name] = useState("");
+    const [post_user_profile, set_post_user_profile] = useState({student_id:"", name:"", sls_verification:false});
 
     useEffect(() => {
-        api_get_name_with_student_id(p.post.user_id).then((result) => {
+        api_get_user_profile_with_student_id(p.post.user_id).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
-                set_name(result.data);
+                set_post_user_profile(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
@@ -142,7 +143,7 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
                                 </Stack>
                             </Grid>
                             <Grid xs={8}>
-                                <Stack display="flex" justifyContent="end" direction="row" spacing={1}
+                                <Stack display="flex" justifyContent="end" direction="row" alignItems="center" spacing={1}
                                        sx={{height: '30px', padding: '20px'}}>
                                     <Box display="flex" justifyContent="center" alignItems="center">
                                         <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
@@ -150,14 +151,18 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
                                         </Typography>
                                     </Box>
                                     <Box display="flex" justifyContent="center" alignItems="center">
-                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                            {name.length > 0 ?
-                                                name
-                                                :
-                                                <CircularProgress size="10px" color="secondary"/>
-                                            }
-                                        </Typography>
+                                        {post_user_profile.name.length > 0 ?
+                                            <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                {post_user_profile.name}
+                                            </Typography>
+                                            :
+                                            <CircularProgress size="10px" color="secondary"/>
+                                        }
                                     </Box>
+                                    {post_user_profile.sls_verification &&
+                                    <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
+                                        山林寺认证
+                                    </Avatar>}
                                 </Stack>
                             </Grid>
                         </Grid>
@@ -203,14 +208,14 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
         set_time_stamp(result.time_stamp);
     }, 1000)
 
-    const [name, set_name] = useState("");
+    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
 
 
     useEffect(() => {
         if (p.cookies.token) {
-            api_get_user_name().then((result) => {
+            api_get_user_profile().then((result) => {
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_name(result.data.name);
+                    set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
@@ -218,6 +223,8 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                     navigate(`/error`, {replace: false, state: {error: null}})
                 }
             })
+        } else {
+            set_user_profile({student_id:"", name:"", sls_verification:false});
         }
     }, [p.cookies.token])
 
@@ -557,10 +564,17 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                             </Box>
                                                             <Box display="flex" justifyContent="center"
                                                                  alignItems="center">
-                                                                <Typography color="text.secondary"
-                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                    {name.length > 0 ? name : "发帖需先登录"}
-                                                                </Typography>
+                                                                {user_profile.name.length > 0 ?
+                                                                    <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                        {user_profile.name}
+                                                                    </Typography>
+                                                                    :
+                                                                    <Link to={'/login'} style={{textDecoration: "none"}}>
+                                                                        <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            发帖需先登录
+                                                                        </Typography>
+                                                                    </Link>
+                                                                }
                                                             </Box>
                                                         </Stack>
                                                     </Grid>

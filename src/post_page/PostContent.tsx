@@ -16,7 +16,7 @@ import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
 import {CardActionArea} from '@mui/material';
 import Grid from "@mui/material/Grid";
@@ -37,9 +37,9 @@ import {
     api_get_comment_with_id,
     api_get_comments,
     api_get_comments_of_comments,
-    api_get_name_with_student_id,
+    api_get_user_profile_with_student_id,
     api_get_post_with_id,
-    api_get_user_name,
+    api_get_user_profile,
     api_submit_an_action,
     api_submit_files,
     api_submit_new_comment
@@ -47,16 +47,18 @@ import {
 import ReplyIcon from "@mui/icons-material/Reply";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import Avatar from "@mui/material/Avatar";
 
 function Post(p: { handle_scroll: () => void, post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
 
-    const [student_id, set_student_id] = useState("");
+    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+
     useEffect(() => {
         if (p.cookies.token) {
-            api_get_user_name().then((result) => {
+            api_get_user_profile().then((result) => {
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_student_id(result.data.student_id);
+                    set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
@@ -64,15 +66,17 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                     navigate(`/error`, {replace: false, state: {error: null}})
                 }
             })
+        } else {
+            set_user_profile({student_id:"", name:"", sls_verification:false});
         }
     }, [p.cookies.token])
 
-    const [name, set_name] = useState("");
+    const [post_user_profile, set_post_user_profile] = useState({student_id:"", name:"", sls_verification:false});
 
     useEffect(() => {
-        api_get_name_with_student_id(p.post.user_id).then((result) => {
+        api_get_user_profile_with_student_id(p.post.user_id).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
-                set_name(result.data);
+                set_post_user_profile(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
@@ -116,185 +120,190 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                     borderRadius: '5px'
                 }}/>
             </Backdrop>
-            <CardActionArea onClick={() => {
-                p.set_is_commenting_on_post(true);
-                p.set_post_or_comment_id_commented_on(p.post.post_id)
-            }}>
-                <Stack spacing={0.1} sx={{width: '100%'}}>
-                    <Card elevation={4} sx={{width: '100%', borderTopLeftRadius: '20px', borderTopRightRadius: '20px'}}>
-                        <Box sx={{padding: '20px'}}>
-                            <Box alignItems="center" sx={{width: '100%'}}>
-                                <Typography sx={{fontSize: 'h5.fontSize'}}>
-                                    {p.post.title}
+            <Stack spacing={0.1} sx={{width: '100%'}}>
+                <Card elevation={4} sx={{width: '100%', borderTopLeftRadius: '20px', borderTopRightRadius: '20px'}}>
+                    <Box sx={{padding: '20px'}}>
+                        <Box alignItems="center" sx={{width: '100%'}}>
+                            <Typography sx={{fontSize: 'h5.fontSize'}}>
+                                {p.post.title}
+                            </Typography>
+                        </Box>
+                        <Stack display="flex" justifyContent="end" direction="row" alignItems="center" spacing={1}>
+                            {post_user_profile.sls_verification &&
+                            <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
+                                山林寺认证
+                            </Avatar>}
+                            <Box alignItems="center">
+                                {post_user_profile.name.length > 0 ?
+                                    <Link to={`/user/`+post_user_profile.student_id} style={{textDecoration:"none"}}>
+                                        <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                                            {post_user_profile.name}
+                                        </Typography>
+                                    </Link>
+                                :
+                                    <CircularProgress size="10px" color="secondary"/>
+                                }
+                            </Box>
+                            <Box alignItems="center">
+                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                    {'发布于 ' + _getDate(p.post.time)}
                                 </Typography>
                             </Box>
-                            <Stack display="flex" justifyContent="end" direction="row" spacing={1}>
-                                <Box alignItems="center">
-                                    <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                        {name.length > 0 ?
-                                            name
-                                            :
-                                            <CircularProgress size="10px" color="secondary"/>
-                                        }
-                                    </Typography>
-                                </Box>
-                                <Box alignItems="center">
-                                    <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                        {'发布于 ' + _getDate(p.post.time)}
-                                    </Typography>
-                                </Box>
-                            </Stack>
-                        </Box>
-                    </Card>
-                    <Card elevation={4}
-                          sx={{width: '100%', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'}}>
-                        <Stack spacing={2} sx={{width: '100%'}}>
-                            <Grid container spacing={0}>
-                                <Grid xs={12}>
-                                    <Box sx={{padding: '20px'}}>
-                                        <Box alignItems="center" sx={{width: '100%'}}>
-                                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                {p.post.content}
-                                            </Typography>
-                                        </Box>
+                        </Stack>
+                    </Box>
+                </Card>
+                <Card elevation={4}
+                      sx={{width: '100%', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'}}>
+                    <Stack spacing={2} sx={{width: '100%'}}>
+                        <Grid container spacing={0}>
+                            <Grid xs={12}>
+                                <Box sx={{padding: '20px'}}>
+                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                            {p.post.content}
+                                        </Typography>
                                     </Box>
-                                    {p.post.files.filter((val) => {
-                                            return val.category == "image"
-                                        }).length > 0 &&
-                                        <div>
-                                            <Box display="flex" justifyContent="center" alignItems="center"
-                                                 sx={{width: '100%'}}>
-                                                <Box display="flex" justifyContent="start" alignItems="center"
-                                                     sx={{width: '95%'}}>
-                                                    <Grid container spacing={0}>
-                                                        {p.post.files.filter((val) => {
-                                                            return val.category == "image"
-                                                        }).map((image_file) => {
-                                                            return (
-                                                                <Grid xs={p.post.files.filter((val) => {
-                                                                    return val.category == "image"
-                                                                }).length > 1 ? 4 : 8} display="flex"
-                                                                      justifyContent="center"
-                                                                      alignItems="center"
-                                                                      sx={p.post.files.filter((val) => {
-                                                                          return val.category == "image"
-                                                                      }).length > 1 ? {height: '150px'} : {height: '300px'}}>
-                                                                    <Box onClick={() => {
-                                                                        set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name);
-                                                                        set_image_clicked(true);
-                                                                    }} sx={{
-                                                                        width: '90%',
-                                                                        height: '90%',
-                                                                        backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name + ')'),
-                                                                        backgroundSize: 'contain',
-                                                                        backgroundPosition: 'left top',
-                                                                        backgroundRepeat: 'no-repeat',
-                                                                    }}/>
-                                                                </Grid>
-                                                            )
-                                                        })}
-                                                    </Grid>
-                                                </Box>
+                                </Box>
+                                {p.post.files.filter((val) => {
+                                        return val.category == "image"
+                                    }).length > 0 &&
+                                    <div>
+                                        <Box display="flex" justifyContent="center" alignItems="center"
+                                             sx={{width: '100%'}}>
+                                            <Box display="flex" justifyContent="start" alignItems="center"
+                                                 sx={{width: '95%'}}>
+                                                <Grid container spacing={0}>
+                                                    {p.post.files.filter((val) => {
+                                                        return val.category == "image"
+                                                    }).map((image_file) => {
+                                                        return (
+                                                            <Grid xs={p.post.files.filter((val) => {
+                                                                return val.category == "image"
+                                                            }).length > 1 ? 4 : 8} display="flex"
+                                                                  justifyContent="center"
+                                                                  alignItems="center"
+                                                                  sx={p.post.files.filter((val) => {
+                                                                      return val.category == "image"
+                                                                  }).length > 1 ? {height: '150px'} : {height: '300px'}}>
+                                                                <Box onClick={() => {
+                                                                    set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name);
+                                                                    set_image_clicked(true);
+                                                                }} sx={{
+                                                                    width: '90%',
+                                                                    height: '90%',
+                                                                    backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name + ')'),
+                                                                    backgroundSize: 'contain',
+                                                                    backgroundPosition: 'left top',
+                                                                    backgroundRepeat: 'no-repeat',
+                                                                }}/>
+                                                            </Grid>
+                                                        )
+                                                    })}
+                                                </Grid>
                                             </Box>
-                                            <Box sx={{height: '10px', width: '100%'}}/>
-                                        </div>
-                                    }
-                                    {p.post.files.filter((val) => {
-                                            return val.category == "other"
-                                        }).length > 0 &&
-                                        <div>
-                                            <Box display="flex" justifyContent="center" alignItems="center"
-                                                 sx={{width: '100%'}}>
-                                                <Box display="flex" justifyContent="start" alignItems="center"
-                                                     sx={{width: '90%'}}>
-                                                    <Stack display="flex" justifyContent="start" spacing={2}>
-                                                        {p.post.files.filter((val) => {
-                                                            return val.category == "other"
-                                                        }).map((other_file) => {
-                                                            return (
-                                                                <Box display="flex" justifyContent="start"
-                                                                     alignItems="center">
-                                                                    <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name}>
-                                                                        <Typography
-                                                                            sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                            {other_file.name}
-                                                                        </Typography>
-                                                                    </a>
-                                                                </Box>
-                                                            )
-                                                        })}
-                                                    </Stack>
-                                                </Box>
+                                        </Box>
+                                        <Box sx={{height: '10px', width: '100%'}}/>
+                                    </div>
+                                }
+                                {p.post.files.filter((val) => {
+                                        return val.category == "other"
+                                    }).length > 0 &&
+                                    <div>
+                                        <Box display="flex" justifyContent="center" alignItems="center"
+                                             sx={{width: '100%'}}>
+                                            <Box display="flex" justifyContent="start" alignItems="center"
+                                                 sx={{width: '90%'}}>
+                                                <Stack display="flex" justifyContent="start" spacing={2}>
+                                                    {p.post.files.filter((val) => {
+                                                        return val.category == "other"
+                                                    }).map((other_file) => {
+                                                        return (
+                                                            <Box display="flex" justifyContent="start"
+                                                                 alignItems="center">
+                                                                <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name}>
+                                                                    <Typography
+                                                                        sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                                        {other_file.name}
+                                                                    </Typography>
+                                                                </a>
+                                                            </Box>
+                                                        )
+                                                    })}
+                                                </Stack>
                                             </Box>
-                                            <Box sx={{height: '10px', width: '100%'}}/>
-                                        </div>
-                                    }
-                                    <Grid container spacing={0}>
-                                        <Grid xs={12}>
-                                            <Stack display="flex" justifyContent="start" direction="row" spacing={1}
-                                                   sx={{height: '30px', padding: '20px'}}>
-                                                <IconButton aria-label="favorite" size="small">
-                                                    <Stack alignItems="center" display="flex" justifyContent="start"
-                                                           direction="row" spacing={1}>
-                                                        <VisibilityOutlinedIcon/>
-                                                        <Box alignItems="center" sx={{width: '100%'}}>
-                                                            <Typography color="text.secondary"
-                                                                        sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                {p.post.stat.watch}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Stack>
-                                                </IconButton>
-                                                <IconButton aria-label="thumb up" size="small"
-                                                            onClick={() => handleActionCLicked("like")}>
-                                                    <Stack alignItems="center" display="flex" justifyContent="start"
-                                                           direction="row" spacing={1}>
-                                                        <ThumbUpOutlinedIcon
-                                                            color={p.post.like_ids.includes(student_id) ? "primary" : "secondary"}/>
-                                                        <Box alignItems="center" sx={{width: '100%'}}>
-                                                            <Typography color="text.secondary"
-                                                                        sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                {p.post.stat.like}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Stack>
-                                                </IconButton>
-                                                <IconButton aria-label="favorite" size="small"
-                                                            onClick={() => handleActionCLicked("favorite")}>
-                                                    <Stack alignItems="center" display="flex" justifyContent="start"
-                                                           direction="row" spacing={1}>
-                                                        <FavoriteBorderOutlinedIcon
-                                                            color={p.post.favorite_ids.includes(student_id) ? "primary" : "secondary"}/>
-                                                        <Box alignItems="center" sx={{width: '100%'}}>
-                                                            <Typography color="text.secondary"
-                                                                        sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                {p.post.stat.favorite}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Stack>
-                                                </IconButton>
-                                                <IconButton aria-label="comment" size="small"
-                                                            onClick={() => handleCommentClicked()}>
-                                                    <Stack alignItems="center" display="flex" justifyContent="start"
-                                                           direction="row" spacing={1}>
-                                                        <CommentOutlinedIcon/>
-                                                        <Box alignItems="center" sx={{width: '100%'}}>
-                                                            <Typography color="text.secondary"
-                                                                        sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                {p.post.stat.comment}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Stack>
-                                                </IconButton>
-                                            </Stack>
-                                        </Grid>
+                                        </Box>
+                                        <Box sx={{height: '10px', width: '100%'}}/>
+                                    </div>
+                                }
+                                <Grid container spacing={0}>
+                                    <Grid xs={12}>
+                                        <Stack display="flex" justifyContent="start" direction="row" spacing={1}
+                                               sx={{height: '30px', padding: '20px'}}>
+                                            <IconButton aria-label="favorite" size="small">
+                                                <Stack alignItems="center" display="flex" justifyContent="start"
+                                                       direction="row" spacing={1}>
+                                                    <VisibilityOutlinedIcon/>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <Typography color="text.secondary"
+                                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                            {p.post.stat.watch}
+                                                        </Typography>
+                                                    </Box>
+                                                </Stack>
+                                            </IconButton>
+                                            <IconButton aria-label="thumb up" size="small"
+                                                        onClick={() => handleActionCLicked("like")}>
+                                                <Stack alignItems="center" display="flex" justifyContent="start"
+                                                       direction="row" spacing={1}>
+                                                    <ThumbUpOutlinedIcon
+                                                        color={p.post.like_ids.includes(user_profile.student_id) ? "primary" : "secondary"}/>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <Typography color="text.secondary"
+                                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                            {p.post.stat.like}
+                                                        </Typography>
+                                                    </Box>
+                                                </Stack>
+                                            </IconButton>
+                                            <IconButton aria-label="favorite" size="small"
+                                                        onClick={() => handleActionCLicked("favorite")}>
+                                                <Stack alignItems="center" display="flex" justifyContent="start"
+                                                       direction="row" spacing={1}>
+                                                    <FavoriteBorderOutlinedIcon
+                                                        color={p.post.favorite_ids.includes(user_profile.student_id) ? "primary" : "secondary"}/>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <Typography color="text.secondary"
+                                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                            {p.post.stat.favorite}
+                                                        </Typography>
+                                                    </Box>
+                                                </Stack>
+                                            </IconButton>
+                                            <IconButton aria-label="comment" size="small"
+                                                        onClick={() => {
+                                                            p.set_is_commenting_on_post(true);
+                                                            p.set_post_or_comment_id_commented_on(p.post.post_id);
+                                                            handleCommentClicked()
+                                                        }}>
+                                                <Stack alignItems="center" display="flex" justifyContent="start"
+                                                       direction="row" spacing={1}>
+                                                    <CommentOutlinedIcon/>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <Typography color="text.secondary"
+                                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                            {p.post.stat.comment}
+                                                        </Typography>
+                                                    </Box>
+                                                </Stack>
+                                            </IconButton>
+                                        </Stack>
                                     </Grid>
                                 </Grid>
                             </Grid>
-                        </Stack>
-                    </Card>
-                </Stack>
-            </CardActionArea>
+                        </Grid>
+                    </Stack>
+                </Card>
+            </Stack>
         </div>
     )
 }
@@ -302,13 +311,13 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
 function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, depth: string, idx: number, comment: { comment_id: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, submit_success: boolean, page: number, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
 
-    const [student_id, set_student_id] = useState("");
+    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
 
     useEffect(() => {
         if (p.cookies.token) {
-            api_get_user_name().then((result) => {
+            api_get_user_profile().then((result) => {
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_student_id(result.data.student_id);
+                    set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
@@ -316,15 +325,17 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                     navigate(`/error`, {replace: false, state: {error: null}})
                 }
             })
+        } else {
+            set_user_profile({student_id:"", name:"", sls_verification:false});
         }
     }, [p.cookies.token])
 
-    const [name, set_name] = useState("");
+    const [comment_user_profile, set_comment_user_profile] = useState({student_id:"", name:"", sls_verification:false});
 
     useEffect(() => {
-        api_get_name_with_student_id(p.comment.user_id).then((result) => {
+        api_get_user_profile_with_student_id(p.comment.user_id).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
-                set_name(result.data);
+                set_comment_user_profile(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
@@ -414,189 +425,193 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                 }}/>
             </Backdrop>
             <Stack spacing={2} sx={{width: '100%'}}>
-                <CardActionArea onClick={() => {
-                    p.set_is_commenting_on_post(false);
-                    p.set_post_or_comment_id_commented_on(p.comment.comment_id)
-                }}>
-                    <Stack spacing={0.1} sx={{width: '100%'}}>
-                        <Card elevation={4}
-                              sx={{width: '100%', borderTopLeftRadius: '20px', borderTopRightRadius: '20px'}}>
-                            <Box sx={{padding: '20px'}}>
-                                <Grid container spacing={0}>
-                                    <Grid xs={9}>
-                                        <Stack display="flex" justifyContent="start" direction="row" spacing={1}>
-                                            <Box alignItems="center">
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {name.length > 0 ?
-                                                        name
-                                                        :
-                                                        <CircularProgress size="10px" color="secondary"/>
-                                                    }
-                                                </Typography>
-                                            </Box>
-                                            <Box alignItems="center">
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {'评论于 ' + _getDate(p.comment.time)}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </Grid>
-                                    <Grid xs={3}>
-                                        <Stack display="flex" justifyContent="end" direction="row" spacing={1}>
-                                            <Box alignItems="center">
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {p.depth + p.idx.toString() + "楼"}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        </Card>
-                        <Card elevation={4}
-                              sx={{width: '100%', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'}}>
-                            <Stack spacing={2} sx={{width: '100%'}}>
-                                <Grid container spacing={0}>
-                                    <Grid xs={12}>
-                                        <Box sx={{padding: '20px'}}>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {p.comment.content}
-                                                </Typography>
-                                            </Box>
+                <Stack spacing={0.1} sx={{width: '100%'}}>
+                    <Card elevation={4}
+                          sx={{width: '100%', borderTopLeftRadius: '20px', borderTopRightRadius: '20px'}}>
+                        <Box sx={{padding: '20px'}}>
+                            <Grid container spacing={0}>
+                                <Grid xs={9}>
+                                    <Stack display="flex" justifyContent="start" direction="row" alignItems="center" spacing={1}>
+                                        {comment_user_profile.sls_verification &&
+                                            <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
+                                                山林寺认证
+                                            </Avatar>}
+                                        <Box alignItems="center">
+                                            {comment_user_profile.name.length > 0 ?
+                                                <Link to={`/user/`+comment_user_profile.student_id} style={{textDecoration:"none"}}>
+                                                    <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                        {comment_user_profile.name}
+                                                    </Typography>
+                                                </Link>
+                                                :
+                                                <CircularProgress size="10px" color="secondary"/>
+                                            }
                                         </Box>
-                                        {p.comment.files.filter((val) => {
-                                                return val.category == "image"
-                                            }).length > 0 &&
-                                            <div>
-                                                <Box display="flex" justifyContent="center" alignItems="center"
-                                                     sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '95%'}}>
-                                                        <Grid container spacing={0}>
-                                                            {p.comment.files.filter((val) => {
-                                                                return val.category == "image"
-                                                            }).map((image_file) => {
-                                                                return (
-                                                                    <Grid xs={p.comment.files.filter((val) => {
-                                                                        return val.category == "image"
-                                                                    }).length > 1 ? 4 : 8} display="flex"
-                                                                          justifyContent="center"
-                                                                          alignItems="center"
-                                                                          sx={p.comment.files.filter((val) => {
-                                                                              return val.category == "image"
-                                                                          }).length > 1 ? {height: '150px'} : {height: '300px'}}>
-                                                                        <Box onClick={() => {
-                                                                            set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name);
-                                                                            set_image_clicked(true);
-                                                                        }} sx={{
-                                                                            width: '90%',
-                                                                            height: '90%',
-                                                                            backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name + ')'),
-                                                                            backgroundSize: 'contain',
-                                                                            backgroundPosition: 'left top',
-                                                                            backgroundRepeat: 'no-repeat',
-                                                                        }}/>
-                                                                    </Grid>
-                                                                )
-                                                            })}
-                                                        </Grid>
-                                                    </Box>
+                                        <Box alignItems="center">
+                                            <Typography color="text.secondary"
+                                                        sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                {'评论于 ' + _getDate(p.comment.time)}
+                                            </Typography>
+                                        </Box>
+                                    </Stack>
+                                </Grid>
+                                <Grid xs={3}>
+                                    <Stack display="flex" justifyContent="end" direction="row" spacing={1}>
+                                        <Box alignItems="center">
+                                            <Typography color="text.secondary"
+                                                        sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                {p.depth + p.idx.toString() + "楼"}
+                                            </Typography>
+                                        </Box>
+                                    </Stack>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Card>
+                    <Card elevation={4}
+                          sx={{width: '100%', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px'}}>
+                        <Stack spacing={2} sx={{width: '100%'}}>
+                            <Grid container spacing={0}>
+                                <Grid xs={12}>
+                                    <Box sx={{padding: '20px'}}>
+                                        <Box alignItems="center" sx={{width: '100%'}}>
+                                            <Typography color="text.secondary"
+                                                        sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                {p.comment.content}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                    {p.comment.files.filter((val) => {
+                                            return val.category == "image"
+                                        }).length > 0 &&
+                                        <div>
+                                            <Box display="flex" justifyContent="center" alignItems="center"
+                                                 sx={{width: '100%'}}>
+                                                <Box display="flex" justifyContent="start" alignItems="center"
+                                                     sx={{width: '95%'}}>
+                                                    <Grid container spacing={0}>
+                                                        {p.comment.files.filter((val) => {
+                                                            return val.category == "image"
+                                                        }).map((image_file) => {
+                                                            return (
+                                                                <Grid xs={p.comment.files.filter((val) => {
+                                                                    return val.category == "image"
+                                                                }).length > 1 ? 4 : 8} display="flex"
+                                                                      justifyContent="center"
+                                                                      alignItems="center"
+                                                                      sx={p.comment.files.filter((val) => {
+                                                                          return val.category == "image"
+                                                                      }).length > 1 ? {height: '150px'} : {height: '300px'}}>
+                                                                    <Box onClick={() => {
+                                                                        set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name);
+                                                                        set_image_clicked(true);
+                                                                    }} sx={{
+                                                                        width: '90%',
+                                                                        height: '90%',
+                                                                        backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name + ')'),
+                                                                        backgroundSize: 'contain',
+                                                                        backgroundPosition: 'left top',
+                                                                        backgroundRepeat: 'no-repeat',
+                                                                    }}/>
+                                                                </Grid>
+                                                            )
+                                                        })}
+                                                    </Grid>
                                                 </Box>
-                                                <Box sx={{height: '10px', width: '100%'}}/>
-                                            </div>
-                                        }
-                                        {p.comment.files.filter((val) => {
-                                                return val.category == "other"
-                                            }).length > 0 &&
-                                            <div>
-                                                <Box display="flex" justifyContent="center" alignItems="center"
-                                                     sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '90%'}}>
-                                                        <Stack display="flex" justifyContent="start" spacing={2}>
-                                                            {p.comment.files.filter((val) => {
-                                                                return val.category == "other"
-                                                            }).map((other_file) => {
-                                                                return (
-                                                                    <Box display="flex" justifyContent="start"
-                                                                         alignItems="center">
-                                                                        <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name}>
-                                                                            <Typography
-                                                                                sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                                {other_file.name}
-                                                                            </Typography>
-                                                                        </a>
-                                                                    </Box>
-                                                                )
-                                                            })}
-                                                        </Stack>
-                                                    </Box>
+                                            </Box>
+                                            <Box sx={{height: '10px', width: '100%'}}/>
+                                        </div>
+                                    }
+                                    {p.comment.files.filter((val) => {
+                                            return val.category == "other"
+                                        }).length > 0 &&
+                                        <div>
+                                            <Box display="flex" justifyContent="center" alignItems="center"
+                                                 sx={{width: '100%'}}>
+                                                <Box display="flex" justifyContent="start" alignItems="center"
+                                                     sx={{width: '90%'}}>
+                                                    <Stack display="flex" justifyContent="start" spacing={2}>
+                                                        {p.comment.files.filter((val) => {
+                                                            return val.category == "other"
+                                                        }).map((other_file) => {
+                                                            return (
+                                                                <Box display="flex" justifyContent="start"
+                                                                     alignItems="center">
+                                                                    <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name}>
+                                                                        <Typography
+                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            {other_file.name}
+                                                                        </Typography>
+                                                                    </a>
+                                                                </Box>
+                                                            )
+                                                        })}
+                                                    </Stack>
                                                 </Box>
-                                                <Box sx={{height: '10px', width: '100%'}}/>
-                                            </div>
-                                        }
-                                        <Grid container spacing={0}>
-                                            <Grid xs={9}>
-                                                <Stack display="flex" justifyContent="start" direction="row" spacing={1}
-                                                       sx={{height: '30px', padding: '20px'}}>
-                                                    <IconButton aria-label="thumb up" size="small"
-                                                                onClick={() => handleActionCLicked("like")}>
-                                                        <Stack alignItems="center" display="flex" justifyContent="start"
-                                                               direction="row" spacing={1}>
-                                                            <ThumbUpOutlinedIcon
-                                                                color={p.comment.like_ids.includes(student_id) ? "primary" : "secondary"}/>
-                                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                                <Typography color="text.secondary"
-                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                    {p.comment.stat.like}
-                                                                </Typography>
-                                                            </Box>
-                                                        </Stack>
-                                                    </IconButton>
-                                                    <IconButton aria-label="comment" size="small"
-                                                                onClick={() => handleCommentClicked()}>
-                                                        <Stack alignItems="center" display="flex" justifyContent="start"
-                                                               direction="row" spacing={1}>
-                                                            <CommentOutlinedIcon/>
-                                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                                <Typography color="text.secondary"
-                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                    {p.comment.stat.comment}
-                                                                </Typography>
-                                                            </Box>
-                                                        </Stack>
-                                                    </IconButton>
-                                                </Stack>
-                                            </Grid>
-                                            <Grid xs={3}>
-                                                <Stack display="flex" justifyContent="end" direction="row" spacing={1}
-                                                       sx={{height: '30px', padding: '20px'}}>
-                                                    {page > 1 &&
-                                                        <IconButton aria-label="prev" size="small" onClick={() => {
-                                                            setPage(Math.max(page - 1, 1))
-                                                        }}>
-                                                            <ArrowBackIosIcon color={"primary"}/>
-                                                        </IconButton>}
-                                                    {page < num_comments &&
-                                                        <IconButton aria-label="next" size="small" onClick={() => {
-                                                            setPage(Math.min(page + 1, num_comments))
-                                                        }}>
-                                                            <ArrowForwardIosIcon color={"primary"}/>
-                                                        </IconButton>}
-                                                </Stack>
-                                            </Grid>
+                                            </Box>
+                                            <Box sx={{height: '10px', width: '100%'}}/>
+                                        </div>
+                                    }
+                                    <Grid container spacing={0}>
+                                        <Grid xs={9}>
+                                            <Stack display="flex" justifyContent="start" direction="row" spacing={1}
+                                                   sx={{height: '30px', padding: '20px'}}>
+                                                <IconButton aria-label="thumb up" size="small"
+                                                            onClick={() => handleActionCLicked("like")}>
+                                                    <Stack alignItems="center" display="flex" justifyContent="start"
+                                                           direction="row" spacing={1}>
+                                                        <ThumbUpOutlinedIcon
+                                                            color={p.comment.like_ids.includes(user_profile.student_id) ? "primary" : "secondary"}/>
+                                                        <Box alignItems="center" sx={{width: '100%'}}>
+                                                            <Typography color="text.secondary"
+                                                                        sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                {p.comment.stat.like}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Stack>
+                                                </IconButton>
+                                                <IconButton aria-label="comment" size="small"
+                                                            onClick={() => {
+                                                                p.set_is_commenting_on_post(false);
+                                                                p.set_post_or_comment_id_commented_on(p.comment.comment_id);
+                                                                handleCommentClicked();
+                                                            }}>
+                                                    <Stack alignItems="center" display="flex" justifyContent="start"
+                                                           direction="row" spacing={1}>
+                                                        <CommentOutlinedIcon/>
+                                                        <Box alignItems="center" sx={{width: '100%'}}>
+                                                            <Typography color="text.secondary"
+                                                                        sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                {p.comment.stat.comment}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Stack>
+                                                </IconButton>
+                                            </Stack>
+                                        </Grid>
+                                        <Grid xs={3}>
+                                            <Stack display="flex" justifyContent="end" direction="row" spacing={1}
+                                                   sx={{height: '30px', padding: '20px'}}>
+                                                {page > 1 &&
+                                                    <IconButton aria-label="prev" size="small" onClick={() => {
+                                                        setPage(Math.max(page - 1, 1))
+                                                    }}>
+                                                        <ArrowBackIosIcon color={"primary"}/>
+                                                    </IconButton>}
+                                                {page < num_comments &&
+                                                    <IconButton aria-label="next" size="small" onClick={() => {
+                                                        setPage(Math.min(page + 1, num_comments))
+                                                    }}>
+                                                        <ArrowForwardIosIcon color={"primary"}/>
+                                                    </IconButton>}
+                                            </Stack>
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                            </Stack>
-                        </Card>
-                    </Stack>
-                </CardActionArea>
+                            </Grid>
+                        </Stack>
+                    </Card>
+                </Stack>
                 {comments.length > 0 && (comments[0].comment_id.length > 0 ?
                     <Stack spacing={2} sx={{width: '100%'}}>
                         {comments.map((comment, idx) => {
@@ -654,13 +669,13 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
         }
     }, [p.is_commenting_on_post, p.post_or_comment_id_commented_on])
 
-    const [name_commented_on, set_name_commented_on] = useState("");
+    const [comment_user_profile, set_comment_user_profile] = useState({student_id:"", name:"", sls_verification:false});
 
     useEffect(() => {
         if (comment.user_id.length > 0) {
-            api_get_name_with_student_id(comment.user_id).then((result) => {
+            api_get_user_profile_with_student_id(comment.user_id).then((result) => {
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_name_commented_on(result.data);
+                    set_comment_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
@@ -684,13 +699,13 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
         set_time_stamp(result.time_stamp);
     }, 1000)
 
-    const [name, set_name] = useState("");
+    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
 
     useEffect(() => {
         if (p.cookies.token) {
-            api_get_user_name().then((result) => {
+            api_get_user_profile().then((result) => {
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_name(result.data.name);
+                    set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
@@ -698,6 +713,8 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                     navigate(`/error`, {replace: false, state: {error: null}})
                 }
             })
+        } else {
+            set_user_profile({student_id:"", name:"", sls_verification:false});
         }
     }, [p.cookies.token])
 
@@ -918,7 +935,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                             display: "-webkit-box",
                                                             WebkitBoxOrient: "vertical"
                                                         }}>
-                                                            {p.is_commenting_on_post ? "评论本帖" : "评论 " + name_commented_on + "：" + (comment.content)}
+                                                            {p.is_commenting_on_post ? "评论本帖" : "评论 " + comment_user_profile.name + "：" + (comment.content)}
                                                         </Typography>
                                                     </Box>
                                                     <Box sx={{height: '10px', width: '100%'}}/>
@@ -1019,10 +1036,17 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                             </Box>
                                                             <Box display="flex" justifyContent="center"
                                                                  alignItems="center">
-                                                                <Typography color="text.secondary"
-                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                    {name.length > 0 ? name : "评论需先登录"}
-                                                                </Typography>
+                                                                {user_profile.name.length > 0 ?
+                                                                    <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                        {user_profile.name}
+                                                                    </Typography>
+                                                                    :
+                                                                    <Link to={'/login'} style={{textDecoration: "none"}}>
+                                                                        <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            评论需先登录
+                                                                        </Typography>
+                                                                    </Link>
+                                                                }
                                                             </Box>
                                                         </Stack>
                                                     </Grid>
