@@ -6,19 +6,16 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import {API_STATUS, SERVER_URL} from '../config';
+import {API_STATUS} from '../config';
 import {useNavigate} from 'react-router-dom'
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-    api_get_sls_members,
-    api_read_image_files_in_folder
-} from "../api/api";
+import {api_get_sls_members, api_read_image_files_in_folder} from "../api/api";
 
-function SlsMembersGrid(p:{sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string}) {
+function SlsMembersGrid(p: { sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string }) {
     return (
         <Grid container spacing={0}>
             {p.sls_members_list.map((item) => (
-                <Grid xs={12/p.col}>
+                <Grid xs={12 / p.col}>
                     <Stack display="flex" justifyContent="center" alignItems="center" spacing={0} sx={{padding: '5%'}}>
                         <img
                             src={item.image}
@@ -44,32 +41,32 @@ function SlsMembers() {
     const navigate = useNavigate()
 
     const [sls_members, set_sls_members] = useState({
-        teachers:[{
-            name:"",
-            description:"",
-            image:""
+        teachers: [{
+            name: "",
+            description: "",
+            image: ""
         }],
-        students:[{
-            name:"",
-            description:"",
-            image:""
+        students: [{
+            name: "",
+            description: "",
+            image: ""
         }],
-        graduates:[{
-            name:"",
-            description:"",
-            image:""
+        graduates: [{
+            name: "",
+            description: "",
+            image: ""
         }],
     });
 
 
-    useEffect(()=>{
-        api_get_sls_members().then((result)=>{
+    useEffect(() => {
+        api_get_sls_members().then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
                 set_sls_members(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:null } })
+                navigate(`/error`, {replace: false, state: {error: null}})
             }
         });
     }, []);
@@ -93,16 +90,17 @@ function SlsMembers() {
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
-                    {sls_teachers.length>0?sls_teachers[0].name.length>0?
-                            <SlsMembersGrid sls_members_list={sls_teachers} photo_width={"50%"} col={2} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                    {sls_teachers.length > 0 ? sls_teachers[0].name.length > 0 ?
+                            <SlsMembersGrid sls_members_list={sls_teachers} photo_width={"50%"} col={2}
+                                            name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                            :
+                            <CircularProgress color="primary"/>
                         :
-                            <CircularProgress color="primary" />
-                        :
-                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                                <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                    暂无
-                                </Typography>
-                            </Box>
+                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                            <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                暂无
+                            </Typography>
+                        </Box>
                     }
                 </Box>
             </Box>
@@ -119,10 +117,11 @@ function SlsMembers() {
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
-                    {sls_students.length>0?sls_students[0].name.length>0?
-                            <SlsMembersGrid sls_members_list={sls_students} photo_width={"80%"} col={6} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                    {sls_students.length > 0 ? sls_students[0].name.length > 0 ?
+                            <SlsMembersGrid sls_members_list={sls_students} photo_width={"80%"} col={6}
+                                            name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
                             :
-                            <CircularProgress color="primary" />
+                            <CircularProgress color="primary"/>
                         :
                         <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                             <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
@@ -145,10 +144,11 @@ function SlsMembers() {
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
-                    {sls_graduates.length>0?sls_graduates[0].name.length>0?
-                            <SlsMembersGrid sls_members_list={sls_graduates} photo_width={"90%"} col={8} name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
+                    {sls_graduates.length > 0 ? sls_graduates[0].name.length > 0 ?
+                            <SlsMembersGrid sls_members_list={sls_graduates} photo_width={"90%"} col={8}
+                                            name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
                             :
-                            <CircularProgress color="primary" />
+                            <CircularProgress color="primary"/>
                         :
                         <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                             <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
@@ -166,19 +166,19 @@ function SlsMembers() {
 function PhotoWall() {
     const navigate = useNavigate()
 
-    const [photo_wall, set_photo_wall] = useState([{image:"", title:""}]);
+    const [photo_wall, set_photo_wall] = useState([{image: "", title: ""}]);
 
-    useEffect(()=>{
-        api_read_image_files_in_folder().then((result)=>{
+    useEffect(() => {
+        api_read_image_files_in_folder().then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
                 set_photo_wall(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:null } })
+                navigate(`/error`, {replace: false, state: {error: null}})
             }
         })
-    },[])
+    }, [])
 
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
@@ -195,22 +195,22 @@ function PhotoWall() {
             </Box>
             <Box sx={{height: '10px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                {photo_wall.length>0?photo_wall[0].image.length>0?
-                    <Box sx={{ width: '80%', height: '600px', overflowY: 'scroll' }}>
-                        <ImageList variant="masonry" cols={3} gap={8}>
-                            {photo_wall.map((item) => (
-                                <ImageListItem key={item.image}>
-                                    <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        loading="lazy"
-                                    />
-                                </ImageListItem>
-                            ))}
-                        </ImageList>
-                    </Box>
-                    :
-                    <CircularProgress color="primary" />
+                {photo_wall.length > 0 ? photo_wall[0].image.length > 0 ?
+                        <Box sx={{width: '80%', height: '600px', overflowY: 'scroll'}}>
+                            <ImageList variant="masonry" cols={3} gap={8}>
+                                {photo_wall.map((item) => (
+                                    <ImageListItem key={item.image}>
+                                        <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            loading="lazy"
+                                        />
+                                    </ImageListItem>
+                                ))}
+                            </ImageList>
+                        </Box>
+                        :
+                        <CircularProgress color="primary"/>
                     :
                     <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                         <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
@@ -226,7 +226,12 @@ function PhotoWall() {
 
 function MainContent() {
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" sx={{background:'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)', width: '100%', borderBottomLeftRadius:'20px', borderBottomRightRadius:'20px'}}>
+        <Box display="flex" justifyContent="center" alignItems="center" sx={{
+            background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
+            width: '100%',
+            borderBottomLeftRadius: '20px',
+            borderBottomRightRadius: '20px'
+        }}>
             <Stack spacing={2} sx={{width: '80%'}}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 {/*山林寺成员*/}

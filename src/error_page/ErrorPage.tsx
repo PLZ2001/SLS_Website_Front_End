@@ -1,5 +1,5 @@
 import React from 'react';
-import {ThemeProvider } from '@mui/material/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 
 import TopBar from '../home_page/TopBar';
@@ -13,7 +13,7 @@ import {useLocation} from 'react-router-dom';
 function ErrorPage() {
     const [cookies, setCookies] = Cookie.useCookies(["token"])
     // 页面有输入参数error
-    const {state:{error}} = useLocation()
+    const {state: {error}} = useLocation()
     return (
         <ThemeProvider theme={THEME}>
             <Box sx={{width: '100%', backgroundColor: '#ffffff'}}>

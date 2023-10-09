@@ -14,14 +14,18 @@ function BottomBar() {
             <Grid container spacing={0}>
                 <Grid xs={0.25}/>
                 <Grid xs={9}>
-                    <Stack display="flex" justifyContent="start" direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{height: '40px'}}>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{paddingTop: '5px', height: '30px'}}>
+                    <Stack display="flex" justifyContent="start" direction="row"
+                           divider={<Divider orientation="vertical" flexItem/>} spacing={2} sx={{height: '40px'}}>
+                        <Box display="flex" justifyContent="center" alignItems="center"
+                             sx={{paddingTop: '5px', height: '30px'}}>
                             <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
                                 © 2023 电力能源互联及其智能化研究所-山林寺课题组 版权所有
                             </Typography>
                         </Box>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{paddingTop: '5px', height: '30px'}}>
-                            <Link href="https://github.com/PLZ2001" underline="hover" sx={{fontSize: 'subtitle1.fontSize'}}>
+                        <Box display="flex" justifyContent="center" alignItems="center"
+                             sx={{paddingTop: '5px', height: '30px'}}>
+                            <Link href="https://github.com/PLZ2001" underline="hover"
+                                  sx={{fontSize: 'subtitle1.fontSize'}}>
                                 技术支持：PLZ2001
                             </Link>
                         </Box>

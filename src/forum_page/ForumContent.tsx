@@ -1,18 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
-import {_hash, API_STATUS, SERVER_PORT, SERVER_URL, POST_PIECES, CONTENT_LENGTH_LIMIT, _getDate, MAX_PIECES} from "../config";
+import {_getDate, _hash, API_STATUS, MAX_PIECES, POST_PIECES, SERVER_PORT, SERVER_URL} from "../config";
 import TopMenu from "../home_page/TopMenu";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
-import { CardActionArea, CardActions } from '@mui/material';
+import {CardActionArea} from '@mui/material';
 import Grid from "@mui/material/Grid";
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
@@ -27,22 +26,21 @@ import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
 import {
     api_get_name_with_student_id,
+    api_get_posts,
     api_get_user_name,
-    api_submit_new_post,
+    api_submit_an_action,
     api_submit_files,
-    api_get_posts
+    api_submit_new_post
 } from "../api/api";
 
 
-function Post(p:{post:{post_id:string, title:string, content:string, user_id:string, time:number, stat:{watch:number, like:number, share:number, favorite:number, comment:number}, files:{category:string, name:string}[], comment_ids:string[]}}) {
+function Post(p: { post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, submit_success: boolean, page: number }) {
     const navigate = useNavigate()
 
     const [name, set_name] = useState("");
 
-
-
-    useEffect(()=>{
-        api_get_name_with_student_id(p.post.user_id).then((result)=> {
+    useEffect(() => {
+        api_get_name_with_student_id(p.post.user_id).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
                 set_name(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
@@ -51,77 +49,91 @@ function Post(p:{post:{post_id:string, title:string, content:string, user_id:str
                 navigate(`/error`, {replace: false, state: {error: null}})
             }
         })
-    },[])
+    }, [p.page, p.post, p.submit_success])
 
-    const handleClickingPost = async (post_id:string) => {
-        navigate(`/post/`+post_id, {replace: false})
+    const handleClickingPost = (post_id: string) => {
+        api_submit_an_action("watch", true, post_id)
+        navigate(`/post/` + post_id, {replace: false})
     }
 
     return (
-        <Card elevation={4} sx={{ width: '100%', borderRadius:'20px'}}>
-            <CardActionArea onClick={(e)=>{handleClickingPost(p.post.post_id)}}>
+        <Card elevation={4} sx={{width: '100%', borderRadius: '20px'}}>
+            <CardActionArea onClick={() => {
+                handleClickingPost(p.post.post_id)
+            }}>
                 <Grid container spacing={0}>
-                    <Grid xs={p.post.files.filter((val)=>{return val.category=="image"}).length>0?9:12}>
+                    <Grid xs={p.post.files.filter((val) => {
+                        return val.category == "image"
+                    }).length > 0 ? 9 : 12}>
                         <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
                             <Box alignItems="center" sx={{width: '100%'}}>
-                                <Typography sx={{fontSize: 'h6.fontSize'}}>
+                                <Typography sx={{
+                                    fontSize: 'h6.fontSize',
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: "2",
+                                    WebkitBoxOrient: "vertical"
+                                }}>
                                     {p.post.title}
                                 </Typography>
                             </Box>
                             <Box alignItems="center" sx={{width: '100%'}}>
-                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                    {p.post.content.length>CONTENT_LENGTH_LIMIT?p.post.content.substring(0,CONTENT_LENGTH_LIMIT)+'...':p.post.content}
+                                <Typography color="text.secondary" sx={{
+                                    fontSize: 'subtitle2.fontSize',
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: "2",
+                                    WebkitBoxOrient: "vertical"
+                                }}>
+                                    {p.post.content}
                                 </Typography>
                             </Box>
                         </Box>
                         <Grid container spacing={0}>
                             <Grid xs={4}>
-                                <Stack display="flex" justifyContent="start" direction="row" spacing={1} sx={{height: '30px', padding: '20px'}}>
+                                <Stack display="flex" justifyContent="start" direction="row" spacing={1}
+                                       sx={{height: '30px', padding: '20px'}}>
                                     <IconButton aria-label="favorite" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
+                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
+                                               spacing={1}>
                                             <VisibilityOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                <Typography color="text.secondary"
+                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
                                                     {p.post.stat.watch}
                                                 </Typography>
                                             </Box>
                                         </Stack>
                                     </IconButton>
                                     <IconButton aria-label="thumb up" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
+                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
+                                               spacing={1}>
                                             <ThumbUpOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                <Typography color="text.secondary"
+                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
                                                     {p.post.stat.like}
                                                 </Typography>
                                             </Box>
                                         </Stack>
                                     </IconButton>
-                                    <IconButton aria-label="share" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
-                                            <ShareOutlinedIcon/>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {p.post.stat.share}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </IconButton>
                                     <IconButton aria-label="favorite" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
+                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
+                                               spacing={1}>
                                             <FavoriteBorderOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                <Typography color="text.secondary"
+                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
                                                     {p.post.stat.favorite}
                                                 </Typography>
                                             </Box>
                                         </Stack>
                                     </IconButton>
                                     <IconButton aria-label="comment" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row" spacing={1}>
+                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
+                                               spacing={1}>
                                             <CommentOutlinedIcon/>
                                             <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                <Typography color="text.secondary"
+                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
                                                     {p.post.stat.comment}
                                                 </Typography>
                                             </Box>
@@ -130,7 +142,8 @@ function Post(p:{post:{post_id:string, title:string, content:string, user_id:str
                                 </Stack>
                             </Grid>
                             <Grid xs={8}>
-                                <Stack display="flex" justifyContent="end" direction="row" spacing={1} sx={{height: '30px', padding: '20px'}}>
+                                <Stack display="flex" justifyContent="end" direction="row" spacing={1}
+                                       sx={{height: '30px', padding: '20px'}}>
                                     <Box display="flex" justifyContent="center" alignItems="center">
                                         <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
                                             {_getDate(p.post.time)}
@@ -138,7 +151,7 @@ function Post(p:{post:{post_id:string, title:string, content:string, user_id:str
                                     </Box>
                                     <Box display="flex" justifyContent="center" alignItems="center">
                                         <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                            {name.length>0?
+                                            {name.length > 0 ?
                                                 name
                                                 :
                                                 <CircularProgress size="10px" color="secondary"/>
@@ -149,9 +162,22 @@ function Post(p:{post:{post_id:string, title:string, content:string, user_id:str
                             </Grid>
                         </Grid>
                     </Grid>
-                    {p.post.files.filter((val)=>{return val.category=="image"}).length>0 &&
+                    {p.post.files.filter((val) => {
+                            return val.category == "image"
+                        }).length > 0 &&
                         <Grid xs={3}>
-                            <Box sx={{width: '100%', height:'100%', backgroundImage: String('url('+'http://'+SERVER_URL+':'+SERVER_PORT+'/files/'+p.post.post_id+'/'+p.post.files.filter((val)=>{return val.category=="image"})[0].name+')'), backgroundSize: 'cover', backgroundPosition:'center center', backgroundRepeat:'no-repeat', borderTopRightRadius:'20px', borderBottomRightRadius:'20px'}}/>
+                            <Box sx={{
+                                width: '100%',
+                                height: '100%',
+                                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + p.post.files.filter((val) => {
+                                    return val.category == "image"
+                                })[0].name + ')'),
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center center',
+                                backgroundRepeat: 'no-repeat',
+                                borderTopRightRadius: '20px',
+                                borderBottomRightRadius: '20px'
+                            }}/>
                         </Grid>
                     }
                 </Grid>
@@ -160,49 +186,50 @@ function Post(p:{post:{post_id:string, title:string, content:string, user_id:str
     )
 }
 
-function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, submit_success:boolean, set_submit_success:(value: (((prevState: boolean) => boolean) | boolean)) => void}) {
+function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, submit_success: boolean, set_submit_success: (value: (((prevState: boolean) => boolean) | boolean)) => void }) {
     const navigate = useNavigate()
 
     const [formatted_time, set_formatted_time] = useState("")
     const [time_stamp, set_time_stamp] = useState(0)
-    const get_time_now = async () => {
+    const get_time_now = () => {
         const date = new Date();
         const time_stamp = date.getTime() / 1000;
         const formatted_time = _getDate(time_stamp);
-        return {"formatted_time":formatted_time, "time_stamp":time_stamp};
+        return {"formatted_time": formatted_time, "time_stamp": time_stamp};
     }
     setInterval(() => {
-        get_time_now().then((result)=>{set_formatted_time(result.formatted_time);set_time_stamp(result.time_stamp)})
+        const result = get_time_now();
+        set_formatted_time(result.formatted_time);
+        set_time_stamp(result.time_stamp);
     }, 1000)
 
     const [name, set_name] = useState("");
 
 
-
-    useEffect(()=>{
+    useEffect(() => {
         if (p.cookies.token) {
-            api_get_user_name().then((result)=>{
+            api_get_user_name().then((result) => {
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_name(result.data);
+                    set_name(result.data.name);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
-                    navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                    navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                    navigate(`/error`, { replace: false, state: { error:null } })
+                    navigate(`/error`, {replace: false, state: {error: null}})
                 }
             })
         }
-    },[p.cookies.token])
+    }, [p.cookies.token])
 
-    const [image_files_selected, set_image_files_selected] = useState([{name:"", url:"", file: new File([], "")}])
-    const [other_files_selected, set_other_files_selected] = useState([{name:"", url:"", file: new File([], "")}])
+    const [image_files_selected, set_image_files_selected] = useState([{name: "", url: "", file: new File([], "")}])
+    const [other_files_selected, set_other_files_selected] = useState([{name: "", url: "", file: new File([], "")}])
 
     const [image_files_order, set_image_files_order] = useState([0])
     const [other_files_order, set_other_files_order] = useState([0])
 
-    const handleImageFile = async (files:FileList|null) => {
+    const handleImageFile = (files: FileList | null) => {
         if (files) {
-            if (files.length>0) {
+            if (files.length > 0) {
                 let _image_files_selected = [];
                 let _image_files_order = [];
                 for (let i = 0; i < files.length; i++) {
@@ -219,13 +246,17 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         }
     }
 
-    const handleOtherFile = async (files:FileList|null) => {
+    const handleOtherFile = (files: FileList | null) => {
         if (files) {
-            if (files.length>0) {
+            if (files.length > 0) {
                 let _other_files_selected = [];
                 let _other_files_order = [];
-                for (let i=0;i<files.length;i++) {
-                    _other_files_selected.push({name:files[i].name, url:URL.createObjectURL(files[i]), file:files[i]})
+                for (let i = 0; i < files.length; i++) {
+                    _other_files_selected.push({
+                        name: files[i].name,
+                        url: URL.createObjectURL(files[i]),
+                        file: files[i]
+                    })
                     _other_files_order.push(i);
                 }
                 set_other_files_selected(_other_files_selected)
@@ -234,53 +265,64 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         }
     }
 
-    const handleImageFileOrder = async (idx:number) => {
+    const handleImageFileOrder = (idx: number) => {
         let _image_files_order = image_files_order;
         if (_image_files_order.includes(idx)) {
-            _image_files_order = _image_files_order.filter((v)=>{return v!=idx})
+            _image_files_order = _image_files_order.filter((v) => {
+                return v != idx
+            })
         } else {
+            _image_files_order = _image_files_order.filter(() => {
+                return true
+            })
             _image_files_order.push(idx)
         }
         set_image_files_order(_image_files_order)
     }
 
-    const handleOtherFileOrder = async (idx:number) => {
+    const handleOtherFileOrder = (idx: number) => {
         let _other_files_order = other_files_order;
         if (_other_files_order.includes(idx)) {
-            _other_files_order = _other_files_order.filter((v)=>{return v!=idx})
+            _other_files_order = _other_files_order.filter((v) => {
+                return v != idx
+            })
         } else {
+            _other_files_order = _other_files_order.filter(() => {
+                return true
+            })
             _other_files_order.push(idx)
         }
         set_other_files_order(_other_files_order)
     }
 
-
-
-    useEffect(()=>{
+    const sync_with_files = () => {
         let _files = []
-        if (image_files_selected[0].name.length>0) {
-            for (let i=0;i<image_files_order.length;i++) {
-                _files.push({category:"image", name:image_files_selected[image_files_order[i]].name})
+        if (image_files_selected[0].name.length > 0) {
+            for (let i = 0; i < image_files_order.length; i++) {
+                _files.push({category: "image", name: image_files_selected[image_files_order[i]].name})
             }
         }
-        if (other_files_selected[0].name.length>0) {
-            for (let i=0;i<other_files_order.length;i++) {
-                _files.push({category:"other", name:other_files_selected[other_files_order[i]].name})
+        if (other_files_selected[0].name.length > 0) {
+            for (let i = 0; i < other_files_order.length; i++) {
+                _files.push({category: "other", name: other_files_selected[other_files_order[i]].name})
             }
         }
         set_files(_files)
-    },[image_files_selected, other_files_selected, image_files_order, other_files_order])
+    }
 
+    useEffect(() => {
+        sync_with_files();
+    }, [image_files_selected, other_files_selected, image_files_order, other_files_order])
 
 
     const [title, set_title] = useState("");
     const [title_error_text, set_title_error_text] = useState("");
     const [content, set_content] = useState("");
     const [content_error_text, set_content_error_text] = useState("");
-    const [files, set_files] = useState([{category:"", name:""}]);
+    const [files, set_files] = useState([{category: "", name: ""}]);
     const [submit_clicked, set_submit_clicked] = useState(false);
 
-    const check_post_title = (post_title:string) => {
+    const check_post_title = (post_title: string) => {
         if (post_title.length == 0) {
             set_title_error_text("标题不能为空")
         } else {
@@ -288,7 +330,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         }
     }
 
-    const check_post_content = (post_content:string) => {
+    const check_post_content = (post_content: string) => {
         if (post_content.length == 0) {
             set_content_error_text("内容不能为空")
         } else {
@@ -303,48 +345,50 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
         if (!p.cookies.token) {
             p.set_submit_success(false);
             set_submit_clicked(false);
-            navigate(`/error`, { replace: false, state: { error:"抱歉，请登录后再试" } })
-        } else if (title_error_text.length==0 && content_error_text.length==0 && title.length>0 && content.length>0) {
+            navigate(`/error`, {replace: false, state: {error: "抱歉，请登录后再试"}})
+        } else if (title_error_text.length == 0 && content_error_text.length == 0 && title.length > 0 && content.length > 0) {
             set_submit_clicked(true);
-            const post_id = _hash(title+time_stamp.toString());
-            if (files.length>0) {
-                const result = await api_submit_files(post_id, image_files_selected.concat(other_files_selected), image_files_order.concat(other_files_order.map((v)=>{return v+image_files_selected.length})));
+            const post_id = _hash(title + time_stamp.toString());
+            if (files.length > 0) {
+                const result = await api_submit_files(post_id, image_files_selected.concat(other_files_selected), image_files_order.concat(other_files_order.map((v) => {
+                    return v + image_files_selected.length
+                })));
                 if (result.status == API_STATUS.SUCCESS) {
                     const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
                     if (result.status == API_STATUS.SUCCESS) {
                         p.set_submit_success(true);
                         set_submit_clicked(false);
-                    } else if (result.status == API_STATUS.FAILURE_WITH_REASONS){
+                    } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                         p.set_submit_success(false);
                         set_submit_clicked(false);
-                        navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                        navigate(`/error`, {replace: false, state: {error: result.reasons}})
                     } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                         p.set_submit_success(false);
                         set_submit_clicked(false);
-                        navigate(`/error`, { replace: false, state: { error:null } })
+                        navigate(`/error`, {replace: false, state: {error: null}})
                     }
-                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS){
+                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     p.set_submit_success(false);
                     set_submit_clicked(false);
-                    navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                    navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     p.set_submit_success(false);
                     set_submit_clicked(false);
-                    navigate(`/error`, { replace: false, state: { error:null } })
+                    navigate(`/error`, {replace: false, state: {error: null}})
                 }
             } else {
                 const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
                 if (result.status == API_STATUS.SUCCESS) {
                     p.set_submit_success(true);
                     set_submit_clicked(false);
-                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS){
+                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                     p.set_submit_success(false);
                     set_submit_clicked(false);
-                    navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                    navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     p.set_submit_success(false);
                     set_submit_clicked(false);
-                    navigate(`/error`, { replace: false, state: { error:null } })
+                    navigate(`/error`, {replace: false, state: {error: null}})
                 }
             }
         } else {
@@ -379,6 +423,8 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                 <Backdrop
                     sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
                     open={submit_clicked}
+                    onExited={() => {
+                    }}
                 >
                     <CircularProgress color="inherit"/>
                 </Backdrop>
@@ -391,7 +437,11 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                     <Stack spacing={2} sx={{width: '100%'}}>
                                         <Grid container spacing={0}>
                                             <Grid xs={9}>
-                                                <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
+                                                <Box sx={{
+                                                    paddingTop: '20px',
+                                                    paddingLeft: '20px',
+                                                    paddingRight: '20px'
+                                                }}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <TextField
                                                             id="outlined-multiline-flexible"
@@ -405,7 +455,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                                 set_title(event.target.value);
                                                                 check_post_title(event.target.value);
                                                             }}
-                                                            error={title_error_text.length == 0 ? false : true}
+                                                            error={title_error_text.length != 0}
                                                             helperText={title_error_text}
                                                         />
                                                     </Box>
@@ -424,7 +474,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                                 set_content(event.target.value);
                                                                 check_post_content(event.target.value);
                                                             }}
-                                                            error={content_error_text.length == 0 ? false : true}
+                                                            error={content_error_text.length != 0}
                                                             helperText={content_error_text}
                                                         />
                                                     </Box>
@@ -435,7 +485,8 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                                spacing={1} sx={{height: '30px', padding: '20px'}}>
                                                             <IconButton aria-label="add photo" size="small">
                                                                 <Stack alignItems="center" display="flex"
-                                                                       justifyContent="start" direction="row" spacing={1}>
+                                                                       justifyContent="start" direction="row"
+                                                                       spacing={1}>
                                                                     <InsertPhotoOutlinedIcon/>
                                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                                         <Typography color="text.secondary"
@@ -464,7 +515,8 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                             </IconButton>
                                                             <IconButton aria-label="add file" size="small">
                                                                 <Stack alignItems="center" display="flex"
-                                                                       justifyContent="start" direction="row" spacing={1}>
+                                                                       justifyContent="start" direction="row"
+                                                                       spacing={1}>
                                                                     <FilePresentOutlinedIcon/>
                                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                                         <Typography color="text.secondary"
@@ -496,13 +548,15 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                     <Grid xs={8}>
                                                         <Stack display="flex" justifyContent="end" direction="row"
                                                                spacing={1} sx={{height: '30px', padding: '20px'}}>
-                                                            <Box display="flex" justifyContent="center" alignItems="center">
+                                                            <Box display="flex" justifyContent="center"
+                                                                 alignItems="center">
                                                                 <Typography color="text.secondary"
                                                                             sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                     {formatted_time}
                                                                 </Typography>
                                                             </Box>
-                                                            <Box display="flex" justifyContent="center" alignItems="center">
+                                                            <Box display="flex" justifyContent="center"
+                                                                 alignItems="center">
                                                                 <Typography color="text.secondary"
                                                                             sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                     {name.length > 0 ? name : "发帖需先登录"}
@@ -513,7 +567,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                 </Grid>
                                             </Grid>
                                             <Grid xs={3}>
-                                                {image_files_selected[0].name.length > 0 && image_files_order.length>0?
+                                                {image_files_selected[0].name.length > 0 && image_files_order.length > 0 ?
                                                     <Box sx={{
                                                         width: '100%',
                                                         height: '100%',
@@ -525,8 +579,15 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                         borderBottomRightRadius: '20px'
                                                     }}/>
                                                     :
-                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%', height:'100%', borderTopRightRadius: '20px', borderBottomRightRadius: '20px'}}>
-                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                                         sx={{
+                                                             width: '100%',
+                                                             height: '100%',
+                                                             borderTopRightRadius: '20px',
+                                                             borderBottomRightRadius: '20px'
+                                                         }}>
+                                                        <Typography color="text.secondary"
+                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
                                                             帖子封面默认为第一张图
                                                         </Typography>
                                                     </Box>
@@ -535,10 +596,13 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                         </Grid>
                                         {image_files_selected[0].name.length > 0 &&
                                             <div>
-                                                <Stack spacing={1} display="flex" justifyContent="center" alignItems="center"
-                                                     sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center" sx={{width:'90%', height:'100%'}}>
-                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                <Stack spacing={1} display="flex" justifyContent="center"
+                                                       alignItems="center"
+                                                       sx={{width: '100%'}}>
+                                                    <Box display="flex" justifyContent="start" alignItems="center"
+                                                         sx={{width: '90%', height: '100%'}}>
+                                                        <Typography color="text.secondary"
+                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
                                                             提示：单击图片调整顺序
                                                         </Typography>
                                                     </Box>
@@ -547,10 +611,22 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                                         <Grid container spacing={0}>
                                                             {image_files_selected.map((image_file, idx) => {
                                                                 return (
-                                                                    <Grid xs={image_files_selected.length>1?4:8} display="flex" justifyContent="center"
-                                                                          alignItems="center" sx={image_files_selected.length>1?{height: '150px'}:{height: '300px'}}>
-                                                                        <Badge badgeContent={image_files_order.indexOf(idx)+1} color="primary" sx={{width:'90%', height:'90%'}} anchorOrigin={{ horizontal: 'left', vertical: 'top' }}>
-                                                                            <Box border="1px solid grey" onClick={(e)=>{handleImageFileOrder(idx)}} sx={{
+                                                                    <Grid xs={image_files_selected.length > 1 ? 4 : 8}
+                                                                          display="flex" justifyContent="center"
+                                                                          alignItems="center"
+                                                                          sx={image_files_selected.length > 1 ? {height: '150px'} : {height: '300px'}}>
+                                                                        <Badge
+                                                                            badgeContent={image_files_order.indexOf(idx) + 1}
+                                                                            color="primary"
+                                                                            sx={{width: '90%', height: '90%'}}
+                                                                            anchorOrigin={{
+                                                                                horizontal: 'left',
+                                                                                vertical: 'top'
+                                                                            }}>
+                                                                            <Box border="1px solid grey"
+                                                                                 onClick={() => {
+                                                                                     handleImageFileOrder(idx)
+                                                                                 }} sx={{
                                                                                 width: '100%',
                                                                                 height: '100%',
                                                                                 backgroundImage: String('url(' + image_file.url + ')'),
@@ -570,20 +646,30 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
                                         }
                                         {other_files_selected[0].name.length > 0 &&
                                             <div>
-                                                <Stack spacing={2} display="flex" justifyContent="center" alignItems="center"
-                                                     sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center" sx={{width:'90%', height:'100%'}}>
-                                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                <Stack spacing={2} display="flex" justifyContent="center"
+                                                       alignItems="center"
+                                                       sx={{width: '100%'}}>
+                                                    <Box display="flex" justifyContent="start" alignItems="center"
+                                                         sx={{width: '90%', height: '100%'}}>
+                                                        <Typography color="text.secondary"
+                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
                                                             提示：单击附件调整顺序
                                                         </Typography>
                                                     </Box>
                                                     <Box display="flex" justifyContent="start" alignItems="center"
                                                          sx={{width: '90%'}}>
                                                         <Stack display="flex" justifyContent="start" spacing={2}>
-                                                            {other_files_selected.map((other_file,idx) => {
+                                                            {other_files_selected.map((other_file, idx) => {
                                                                 return (
-                                                                    <Badge badgeContent={other_files_order.indexOf(idx)+1} color="primary" anchorOrigin={{ horizontal: 'left', vertical: 'top' }}>
-                                                                        <Box onClick={(e)=>{handleOtherFileOrder(idx)}} display="flex" justifyContent="start"
+                                                                    <Badge
+                                                                        badgeContent={other_files_order.indexOf(idx) + 1}
+                                                                        color="primary" anchorOrigin={{
+                                                                        horizontal: 'left',
+                                                                        vertical: 'top'
+                                                                    }}>
+                                                                        <Box onClick={() => {
+                                                                            handleOtherFileOrder(idx)
+                                                                        }} display="flex" justifyContent="start"
                                                                              alignItems="center">
                                                                             <Typography
                                                                                 sx={{fontSize: 'subtitle2.fontSize'}}>
@@ -616,7 +702,7 @@ function SendNewPost(p:{cookies:{token?: any}, setCookies:(name: "token", value:
     }
 }
 
-function Forum(p:{submit_success:boolean}) {
+function Forum(p: { submit_success: boolean }) {
     const navigate = useNavigate()
 
     const [page, setPage] = React.useState(1);
@@ -624,32 +710,44 @@ function Forum(p:{submit_success:boolean}) {
         setPage(value);
     };
 
-    const [posts, set_posts] = useState([{post_id:"", title:"", content:"", user_id:"", time:0, stat:{watch:0, like:0, share:0, favorite:0, comment:0}, files:[{category:"", name:""}], comment_ids:[""]}]);
+    const [posts, set_posts] = useState([{
+        post_id: "",
+        title: "",
+        content: "",
+        user_id: "",
+        time: 0,
+        stat: {watch: 0, like: 0, favorite: 0, comment: 0},
+        files: [{category: "", name: ""}],
+        comment_ids: [""],
+        watch_ids: [""],
+        like_ids: [""],
+        favorite_ids: [""]
+    }]);
     const [num_posts, set_num_posts] = useState(0);
 
-    useEffect(()=>{
-        api_get_posts(POST_PIECES, page).then((result)=>{
+    useEffect(() => {
+        api_get_posts(POST_PIECES, page).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
                 set_posts(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:null } })
+                navigate(`/error`, {replace: false, state: {error: null}})
             }
         })
-    },[page, p.submit_success])
+    }, [page, p.submit_success])
 
-    useEffect(()=>{
-        api_get_posts(MAX_PIECES, 1).then((result)=>{
+    useEffect(() => {
+        api_get_posts(MAX_PIECES, 1).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
-                set_num_posts(Math.ceil(result.data.length/POST_PIECES));
+                set_num_posts(Math.ceil(result.data.length / POST_PIECES));
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:result.reasons } })
+                navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, { replace: false, state: { error:null } })
+                navigate(`/error`, {replace: false, state: {error: null}})
             }
         })
-    },[page, p.submit_success])
+    }, [page, p.submit_success])
 
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}} color={"p"}>
@@ -669,7 +767,7 @@ function Forum(p:{submit_success:boolean}) {
                 <Stack spacing={2} sx={{width: '80%'}}>
                     {posts.length > 0 ? posts[0].post_id.length > 0 ?
                             posts.map((post) => {
-                                return <Post post={post}/>
+                                return <Post post={post} submit_success={p.submit_success} page={page}/>
                             })
                             :
                             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
@@ -686,18 +784,29 @@ function Forum(p:{submit_success:boolean}) {
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Pagination showFirstButton showLastButton count={num_posts} page={page} onChange={handlePage} color="primary"/>
+                <Pagination showFirstButton showLastButton count={num_posts} page={page} onChange={handlePage}
+                            color="primary"/>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
         </Paper>
     )
 }
 
-function ForumContent(p:{cookies:{token?: any}, setCookies:(name: "token", value: any, options?: (CookieSetOptions | undefined)) => void}) {
+function ForumContent(p: { cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     const [submit_success, set_submit_success] = useState(false);
     return (
-        <Box sx={{width: '100%', background:'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)', borderRadius:'20px'}}>
-            <Box sx={{width: '100%', backgroundImage: String('url('+'http://'+SERVER_URL+':'+SERVER_PORT+'/images/others/home_sls_1.png'+')'), backgroundSize: '100% auto', backgroundRepeat:'no-repeat', borderRadius:'20px'}}>
+        <Box sx={{
+            width: '100%',
+            background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
+            borderRadius: '20px'
+        }}>
+            <Box sx={{
+                width: '100%',
+                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.png' + ')'),
+                backgroundSize: '100% auto',
+                backgroundRepeat: 'no-repeat',
+                borderRadius: '20px'
+            }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                     <TopMenu/>
@@ -708,7 +817,8 @@ function ForumContent(p:{cookies:{token?: any}, setCookies:(name: "token", value
                         <Box sx={{height: '10px', width: '100%'}}/>
                         <Forum submit_success={submit_success}/>
                         <Box sx={{height: '10px', width: '100%'}}/>
-                        <SendNewPost cookies={p.cookies} setCookies={p.setCookies} submit_success={submit_success} set_submit_success={set_submit_success}/>
+                        <SendNewPost cookies={p.cookies} setCookies={p.setCookies} submit_success={submit_success}
+                                     set_submit_success={set_submit_success}/>
                         <Box sx={{height: '50px', width: '100%'}}/>
                     </Stack>
                 </Box>

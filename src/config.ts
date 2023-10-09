@@ -13,7 +13,6 @@ const POST_PIECES = 10;
 const COMMENT_PIECES = 5;
 const COMMENT_OF_COMMENT_PIECES = 1;
 const MAX_PIECES = 100000;
-const CONTENT_LENGTH_LIMIT = 100;
 
 // 主题
 const THEME = createTheme({
@@ -32,7 +31,10 @@ const THEME = createTheme({
     typography: {
         allVariants: {
             color: '#1463d8',
-            wordWrap: 'break-word'
+            wordWrap: 'break-word',
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "pre-wrap"
         },
     },
     components: {
@@ -56,16 +58,26 @@ function _hash(data: string) {
 }
 
 // 由时间戳得到时间字符串
-function _getDate(stamp:number) {
-    const date = new Date(1000*stamp);
+function _getDate(stamp: number) {
+    const date = new Date(1000 * stamp);
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const hour = date.getHours();
     const minute = date.getMinutes();
     const second = date.getSeconds();
-    const formatted_time = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day} ${hour<10? '0'+ hour:hour}:${minute<10? '0'+ minute:minute}:${second<10? '0'+ second:second}`;
-    return formatted_time;
+    return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day} ${hour < 10 ? '0' + hour : hour}:${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
 }
 
-export {THEME, SERVER_URL, SERVER_PORT, _hash, API_STATUS, POST_PIECES, CONTENT_LENGTH_LIMIT, _getDate, COMMENT_PIECES, MAX_PIECES, COMMENT_OF_COMMENT_PIECES};
+export {
+    THEME,
+    SERVER_URL,
+    SERVER_PORT,
+    _hash,
+    API_STATUS,
+    POST_PIECES,
+    _getDate,
+    COMMENT_PIECES,
+    MAX_PIECES,
+    COMMENT_OF_COMMENT_PIECES
+};

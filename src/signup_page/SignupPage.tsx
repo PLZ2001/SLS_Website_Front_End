@@ -7,7 +7,6 @@ import BottomBar from "../home_page/BottomBar";
 import {THEME} from "../config";
 import SignupContent from "./SignupContent";
 import * as Cookie from "react-cookie";
-import {CookieSetOptions} from "universal-cookie";
 
 
 function SignupPage() {

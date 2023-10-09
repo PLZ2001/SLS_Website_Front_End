@@ -8,7 +8,6 @@ import MainContent from "./MainContent";
 import BottomBar from "./BottomBar";
 import {THEME} from "../config";
 import * as Cookie from "react-cookie";
-import {CookieSetOptions} from "universal-cookie";
 
 
 function HomePage() {

@@ -5,9 +5,8 @@ import * as Cookie from "react-cookie";
 
 import TopBar from '../home_page/TopBar';
 import BottomBar from "../home_page/BottomBar";
-import {SERVER_URL, THEME} from "../config";
+import {THEME} from "../config";
 import LoginContent from "./LoginContent";
-import {CookieSetOptions} from "universal-cookie";
 
 
 function LoginPage() {
