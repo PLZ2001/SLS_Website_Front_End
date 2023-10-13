@@ -97,7 +97,7 @@ function SlsMembers() {
                             <CircularProgress color="primary"/>
                         :
                         <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                            <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
                                 暂无
                             </Typography>
                         </Box>
@@ -124,7 +124,7 @@ function SlsMembers() {
                             <CircularProgress color="primary"/>
                         :
                         <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                            <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
                                 暂无
                             </Typography>
                         </Box>
@@ -151,7 +151,7 @@ function SlsMembers() {
                             <CircularProgress color="primary"/>
                         :
                         <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                            <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
                                 暂无
                             </Typography>
                         </Box>
@@ -213,7 +213,7 @@ function PhotoWall() {
                         <CircularProgress color="primary"/>
                     :
                     <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                        <Typography color="grey" sx={{fontSize: 'subtitle1.fontSize'}}>
+                        <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
                             暂无
                         </Typography>
                     </Box>

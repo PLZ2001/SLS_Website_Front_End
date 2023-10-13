@@ -70,7 +70,7 @@ const api_get_user_profile = async () => {
     }
 }
 
-const api_submit_new_post = async (post_id: string, title: string, content: string, time: number, files: { category: string, name: string }[]) => {
+const api_submit_new_post = async (post_id: string, title: string, content: string, time: number, files: { category: string, name: string }[], category: string) => {
     try {
         const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_new_post/' + post_id,
             {
@@ -82,7 +82,7 @@ const api_submit_new_post = async (post_id: string, title: string, content: stri
                     'Access-Control-Allow-Origin': '*',
                 },
                 credentials: 'include',
-                body: JSON.stringify({"title": title, "content": content, "time": String(time), "files": files})
+                body: JSON.stringify({"title": title, "content": content, "time": String(time), "files": files, "category": category})
             })
         const result = await response.json()
         if (result.status == "SUCCESS") {
@@ -97,7 +97,7 @@ const api_submit_new_post = async (post_id: string, title: string, content: stri
     }
 }
 
-const api_get_posts = async (p: number, s: number) => {
+const api_get_posts = async (p: number, s: number, search: string, category: string) => {
     try {
         const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_posts',
             {
@@ -109,7 +109,7 @@ const api_get_posts = async (p: number, s: number) => {
                     'Access-Control-Allow-Origin': '*',
                 },
                 credentials: 'include',
-                body: JSON.stringify({"pieces": String(p), "sequence": String(s)})
+                body: JSON.stringify({"pieces": String(p), "sequence": String(s), "search": search, "category": category})
             })
         const result = await response.json()
         if (result.status == "SUCCESS") {

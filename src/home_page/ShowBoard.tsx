@@ -14,7 +14,7 @@ function ShowBoard() {
         }}>
             <Box sx={{
                 width: '100%',
-                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.png' + ')'),
+                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.webp' + ')'),
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderTopLeftRadius: '20px',
@@ -25,7 +25,7 @@ function ShowBoard() {
                     <TopMenu/>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <img src={"http://" + SERVER_URL + ":" + SERVER_PORT + "/images/others/home_slslogo_1.png"}
+                    <img src={"http://" + SERVER_URL + ":" + SERVER_PORT + "/images/others/home_slslogo_1.webp"}
                          alt="山林寺logo" loading="lazy" width="30%" style={{paddingTop: '5%', paddingBottom: '3%'}}/>
                 </Box>
             </Box>

@@ -49,7 +49,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Avatar from "@mui/material/Avatar";
 
-function Post(p: { handle_scroll: () => void, post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
+function Post(p: { handle_scroll: () => void, post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[], category: string }, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
 
     const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
@@ -126,6 +126,16 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                         <Box alignItems="center" sx={{width: '100%'}}>
                             <Typography sx={{fontSize: 'h5.fontSize'}}>
                                 {p.post.title}
+                            </Typography>
+                        </Box>
+                        <Box display="flex" justifyContent="end" alignItems="center" sx={{width: '100%'}}>
+                            <Typography color="text.secondary"
+                                        sx={{fontSize: 'subtitle1.fontSize'}}>
+                                {p.post.category=="resource"?"资源天地":
+                                    p.post.category=="question"?"答疑解惑":
+                                        p.post.category=="activity"?"活动纪实":
+                                            p.post.category=="fun"?"畅所欲言":
+                                                "未知版面"}
                             </Typography>
                         </Box>
                         <Stack display="flex" justifyContent="end" direction="row" alignItems="center" spacing={1}>
@@ -360,24 +370,25 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
     }]);
     const [num_comments, set_num_comments] = useState(0);
 
-
-    useEffect(() => {
-        api_get_comments_of_comments(p.comment.comment_id, COMMENT_OF_COMMENT_PIECES, page).then((result) => {
-            if (result.status == API_STATUS.SUCCESS) {
-                set_comments(result.data);
-            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: result.reasons}})
-            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: null}})
-            }
-        })
-    }, [page, p.page, p.submit_success, p.comment])
+    //
+    // useEffect(() => {
+    //     api_get_comments_of_comments(p.comment.comment_id, COMMENT_OF_COMMENT_PIECES, page).then((result) => {
+    //         if (result.status == API_STATUS.SUCCESS) {
+    //             set_comments(result.data);
+    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
+    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+    //             navigate(`/error`, {replace: false, state: {error: null}})
+    //         }
+    //     })
+    // }, [page, p.page, p.submit_success, p.comment])
 
 
     useEffect(() => {
         api_get_comments_of_comments(p.comment.comment_id, MAX_PIECES, 1).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
                 set_num_comments(Math.ceil(result.data.length / COMMENT_OF_COMMENT_PIECES));
+                set_comments(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
@@ -614,7 +625,7 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                 </Stack>
                 {comments.length > 0 && (comments[0].comment_id.length > 0 ?
                     <Stack spacing={2} sx={{width: '100%'}}>
-                        {comments.map((comment, idx) => {
+                        {comments.slice((page-1)*COMMENT_OF_COMMENT_PIECES, page*COMMENT_OF_COMMENT_PIECES).map((comment, idx) => {
                             return (
                                 <Stack spacing={0} display="flex" direction="row">
                                     <ReplyIcon color={"primary"} sx={{padding: "10px", fontSize: 40}}/>
@@ -1180,7 +1191,8 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
         comment_ids: [""],
         watch_ids: [""],
         like_ids: [""],
-        favorite_ids: [""]
+        favorite_ids: [""],
+        category: "",
     });
     const [comments, set_comments] = useState([{
         comment_id: "",
@@ -1211,23 +1223,24 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
         })
     }, [action])
 
-    useEffect(() => {
-        api_get_comments(p.post_id, COMMENT_PIECES, page).then((result) => {
-            if (result.status == API_STATUS.SUCCESS) {
-                set_comments(result.data);
-            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: result.reasons}})
-            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: null}})
-            }
-        })
-    }, [page, p.submit_success, action])
+    // useEffect(() => {
+    //     api_get_comments(p.post_id, COMMENT_PIECES, page).then((result) => {
+    //         if (result.status == API_STATUS.SUCCESS) {
+    //             set_comments(result.data);
+    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
+    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+    //             navigate(`/error`, {replace: false, state: {error: null}})
+    //         }
+    //     })
+    // }, [page, p.submit_success, action])
 
 
     useEffect(() => {
         api_get_comments(p.post_id, MAX_PIECES, 1).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
                 set_num_comments(Math.ceil(result.data.length / COMMENT_PIECES));
+                set_comments(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
@@ -1252,7 +1265,7 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
                         </Box>)
                     }
                     {comments.length > 0 ? comments[0].comment_id.length > 0 ?
-                            comments.map((comment, idx) => {
+                            comments.slice((page-1)*COMMENT_PIECES, page*COMMENT_PIECES).map((comment, idx) => {
                                 return <Comment handle_scroll={p.handle_scroll} cookies={p.cookies}
                                                 setCookies={p.setCookies} depth=""
                                                 idx={idx + (page - 1) * COMMENT_PIECES + 1} comment={comment}
@@ -1267,7 +1280,7 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
                             </Box>
                         :
                         <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                            <Typography color='grey' sx={{fontSize: 'subtitle1.fontSize'}}>
+                            <Typography color='text.secondary' sx={{fontSize: 'subtitle1.fontSize'}}>
                                 暂无评论
                             </Typography>
                         </Box>
@@ -1313,7 +1326,7 @@ function PostContent(p: { post_id: string | undefined, cookies: { token?: any },
         }}>
             <Box sx={{
                 width: '100%',
-                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.png' + ')'),
+                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.webp' + ')'),
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px'

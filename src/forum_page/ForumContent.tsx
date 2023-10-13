@@ -9,12 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
 import {Link, useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
-import {CardActionArea} from '@mui/material';
 import Grid from "@mui/material/Grid";
-import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import TextField from '@mui/material/TextField';
 import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
 import FilePresentOutlinedIcon from '@mui/icons-material/FilePresentOutlined';
@@ -25,171 +20,101 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
 import {
-    api_get_user_profile_with_student_id,
     api_get_posts,
     api_get_user_profile,
-    api_submit_an_action,
     api_submit_files,
     api_submit_new_post
 } from "../api/api";
-import Avatar from "@mui/material/Avatar";
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
+import Divider from "@mui/material/Divider";
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import Post from'./Post';
+
+function Search(p:{set_search: (value: (((prevState: string) => string) | string)) => void, category:string, set_category: (value: (((prevState: string) => string) | string)) => void}) {
 
 
-function Post(p: { post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, submit_success: boolean, page: number }) {
-    const navigate = useNavigate()
-
-    const [post_user_profile, set_post_user_profile] = useState({student_id:"", name:"", sls_verification:false});
-
-    useEffect(() => {
-        api_get_user_profile_with_student_id(p.post.user_id).then((result) => {
-            if (result.status == API_STATUS.SUCCESS) {
-                set_post_user_profile(result.data);
-            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: result.reasons}})
-            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: null}})
-            }
-        })
-    }, [p.page, p.post, p.submit_success])
-
-    const handleClickingPost = (post_id: string) => {
-        api_submit_an_action("watch", true, post_id)
-        navigate(`/post/` + post_id, {replace: false})
-    }
+    const handleSelect = (event: SelectChangeEvent) => {
+        p.set_category(event.target.value);
+    };
 
     return (
-        <Card elevation={4} sx={{width: '100%', borderRadius: '20px'}}>
-            <CardActionArea onClick={() => {
-                handleClickingPost(p.post.post_id)
-            }}>
-                <Grid container spacing={0}>
-                    <Grid xs={p.post.files.filter((val) => {
-                        return val.category == "image"
-                    }).length > 0 ? 9 : 12}>
-                        <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
-                            <Box alignItems="center" sx={{width: '100%'}}>
-                                <Typography sx={{
-                                    fontSize: 'h6.fontSize',
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: "2",
-                                    WebkitBoxOrient: "vertical"
-                                }}>
-                                    {p.post.title}
+        <Paper
+            elevation={2}
+            component="form"
+            sx={{ p: '2px 10px', display: 'flex', alignItems: 'center', width: "70%", borderRadius:"30px" }}
+        >
+            <Stack display="flex" direction="row" alignItems="center"
+                   divider={<Divider orientation="vertical" flexItem/>} spacing={1} sx={{width:'100%'}}>
+                <FormControl variant="standard" sx={{ m: 1, minWidth: '120px' }}>
+                    <Select
+                        value={p.category}
+                        onChange={handleSelect}
+                        displayEmpty
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        disableUnderline
+                    >
+                        <MenuItem value={"all"}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary"
+                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                    全部版面
                                 </Typography>
                             </Box>
-                            <Box alignItems="center" sx={{width: '100%'}}>
-                                <Typography color="text.secondary" sx={{
-                                    fontSize: 'subtitle2.fontSize',
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: "2",
-                                    WebkitBoxOrient: "vertical"
-                                }}>
-                                    {p.post.content}
+                        </MenuItem>
+                        <MenuItem value={"resource"}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary"
+                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                    资源天地
                                 </Typography>
                             </Box>
-                        </Box>
-                        <Grid container spacing={0}>
-                            <Grid xs={4}>
-                                <Stack display="flex" justifyContent="start" direction="row" spacing={1}
-                                       sx={{height: '30px', padding: '20px'}}>
-                                    <IconButton aria-label="favorite" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
-                                               spacing={1}>
-                                            <VisibilityOutlinedIcon/>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {p.post.stat.watch}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </IconButton>
-                                    <IconButton aria-label="thumb up" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
-                                               spacing={1}>
-                                            <ThumbUpOutlinedIcon/>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {p.post.stat.like}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </IconButton>
-                                    <IconButton aria-label="favorite" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
-                                               spacing={1}>
-                                            <FavoriteBorderOutlinedIcon/>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {p.post.stat.favorite}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </IconButton>
-                                    <IconButton aria-label="comment" size="small">
-                                        <Stack alignItems="center" display="flex" justifyContent="start" direction="row"
-                                               spacing={1}>
-                                            <CommentOutlinedIcon/>
-                                            <Box alignItems="center" sx={{width: '100%'}}>
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                    {p.post.stat.comment}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </IconButton>
-                                </Stack>
-                            </Grid>
-                            <Grid xs={8}>
-                                <Stack display="flex" justifyContent="end" direction="row" alignItems="center" spacing={1}
-                                       sx={{height: '30px', padding: '20px'}}>
-                                    <Box display="flex" justifyContent="center" alignItems="center">
-                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
-                                            {_getDate(p.post.time)}
-                                        </Typography>
-                                    </Box>
-                                    <Box display="flex" justifyContent="center" alignItems="center">
-                                        {post_user_profile.name.length > 0 ?
-                                            <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                {post_user_profile.name}
-                                            </Typography>
-                                            :
-                                            <CircularProgress size="10px" color="secondary"/>
-                                        }
-                                    </Box>
-                                    {post_user_profile.sls_verification &&
-                                    <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
-                                        山林寺认证
-                                    </Avatar>}
-                                </Stack>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    {p.post.files.filter((val) => {
-                            return val.category == "image"
-                        }).length > 0 &&
-                        <Grid xs={3}>
-                            <Box sx={{
-                                width: '100%',
-                                height: '100%',
-                                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + p.post.files.filter((val) => {
-                                    return val.category == "image"
-                                })[0].name + ')'),
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center center',
-                                backgroundRepeat: 'no-repeat',
-                                borderTopRightRadius: '20px',
-                                borderBottomRightRadius: '20px'
-                            }}/>
-                        </Grid>
-                    }
-                </Grid>
-            </CardActionArea>
-        </Card>
+                        </MenuItem>
+                        <MenuItem value={"question"}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary"
+                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                    答疑解惑
+                                </Typography>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value={"activity"}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary"
+                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                    活动纪实
+                                </Typography>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value={"fun"}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary"
+                                            sx={{fontSize: 'subtitle2.fontSize'}}>
+                                    畅所欲言
+                                </Typography>
+                            </Box>
+                        </MenuItem>
+                    </Select>
+                </FormControl>
+                <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="检索帖子"
+                    color="secondary"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        p.set_search(event.target.value);
+                    }}
+                />
+            </Stack>
+
+            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                <SearchIcon />
+            </IconButton>
+        </Paper>
     )
 }
+
 
 function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, submit_success: boolean, set_submit_success: (value: (((prevState: boolean) => boolean) | boolean)) => void }) {
     const navigate = useNavigate()
@@ -321,6 +246,11 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
         sync_with_files();
     }, [image_files_selected, other_files_selected, image_files_order, other_files_order])
 
+    const [category, set_category] = useState("resource");
+    const handleSelect = (event: SelectChangeEvent) => {
+        set_category(event.target.value);
+    };
+
 
     const [title, set_title] = useState("");
     const [title_error_text, set_title_error_text] = useState("");
@@ -361,7 +291,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                     return v + image_files_selected.length
                 })));
                 if (result.status == API_STATUS.SUCCESS) {
-                    const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
+                    const result = await api_submit_new_post(post_id, title, content, time_stamp, files, category);
                     if (result.status == API_STATUS.SUCCESS) {
                         p.set_submit_success(true);
                         set_submit_clicked(false);
@@ -384,7 +314,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                     navigate(`/error`, {replace: false, state: {error: null}})
                 }
             } else {
-                const result = await api_submit_new_post(post_id, title, content, time_stamp, files);
+                const result = await api_submit_new_post(post_id, title, content, time_stamp, files, category);
                 if (result.status == API_STATUS.SUCCESS) {
                     p.set_submit_success(true);
                     set_submit_clicked(false);
@@ -449,23 +379,68 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                     paddingLeft: '20px',
                                                     paddingRight: '20px'
                                                 }}>
-                                                    <Box alignItems="center" sx={{width: '100%'}}>
-                                                        <TextField
-                                                            id="outlined-multiline-flexible"
-                                                            label="标题"
-                                                            multiline
-                                                            maxRows={2}
-                                                            fullWidth
-                                                            size="small"
-                                                            color="primary"
-                                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                                set_title(event.target.value);
-                                                                check_post_title(event.target.value);
-                                                            }}
-                                                            error={title_error_text.length != 0}
-                                                            helperText={title_error_text}
-                                                        />
-                                                    </Box>
+                                                    <Stack display="flex" direction="row" alignItems="center"
+                                                           divider={<Divider orientation="vertical" flexItem/>} spacing={1} sx={{width:'100%'}}>
+                                                        <Box alignItems="center" sx={{width: '100%'}}>
+                                                            <TextField
+                                                                id="outlined-multiline-flexible"
+                                                                label="标题"
+                                                                multiline
+                                                                maxRows={2}
+                                                                fullWidth
+                                                                size="small"
+                                                                color="primary"
+                                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    set_title(event.target.value);
+                                                                    check_post_title(event.target.value);
+                                                                }}
+                                                                error={title_error_text.length != 0}
+                                                                helperText={title_error_text}
+                                                            />
+                                                        </Box>
+                                                        <FormControl variant="standard" sx={{ m: 1, minWidth: "90px" }}>
+                                                            <Select
+                                                                value={category}
+                                                                onChange={handleSelect}
+                                                                displayEmpty
+                                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                                disableUnderline
+                                                            >
+                                                                <MenuItem value={"resource"}>
+                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                        <Typography color="text.secondary"
+                                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            资源天地
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </MenuItem>
+                                                                <MenuItem value={"question"}>
+                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                        <Typography color="text.secondary"
+                                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            答疑解惑
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </MenuItem>
+                                                                <MenuItem value={"activity"}>
+                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                        <Typography color="text.secondary"
+                                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            活动纪实
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </MenuItem>
+                                                                <MenuItem value={"fun"}>
+                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                        <Typography color="text.secondary"
+                                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                            畅所欲言
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </MenuItem>
+                                                            </Select>
+                                                        </FormControl>
+                                                    </Stack>
                                                     <Box sx={{height: '10px', width: '100%'}}/>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <TextField
@@ -719,6 +694,9 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
 function Forum(p: { submit_success: boolean }) {
     const navigate = useNavigate()
 
+    const [search, set_search] = useState("");
+    const [category, set_category] = useState("all");
+
     const [page, setPage] = React.useState(1);
     const handlePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -735,13 +713,27 @@ function Forum(p: { submit_success: boolean }) {
         comment_ids: [""],
         watch_ids: [""],
         like_ids: [""],
-        favorite_ids: [""]
+        favorite_ids: [""],
+        category: "",
     }]);
     const [num_posts, set_num_posts] = useState(0);
 
+    // useEffect(() => {
+    //     api_get_posts(POST_PIECES, page, search).then((result) => {
+    //         if (result.status == API_STATUS.SUCCESS) {
+    //             set_posts(result.data);
+    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
+    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+    //             navigate(`/error`, {replace: false, state: {error: null}})
+    //         }
+    //     })
+    // }, [page, p.submit_success, search])
+
     useEffect(() => {
-        api_get_posts(POST_PIECES, page).then((result) => {
+        api_get_posts(MAX_PIECES, 1, search, category).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
+                set_num_posts(Math.ceil(result.data.length / POST_PIECES));
                 set_posts(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
@@ -749,19 +741,7 @@ function Forum(p: { submit_success: boolean }) {
                 navigate(`/error`, {replace: false, state: {error: null}})
             }
         })
-    }, [page, p.submit_success])
-
-    useEffect(() => {
-        api_get_posts(MAX_PIECES, 1).then((result) => {
-            if (result.status == API_STATUS.SUCCESS) {
-                set_num_posts(Math.ceil(result.data.length / POST_PIECES));
-            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: result.reasons}})
-            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: null}})
-            }
-        })
-    }, [page, p.submit_success])
+    }, [page, p.submit_success, search, category])
 
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}} color={"p"}>
@@ -776,11 +756,15 @@ function Forum(p: { submit_success: boolean }) {
                     SLS Forum
                 </Typography>
             </Box>
-            <Box sx={{height: '20px', width: '100%'}}/>
+            <Box sx={{height: '40px', width: '100%'}}/>
+            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                <Search set_search={set_search} category={category} set_category={set_category}/>
+            </Box>
+            <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Stack spacing={2} sx={{width: '80%'}}>
                     {posts.length > 0 ? posts[0].post_id.length > 0 ?
-                            posts.map((post) => {
+                            posts.slice((page-1)*POST_PIECES, page*POST_PIECES).map((post) => {
                                 return <Post post={post} submit_success={p.submit_success} page={page}/>
                             })
                             :
@@ -789,7 +773,7 @@ function Forum(p: { submit_success: boolean }) {
                             </Box>
                         :
                         <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                            <Typography color='grey' sx={{fontSize: 'subtitle1.fontSize'}}>
+                            <Typography color='text.secondary' sx={{fontSize: 'subtitle1.fontSize'}}>
                                 暂无帖子
                             </Typography>
                         </Box>
@@ -816,7 +800,7 @@ function ForumContent(p: { cookies: { token?: any }, setCookies: (name: "token",
         }}>
             <Box sx={{
                 width: '100%',
-                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.png' + ')'),
+                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.webp' + ')'),
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px'

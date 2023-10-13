@@ -44,7 +44,7 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                     <Stack display="flex" justifyContent="start" alignItems="center" direction="row"
                            divider={<Divider orientation="vertical" flexItem/>} spacing={2} sx={{height: '40px'}}>
                         <a href="https://www.zju.edu.cn/">
-                            <img src={"http://" + SERVER_URL + ":" + SERVER_PORT + "/images/others/home_zju_1.png"}
+                            <img src={"http://" + SERVER_URL + ":" + SERVER_PORT + "/images/others/home_zju_1.webp"}
                                  alt="浙江大学" loading="lazy" height="50px"/>
                         </a>
                         {/*<Box display="flex" justifyContent="center" alignItems="center" sx={{paddingTop: '5px', height: '30px'}}>*/}
