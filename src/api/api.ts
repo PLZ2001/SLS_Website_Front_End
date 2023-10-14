@@ -1,4 +1,4 @@
-import {API_STATUS, SERVER_URL, SERVER_PORT} from "../config";
+import {API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
 
 const api_submit_files = async (post_id: string, files: { name: string, url: string, file: File }[], files_order: number[]) => {
     try {
@@ -82,7 +82,13 @@ const api_submit_new_post = async (post_id: string, title: string, content: stri
                     'Access-Control-Allow-Origin': '*',
                 },
                 credentials: 'include',
-                body: JSON.stringify({"title": title, "content": content, "time": String(time), "files": files, "category": category})
+                body: JSON.stringify({
+                    "title": title,
+                    "content": content,
+                    "time": String(time),
+                    "files": files,
+                    "category": category
+                })
             })
         const result = await response.json()
         if (result.status == "SUCCESS") {
@@ -109,7 +115,12 @@ const api_get_posts = async (p: number, s: number, search: string, category: str
                     'Access-Control-Allow-Origin': '*',
                 },
                 credentials: 'include',
-                body: JSON.stringify({"pieces": String(p), "sequence": String(s), "search": search, "category": category})
+                body: JSON.stringify({
+                    "pieces": String(p),
+                    "sequence": String(s),
+                    "search": search,
+                    "category": category
+                })
             })
         const result = await response.json()
         if (result.status == "SUCCESS") {

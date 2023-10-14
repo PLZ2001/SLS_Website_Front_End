@@ -19,42 +19,40 @@ import {CookieSetOptions} from "universal-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
 import Badge from "@mui/material/Badge";
-import {
-    api_get_posts,
-    api_get_user_profile,
-    api_submit_files,
-    api_submit_new_post
-} from "../api/api";
+import {api_get_posts, api_get_user_profile, api_submit_files, api_submit_new_post} from "../api/api";
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import Divider from "@mui/material/Divider";
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
-import Post from'./Post';
+import Post from './Post';
 
-function Search(p:{set_search: (value: (((prevState: string) => string) | string)) => void, category:string, set_category: (value: (((prevState: string) => string) | string)) => void}) {
+function Search(p: { set_search: (value: (((prevState: string) => string) | string)) => void, category: string, set_category: (value: (((prevState: string) => string) | string)) => void, setPage: (value: (((prevState: number) => number) | number)) => void }) {
 
 
     const handleSelect = (event: SelectChangeEvent) => {
         p.set_category(event.target.value);
+        p.setPage(1);
     };
 
     return (
         <Paper
             elevation={2}
             component="form"
-            sx={{ p: '2px 10px', display: 'flex', alignItems: 'center', width: "70%", borderRadius:"30px" }}
+            sx={{p: '2px 10px', display: 'flex', alignItems: 'center', width: "70%", borderRadius: "30px"}}
         >
             <Stack display="flex" direction="row" alignItems="center"
-                   divider={<Divider orientation="vertical" flexItem/>} spacing={1} sx={{width:'100%'}}>
-                <FormControl variant="standard" sx={{ m: 1, minWidth: '120px' }}>
+                   divider={<Divider orientation="vertical" flexItem/>} spacing={1} sx={{width: '100%'}}>
+                <FormControl variant="standard" sx={{m: 1, minWidth: '120px'}}>
                     <Select
                         value={p.category}
                         onChange={handleSelect}
                         displayEmpty
-                        inputProps={{ 'aria-label': 'Without label' }}
+                        inputProps={{'aria-label': 'Without label'}}
                         disableUnderline
+                        onClose={() => {
+                        }}
                     >
                         <MenuItem value={"all"}>
                             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
@@ -99,7 +97,7 @@ function Search(p:{set_search: (value: (((prevState: string) => string) | string
                     </Select>
                 </FormControl>
                 <InputBase
-                    sx={{ ml: 1, flex: 1 }}
+                    sx={{ml: 1, flex: 1}}
                     placeholder="检索帖子"
                     color="secondary"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,8 +106,8 @@ function Search(p:{set_search: (value: (((prevState: string) => string) | string
                 />
             </Stack>
 
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                <SearchIcon />
+            <IconButton type="button" sx={{p: '10px'}} aria-label="search">
+                <SearchIcon/>
             </IconButton>
         </Paper>
     )
@@ -133,7 +131,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
         set_time_stamp(result.time_stamp);
     }, 1000)
 
-    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
 
     useEffect(() => {
@@ -149,7 +147,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 }
             })
         } else {
-            set_user_profile({student_id:"", name:"", sls_verification:false});
+            set_user_profile({student_id: "", name: "", sls_verification: false});
         }
     }, [p.cookies.token])
 
@@ -287,9 +285,16 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
             set_submit_clicked(true);
             const post_id = _hash(title + time_stamp.toString());
             if (files.length > 0) {
-                const result = await api_submit_files(post_id, image_files_selected.concat(other_files_selected), image_files_order.concat(other_files_order.map((v) => {
-                    return v + image_files_selected.length
-                })));
+                let result;
+                if (image_files_selected[0].name.length > 0 && other_files_selected[0].name.length == 0) {
+                    result = await api_submit_files(post_id, image_files_selected, image_files_order);
+                } else if (image_files_selected[0].name.length == 0 && other_files_selected[0].name.length > 0) {
+                    result = await api_submit_files(post_id, other_files_selected, other_files_order);
+                } else {
+                    result = await api_submit_files(post_id, image_files_selected.concat(other_files_selected), image_files_order.concat(other_files_order.map((v) => {
+                        return v + image_files_selected.length
+                    })));
+                }
                 if (result.status == API_STATUS.SUCCESS) {
                     const result = await api_submit_new_post(post_id, title, content, time_stamp, files, category);
                     if (result.status == API_STATUS.SUCCESS) {
@@ -341,13 +346,14 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography
+                        textAlign="center"
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                         发送成功
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
-                    <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                    <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                         You've Submitted Your Post Successfully.
                     </Typography>
                 </Box>
@@ -380,7 +386,8 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                     paddingRight: '20px'
                                                 }}>
                                                     <Stack display="flex" direction="row" alignItems="center"
-                                                           divider={<Divider orientation="vertical" flexItem/>} spacing={1} sx={{width:'100%'}}>
+                                                           divider={<Divider orientation="vertical" flexItem/>}
+                                                           spacing={1} sx={{width: '100%'}}>
                                                         <Box alignItems="center" sx={{width: '100%'}}>
                                                             <TextField
                                                                 id="outlined-multiline-flexible"
@@ -398,16 +405,19 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                 helperText={title_error_text}
                                                             />
                                                         </Box>
-                                                        <FormControl variant="standard" sx={{ m: 1, minWidth: "90px" }}>
+                                                        <FormControl variant="standard" sx={{m: 1, minWidth: "90px"}}>
                                                             <Select
                                                                 value={category}
                                                                 onChange={handleSelect}
                                                                 displayEmpty
-                                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                                inputProps={{'aria-label': 'Without label'}}
                                                                 disableUnderline
+                                                                onClose={() => {
+                                                                }}
                                                             >
                                                                 <MenuItem value={"resource"}>
-                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                    <Box display="flex" justifyContent="center"
+                                                                         alignItems="center" sx={{width: '100%'}}>
                                                                         <Typography color="text.secondary"
                                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                             资源天地
@@ -415,7 +425,8 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                     </Box>
                                                                 </MenuItem>
                                                                 <MenuItem value={"question"}>
-                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                    <Box display="flex" justifyContent="center"
+                                                                         alignItems="center" sx={{width: '100%'}}>
                                                                         <Typography color="text.secondary"
                                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                             答疑解惑
@@ -423,7 +434,8 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                     </Box>
                                                                 </MenuItem>
                                                                 <MenuItem value={"activity"}>
-                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                    <Box display="flex" justifyContent="center"
+                                                                         alignItems="center" sx={{width: '100%'}}>
                                                                         <Typography color="text.secondary"
                                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                             活动纪实
@@ -431,7 +443,8 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                     </Box>
                                                                 </MenuItem>
                                                                 <MenuItem value={"fun"}>
-                                                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                                                    <Box display="flex" justifyContent="center"
+                                                                         alignItems="center" sx={{width: '100%'}}>
                                                                         <Typography color="text.secondary"
                                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                             畅所欲言
@@ -544,8 +557,10 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                         {user_profile.name}
                                                                     </Typography>
                                                                     :
-                                                                    <Link to={'/login'} style={{textDecoration: "none"}}>
-                                                                        <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                    <Link to={'/login'}
+                                                                          style={{textDecoration: "none"}}>
+                                                                        <Typography
+                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                             发帖需先登录
                                                                         </Typography>
                                                                     </Link>
@@ -747,24 +762,24 @@ function Forum(p: { submit_success: boolean }) {
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}} color={"p"}>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
+                <Typography textAlign="center" sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                     山林寺论坛
                 </Typography>
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                     SLS Forum
                 </Typography>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Search set_search={set_search} category={category} set_category={set_category}/>
+                <Search set_search={set_search} category={category} set_category={set_category} setPage={setPage}/>
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Stack spacing={2} sx={{width: '80%'}}>
                     {posts.length > 0 ? posts[0].post_id.length > 0 ?
-                            posts.slice((page-1)*POST_PIECES, page*POST_PIECES).map((post) => {
+                            posts.slice((page - 1) * POST_PIECES, page * POST_PIECES).map((post) => {
                                 return <Post post={post} submit_success={p.submit_success} page={page}/>
                             })
                             :

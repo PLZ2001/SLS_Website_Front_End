@@ -88,13 +88,14 @@ function SignUp() {
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography
+                        textAlign="center"
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                         注册成功，欢迎访问山林寺课题组
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
-                    <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                    <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                         You've Signed Up Successfully. Welcome to Visit Our Research Group!
                     </Typography>
                 </Box>
@@ -124,13 +125,14 @@ function SignUp() {
                     <Box display="flex" justifyContent="center" alignItems="center"
                          sx={{width: '100%'}}>
                         <Typography
+                            textAlign="center"
                             sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                             注册你第一个山林寺账号
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="center" alignItems="center"
                          sx={{width: '100%'}}>
-                        <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                        <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                             Sign up Your First SLS Account
                         </Typography>
                     </Box>

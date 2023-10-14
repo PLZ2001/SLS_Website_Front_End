@@ -73,13 +73,14 @@ function Login(p: { setCookies: (name: "token", value: any, options?: (CookieSet
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography
+                        textAlign="center"
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                         登录成功
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
-                    <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                    <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                         You've Logined Successfully
                     </Typography>
                 </Box>
@@ -109,13 +110,14 @@ function Login(p: { setCookies: (name: "token", value: any, options?: (CookieSet
                     <Box display="flex" justifyContent="center" alignItems="center"
                          sx={{width: '100%'}}>
                         <Typography
+                            textAlign="center"
                             sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                             登录你的山林寺账号
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="center" alignItems="center"
                          sx={{width: '100%'}}>
-                        <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                        <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                             Login with Your SLS Account
                         </Typography>
                     </Box>

@@ -4,7 +4,7 @@ import {_getDate, API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
 import {CardActionArea} from '@mui/material';
 import Grid from "@mui/material/Grid";
@@ -13,16 +13,13 @@ import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlin
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-    api_get_user_profile_with_student_id,
-    api_submit_an_action,
-} from "../api/api";
+import {api_get_user_profile_with_student_id, api_submit_an_action,} from "../api/api";
 import Avatar from "@mui/material/Avatar";
 
 function Post(p: { post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[], category: string }, submit_success?: boolean, page?: number }) {
     const navigate = useNavigate()
 
-    const [post_user_profile, set_post_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [post_user_profile, set_post_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
     useEffect(() => {
         api_get_user_profile_with_student_id(p.post.user_id).then((result) => {
@@ -51,24 +48,25 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
                         return val.category == "image"
                     }).length > 0 ? 9 : 12}>
                         <Box sx={{paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px'}}>
-                            <Stack display="flex" direction="row" alignItems="center" spacing={1} sx={{width:'100%'}}>
-                                <Box alignItems="center" sx={{width: '100%'}}>
+                            <Stack display="flex" direction="row" alignItems="center" spacing={1} sx={{width: '100%'}}>
+                                <Box display="flex" justifyContent="start" alignItems="center" sx={{width: '90%'}}>
                                     <Typography sx={{
                                         fontSize: 'h6.fontSize',
                                         display: "-webkit-box",
-                                        WebkitLineClamp: "2",
+                                        WebkitLineClamp: "1",
                                         WebkitBoxOrient: "vertical"
                                     }}>
                                         {p.post.title}
                                     </Typography>
                                 </Box>
-                                <Box display="flex" justifyContent="end" alignItems="center" sx={{width: '90px'}}>
+                                <Box display="flex" justifyContent="end" alignItems="center" sx={{width: '10%'}}>
                                     <Typography color="text.secondary"
-                                                sx={{fontSize: 'subtitle2.fontSize'}}>
-                                        {p.post.category=="resource"?"资源天地":
-                                            p.post.category=="question"?"答疑解惑":
-                                                p.post.category=="activity"?"活动纪实":
-                                                    p.post.category=="fun"?"畅所欲言":
+                                                sx={{fontSize: 'subtitle2.fontSize'}}
+                                                textAlign="end">
+                                        {p.post.category == "resource" ? "资源天地" :
+                                            p.post.category == "question" ? "答疑解惑" :
+                                                p.post.category == "activity" ? "活动纪实" :
+                                                    p.post.category == "fun" ? "畅所欲言" :
                                                         "未知版面"}
                                     </Typography>
                                 </Box>
@@ -139,7 +137,8 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
                                 </Stack>
                             </Grid>
                             <Grid xs={8}>
-                                <Stack display="flex" justifyContent="end" direction="row" alignItems="center" spacing={1}
+                                <Stack display="flex" justifyContent="end" direction="row" alignItems="center"
+                                       spacing={1}
                                        sx={{height: '30px', padding: '20px'}}>
                                     <Box display="flex" justifyContent="center" alignItems="center">
                                         <Typography color="text.secondary" sx={{fontSize: 'subtitle2.fontSize'}}>
@@ -156,9 +155,14 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
                                         }
                                     </Box>
                                     {post_user_profile.sls_verification &&
-                                    <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
-                                        山林寺认证
-                                    </Avatar>}
+                                        <Avatar sx={{
+                                            bgcolor: "#1463d8",
+                                            height: "24px",
+                                            width: "96px",
+                                            fontSize: "subtitle2.fontSize"
+                                        }} variant="rounded">
+                                            山林寺认证
+                                        </Avatar>}
                                 </Stack>
                             </Grid>
                         </Grid>

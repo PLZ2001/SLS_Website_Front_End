@@ -16,7 +16,7 @@ import Avatar from '@mui/material/Avatar';
 function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     const navigate = useNavigate()
 
-    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
     useEffect(() => {
         if (p.cookies.token) {
@@ -31,7 +31,7 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                 }
             })
         } else {
-            set_user_profile({student_id:"", name:"", sls_verification:false});
+            set_user_profile({student_id: "", name: "", sls_verification: false});
         }
     }, [p.cookies.token])
 
@@ -58,11 +58,16 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                     {p.cookies.token ? user_profile.name.length > 0 ?
                             <Stack display="flex" justifyContent="start" direction="row" alignItems="center" spacing={2}>
                                 {user_profile.sls_verification &&
-                                <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
-                                    山林寺认证
-                                </Avatar>}
+                                    <Avatar sx={{
+                                        bgcolor: "#1463d8",
+                                        height: "24px",
+                                        width: "96px",
+                                        fontSize: "subtitle2.fontSize"
+                                    }} variant="rounded">
+                                        山林寺认证
+                                    </Avatar>}
                                 <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{height: '30px'}}>
-                                    <Link to={`/user/`+user_profile.student_id}>
+                                    <Link to={`/user/` + user_profile.student_id}>
                                         <Button sx={{
                                             fontSize: 'subtitle1.fontSize',
                                             letterSpacing: 3,

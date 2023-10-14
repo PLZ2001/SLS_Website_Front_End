@@ -18,7 +18,6 @@ import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
 import {Link, useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
-import {CardActionArea} from '@mui/material';
 import Grid from "@mui/material/Grid";
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
@@ -37,9 +36,9 @@ import {
     api_get_comment_with_id,
     api_get_comments,
     api_get_comments_of_comments,
-    api_get_user_profile_with_student_id,
     api_get_post_with_id,
     api_get_user_profile,
+    api_get_user_profile_with_student_id,
     api_submit_an_action,
     api_submit_files,
     api_submit_new_comment
@@ -52,7 +51,7 @@ import Avatar from "@mui/material/Avatar";
 function Post(p: { handle_scroll: () => void, post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[], category: string }, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
 
-    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
     useEffect(() => {
         if (p.cookies.token) {
@@ -67,11 +66,11 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                 }
             })
         } else {
-            set_user_profile({student_id:"", name:"", sls_verification:false});
+            set_user_profile({student_id: "", name: "", sls_verification: false});
         }
     }, [p.cookies.token])
 
-    const [post_user_profile, set_post_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [post_user_profile, set_post_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
     useEffect(() => {
         api_get_user_profile_with_student_id(p.post.user_id).then((result) => {
@@ -131,26 +130,31 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                         <Box display="flex" justifyContent="end" alignItems="center" sx={{width: '100%'}}>
                             <Typography color="text.secondary"
                                         sx={{fontSize: 'subtitle1.fontSize'}}>
-                                {p.post.category=="resource"?"资源天地":
-                                    p.post.category=="question"?"答疑解惑":
-                                        p.post.category=="activity"?"活动纪实":
-                                            p.post.category=="fun"?"畅所欲言":
+                                {p.post.category == "resource" ? "资源天地" :
+                                    p.post.category == "question" ? "答疑解惑" :
+                                        p.post.category == "activity" ? "活动纪实" :
+                                            p.post.category == "fun" ? "畅所欲言" :
                                                 "未知版面"}
                             </Typography>
                         </Box>
                         <Stack display="flex" justifyContent="end" direction="row" alignItems="center" spacing={1}>
                             {post_user_profile.sls_verification &&
-                            <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
-                                山林寺认证
-                            </Avatar>}
+                                <Avatar sx={{
+                                    bgcolor: "#1463d8",
+                                    height: "24px",
+                                    width: "96px",
+                                    fontSize: "subtitle2.fontSize"
+                                }} variant="rounded">
+                                    山林寺认证
+                                </Avatar>}
                             <Box alignItems="center">
                                 {post_user_profile.name.length > 0 ?
-                                    <Link to={`/user/`+post_user_profile.student_id} style={{textDecoration:"none"}}>
+                                    <Link to={`/user/` + post_user_profile.student_id} style={{textDecoration: "none"}}>
                                         <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
                                             {post_user_profile.name}
                                         </Typography>
                                     </Link>
-                                :
+                                    :
                                     <CircularProgress size="10px" color="secondary"/>
                                 }
                             </Box>
@@ -321,7 +325,7 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
 function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, depth: string, idx: number, comment: { comment_id: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, submit_success: boolean, page: number, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
 
-    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
     useEffect(() => {
         if (p.cookies.token) {
@@ -336,11 +340,15 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                 }
             })
         } else {
-            set_user_profile({student_id:"", name:"", sls_verification:false});
+            set_user_profile({student_id: "", name: "", sls_verification: false});
         }
     }, [p.cookies.token])
 
-    const [comment_user_profile, set_comment_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [comment_user_profile, set_comment_user_profile] = useState({
+        student_id: "",
+        name: "",
+        sls_verification: false
+    });
 
     useEffect(() => {
         api_get_user_profile_with_student_id(p.comment.user_id).then((result) => {
@@ -442,14 +450,21 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                         <Box sx={{padding: '20px'}}>
                             <Grid container spacing={0}>
                                 <Grid xs={9}>
-                                    <Stack display="flex" justifyContent="start" direction="row" alignItems="center" spacing={1}>
+                                    <Stack display="flex" justifyContent="start" direction="row" alignItems="center"
+                                           spacing={1}>
                                         {comment_user_profile.sls_verification &&
-                                            <Avatar sx={{bgcolor:"#1463d8", height:"24px", width:"96px", fontSize:"subtitle2.fontSize"}} variant="rounded">
+                                            <Avatar sx={{
+                                                bgcolor: "#1463d8",
+                                                height: "24px",
+                                                width: "96px",
+                                                fontSize: "subtitle2.fontSize"
+                                            }} variant="rounded">
                                                 山林寺认证
                                             </Avatar>}
                                         <Box alignItems="center">
                                             {comment_user_profile.name.length > 0 ?
-                                                <Link to={`/user/`+comment_user_profile.student_id} style={{textDecoration:"none"}}>
+                                                <Link to={`/user/` + comment_user_profile.student_id}
+                                                      style={{textDecoration: "none"}}>
                                                     <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
                                                         {comment_user_profile.name}
                                                     </Typography>
@@ -625,7 +640,7 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                 </Stack>
                 {comments.length > 0 && (comments[0].comment_id.length > 0 ?
                     <Stack spacing={2} sx={{width: '100%'}}>
-                        {comments.slice((page-1)*COMMENT_OF_COMMENT_PIECES, page*COMMENT_OF_COMMENT_PIECES).map((comment, idx) => {
+                        {comments.slice((page - 1) * COMMENT_OF_COMMENT_PIECES, page * COMMENT_OF_COMMENT_PIECES).map((comment, idx) => {
                             return (
                                 <Stack spacing={0} display="flex" direction="row">
                                     <ReplyIcon color={"primary"} sx={{padding: "10px", fontSize: 40}}/>
@@ -680,7 +695,11 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
         }
     }, [p.is_commenting_on_post, p.post_or_comment_id_commented_on])
 
-    const [comment_user_profile, set_comment_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [comment_user_profile, set_comment_user_profile] = useState({
+        student_id: "",
+        name: "",
+        sls_verification: false
+    });
 
     useEffect(() => {
         if (comment.user_id.length > 0) {
@@ -710,7 +729,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
         set_time_stamp(result.time_stamp);
     }, 1000)
 
-    const [user_profile, set_user_profile] = useState({student_id:"", name:"", sls_verification:false});
+    const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
     useEffect(() => {
         if (p.cookies.token) {
@@ -725,7 +744,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                 }
             })
         } else {
-            set_user_profile({student_id:"", name:"", sls_verification:false});
+            set_user_profile({student_id: "", name: "", sls_verification: false});
         }
     }, [p.cookies.token])
 
@@ -901,13 +920,14 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography
+                        textAlign="center"
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                         发送成功
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
-                    <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                    <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                         You've Submitted Your Comment Successfully.
                     </Typography>
                 </Box>
@@ -1052,8 +1072,10 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                                         {user_profile.name}
                                                                     </Typography>
                                                                     :
-                                                                    <Link to={'/login'} style={{textDecoration: "none"}}>
-                                                                        <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                    <Link to={'/login'}
+                                                                          style={{textDecoration: "none"}}>
+                                                                        <Typography
+                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
                                                                             评论需先登录
                                                                         </Typography>
                                                                     </Link>
@@ -1265,7 +1287,7 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
                         </Box>)
                     }
                     {comments.length > 0 ? comments[0].comment_id.length > 0 ?
-                            comments.slice((page-1)*COMMENT_PIECES, page*COMMENT_PIECES).map((comment, idx) => {
+                            comments.slice((page - 1) * COMMENT_PIECES, page * COMMENT_PIECES).map((comment, idx) => {
                                 return <Comment handle_scroll={p.handle_scroll} cookies={p.cookies}
                                                 setCookies={p.setCookies} depth=""
                                                 idx={idx + (page - 1) * COMMENT_PIECES + 1} comment={comment}

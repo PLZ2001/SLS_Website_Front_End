@@ -24,10 +24,11 @@ function SlsMembersGrid(p: { sls_members_list: { image: string, name: string, de
                             width={p.photo_width}
                             loading="lazy"
                         />
-                        <Typography sx={{fontWeight: 'bold', fontSize: String(p.name_font_size), letterSpacing: 6}}>
+                        <Typography textAlign="center"
+                                    sx={{fontWeight: 'bold', fontSize: String(p.name_font_size), letterSpacing: 6}}>
                             {item.name}
                         </Typography>
-                        <Typography sx={{fontSize: String(p.description_font_size)}}>
+                        <Typography textAlign="center" sx={{fontSize: String(p.description_font_size)}}>
                             {item.description}
                         </Typography>
                     </Stack>
@@ -79,12 +80,12 @@ function SlsMembers() {
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
+                <Typography textAlign="center" sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                     山林寺课题组领衔名师
                 </Typography>
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                     Teachers of the Research Group
                 </Typography>
             </Box>
@@ -106,12 +107,12 @@ function SlsMembers() {
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
+                <Typography textAlign="center" sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                     山林寺课题组在读研究生
                 </Typography>
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                     Graduate Students of the Research Group
                 </Typography>
             </Box>
@@ -133,12 +134,12 @@ function SlsMembers() {
             </Box>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
+                <Typography textAlign="center" sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                     山林寺课题组毕业生
                 </Typography>
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                     Graduates of the Research Group
                 </Typography>
             </Box>
@@ -184,12 +185,12 @@ function PhotoWall() {
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
             <Box sx={{height: '40px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
+                <Typography textAlign="center" sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
                     照片墙
                 </Typography>
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
+                <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
                     Photo Wall
                 </Typography>
             </Box>
