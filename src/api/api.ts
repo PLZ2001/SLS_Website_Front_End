@@ -441,6 +441,26 @@ const api_get_favorite_posts_with_student_id = async (p: number, s: number, stud
     }
 }
 
+const api_get_sls_member_profile = async () => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_sls_member_profile', {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
 export {
     api_submit_files,
     api_get_user_profile_with_student_id,
@@ -458,5 +478,6 @@ export {
     api_submit_signup_info,
     api_submit_an_action,
     api_get_posts_with_student_id,
-    api_get_favorite_posts_with_student_id
+    api_get_favorite_posts_with_student_id,
+    api_get_sls_member_profile
 }

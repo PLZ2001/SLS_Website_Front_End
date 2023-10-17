@@ -182,39 +182,37 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                         return val.category == "image"
                                     }).length > 0 &&
                                     <div>
-                                        <Box display="flex" justifyContent="center" alignItems="center"
+                                        <Box display="flex" justifyContent="start" alignItems="center"
                                              sx={{width: '100%'}}>
-                                            <Box display="flex" justifyContent="start" alignItems="center"
-                                                 sx={{width: '95%'}}>
-                                                <Grid container spacing={0}>
-                                                    {p.post.files.filter((val) => {
-                                                        return val.category == "image"
-                                                    }).map((image_file) => {
-                                                        return (
-                                                            <Grid xs={p.post.files.filter((val) => {
-                                                                return val.category == "image"
-                                                            }).length > 1 ? 4 : 8} display="flex"
-                                                                  justifyContent="center"
-                                                                  alignItems="center"
-                                                                  sx={p.post.files.filter((val) => {
-                                                                      return val.category == "image"
-                                                                  }).length > 1 ? {height: '150px'} : {height: '300px'}}>
-                                                                <Box onClick={() => {
-                                                                    set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name);
-                                                                    set_image_clicked(true);
-                                                                }} sx={{
-                                                                    width: '90%',
-                                                                    height: '90%',
-                                                                    backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name + ')'),
-                                                                    backgroundSize: 'contain',
-                                                                    backgroundPosition: 'left top',
-                                                                    backgroundRepeat: 'no-repeat',
-                                                                }}/>
-                                                            </Grid>
-                                                        )
-                                                    })}
-                                                </Grid>
-                                            </Box>
+                                            <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                {p.post.files.filter((val) => {
+                                                    return val.category == "image"
+                                                }).map((image_file) => {
+                                                    return (
+                                                        <Grid xs={p.post.files.filter((val) => {
+                                                            return val.category == "image"
+                                                        }).length > 1 ? 4 : 8} display="flex"
+                                                              justifyContent="start"
+                                                              alignItems="center"
+                                                              sx={p.post.files.filter((val) => {
+                                                                  return val.category == "image"
+                                                              }).length > 1 ? {height: '150px'} : {height: '300px'}}>
+                                                            <Box border="1px solid grey"
+                                                                onClick={() => {
+                                                                set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name);
+                                                                set_image_clicked(true);
+                                                            }} sx={{
+                                                                width: '90%',
+                                                                height: '90%',
+                                                                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name + ')'),
+                                                                backgroundSize: 'contain',
+                                                                backgroundPosition: 'center center',
+                                                                backgroundRepeat: 'no-repeat',
+                                                            }}/>
+                                                        </Grid>
+                                                    )
+                                                })}
+                                            </Grid>
                                         </Box>
                                         <Box sx={{height: '10px', width: '100%'}}/>
                                     </div>
@@ -223,35 +221,32 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                         return val.category == "other"
                                     }).length > 0 &&
                                     <div>
-                                        <Box display="flex" justifyContent="center" alignItems="center"
-                                             sx={{width: '100%'}}>
-                                            <Box display="flex" justifyContent="start" alignItems="center"
-                                                 sx={{width: '90%'}}>
-                                                <Stack display="flex" justifyContent="start" spacing={2}>
-                                                    {p.post.files.filter((val) => {
-                                                        return val.category == "other"
-                                                    }).map((other_file) => {
-                                                        return (
-                                                            <Box display="flex" justifyContent="start"
-                                                                 alignItems="center">
-                                                                <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name}>
-                                                                    <Typography
-                                                                        sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                        {other_file.name}
-                                                                    </Typography>
-                                                                </a>
-                                                            </Box>
-                                                        )
-                                                    })}
-                                                </Stack>
-                                            </Box>
+                                        <Box display="flex" justifyContent="start" alignItems="center"
+                                             sx={{width: '100%', paddingLeft:"20px", paddingRight:"20px"}}>
+                                            <Stack display="flex" justifyContent="start" spacing={2}>
+                                                {p.post.files.filter((val) => {
+                                                    return val.category == "other"
+                                                }).map((other_file) => {
+                                                    return (
+                                                        <Box display="flex" justifyContent="start"
+                                                             alignItems="center">
+                                                            <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name}>
+                                                                <Typography
+                                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                                    {other_file.name}
+                                                                </Typography>
+                                                            </a>
+                                                        </Box>
+                                                    )
+                                                })}
+                                            </Stack>
                                         </Box>
                                         <Box sx={{height: '10px', width: '100%'}}/>
                                     </div>
                                 }
                                 <Grid container spacing={0}>
                                     <Grid xs={12}>
-                                        <Stack display="flex" justifyContent="start" direction="row" spacing={1}
+                                        <Stack display="flex" justifyContent="end" direction="row" spacing={1}
                                                sx={{height: '30px', padding: '20px'}}>
                                             <IconButton aria-label="favorite" size="small">
                                                 <Stack alignItems="center" display="flex" justifyContent="start"
@@ -511,39 +506,37 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                             return val.category == "image"
                                         }).length > 0 &&
                                         <div>
-                                            <Box display="flex" justifyContent="center" alignItems="center"
+                                            <Box display="flex" justifyContent="start" alignItems="center"
                                                  sx={{width: '100%'}}>
-                                                <Box display="flex" justifyContent="start" alignItems="center"
-                                                     sx={{width: '95%'}}>
-                                                    <Grid container spacing={0}>
-                                                        {p.comment.files.filter((val) => {
-                                                            return val.category == "image"
-                                                        }).map((image_file) => {
-                                                            return (
-                                                                <Grid xs={p.comment.files.filter((val) => {
-                                                                    return val.category == "image"
-                                                                }).length > 1 ? 4 : 8} display="flex"
-                                                                      justifyContent="center"
-                                                                      alignItems="center"
-                                                                      sx={p.comment.files.filter((val) => {
-                                                                          return val.category == "image"
-                                                                      }).length > 1 ? {height: '150px'} : {height: '300px'}}>
-                                                                    <Box onClick={() => {
-                                                                        set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name);
-                                                                        set_image_clicked(true);
-                                                                    }} sx={{
-                                                                        width: '90%',
-                                                                        height: '90%',
-                                                                        backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name + ')'),
-                                                                        backgroundSize: 'contain',
-                                                                        backgroundPosition: 'left top',
-                                                                        backgroundRepeat: 'no-repeat',
-                                                                    }}/>
-                                                                </Grid>
-                                                            )
-                                                        })}
-                                                    </Grid>
-                                                </Box>
+                                                <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                    {p.comment.files.filter((val) => {
+                                                        return val.category == "image"
+                                                    }).map((image_file) => {
+                                                        return (
+                                                            <Grid xs={p.comment.files.filter((val) => {
+                                                                return val.category == "image"
+                                                            }).length > 1 ? 4 : 8} display="flex"
+                                                                  justifyContent="start"
+                                                                  alignItems="center"
+                                                                  sx={p.comment.files.filter((val) => {
+                                                                      return val.category == "image"
+                                                                  }).length > 1 ? {height: '150px'} : {height: '300px'}}>
+                                                                <Box border="1px solid grey"
+                                                                     onClick={() => {
+                                                                         set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name);
+                                                                         set_image_clicked(true);
+                                                                     }} sx={{
+                                                                    width: '90%',
+                                                                    height: '90%',
+                                                                    backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + image_file.name + ')'),
+                                                                    backgroundSize: 'contain',
+                                                                    backgroundPosition: 'center center',
+                                                                    backgroundRepeat: 'no-repeat',
+                                                                }}/>
+                                                            </Grid>
+                                                        )
+                                                    })}
+                                                </Grid>
                                             </Box>
                                             <Box sx={{height: '10px', width: '100%'}}/>
                                         </div>
@@ -552,35 +545,32 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                             return val.category == "other"
                                         }).length > 0 &&
                                         <div>
-                                            <Box display="flex" justifyContent="center" alignItems="center"
-                                                 sx={{width: '100%'}}>
-                                                <Box display="flex" justifyContent="start" alignItems="center"
-                                                     sx={{width: '90%'}}>
-                                                    <Stack display="flex" justifyContent="start" spacing={2}>
-                                                        {p.comment.files.filter((val) => {
-                                                            return val.category == "other"
-                                                        }).map((other_file) => {
-                                                            return (
-                                                                <Box display="flex" justifyContent="start"
-                                                                     alignItems="center">
-                                                                    <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name}>
-                                                                        <Typography
-                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                            {other_file.name}
-                                                                        </Typography>
-                                                                    </a>
-                                                                </Box>
-                                                            )
-                                                        })}
-                                                    </Stack>
-                                                </Box>
+                                            <Box display="flex" justifyContent="start" alignItems="center"
+                                                 sx={{width: '100%', paddingLeft:"20px", paddingRight:"20px"}}>
+                                                <Stack display="flex" justifyContent="start" spacing={2}>
+                                                    {p.comment.files.filter((val) => {
+                                                        return val.category == "other"
+                                                    }).map((other_file) => {
+                                                        return (
+                                                            <Box display="flex" justifyContent="start"
+                                                                 alignItems="center">
+                                                                <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name}>
+                                                                    <Typography
+                                                                        sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                        {other_file.name}
+                                                                    </Typography>
+                                                                </a>
+                                                            </Box>
+                                                        )
+                                                    })}
+                                                </Stack>
                                             </Box>
                                             <Box sx={{height: '10px', width: '100%'}}/>
                                         </div>
                                     }
                                     <Grid container spacing={0}>
-                                        <Grid xs={9}>
-                                            <Stack display="flex" justifyContent="start" direction="row" spacing={1}
+                                        <Grid xs={12}>
+                                            <Stack display="flex" justifyContent="end" direction="row" spacing={1}
                                                    sx={{height: '30px', padding: '20px'}}>
                                                 <IconButton aria-label="thumb up" size="small"
                                                             onClick={() => handleActionCLicked("like")}>
@@ -613,11 +603,6 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                                         </Box>
                                                     </Stack>
                                                 </IconButton>
-                                            </Stack>
-                                        </Grid>
-                                        <Grid xs={3}>
-                                            <Stack display="flex" justifyContent="end" direction="row" spacing={1}
-                                                   sx={{height: '30px', padding: '20px'}}>
                                                 {page > 1 &&
                                                     <IconButton aria-label="prev" size="small" onClick={() => {
                                                         setPage(Math.max(page - 1, 1))
@@ -1088,29 +1073,32 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                         </Grid>
                                         {image_files_selected[0].name.length > 0 &&
                                             <div>
-                                                <Stack spacing={1} display="flex" justifyContent="center"
+                                                <Box display="flex" justifyContent="start"
                                                        alignItems="center"
-                                                       sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '90%', height: '100%'}}>
+                                                       sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                             提示：单击图片调整顺序
                                                         </Typography>
                                                     </Box>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '95%'}}>
-                                                        <Grid container spacing={0}>
+                                                </Box>
+                                                <Box sx={{height: '10px', width: '100%'}}/>
+                                                <Box display="flex" justifyContent="start"
+                                                     alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
                                                             {image_files_selected.map((image_file, idx) => {
                                                                 return (
                                                                     <Grid xs={image_files_selected.length > 1 ? 4 : 8}
-                                                                          display="flex" justifyContent="center"
+                                                                          display="flex" justifyContent="start"
                                                                           alignItems="center"
                                                                           sx={image_files_selected.length > 1 ? {height: '150px'} : {height: '300px'}}>
                                                                         <Badge
                                                                             badgeContent={image_files_order.indexOf(idx) + 1}
                                                                             color="primary"
-                                                                            sx={{width: '90%', height: '90%'}}
+                                                                            sx={{width: '100%', height: '100%'}}
                                                                             anchorOrigin={{
                                                                                 horizontal: 'left',
                                                                                 vertical: 'top'
@@ -1119,8 +1107,8 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                                                  onClick={() => {
                                                                                      handleImageFileOrder(idx)
                                                                                  }} sx={{
-                                                                                width: '100%',
-                                                                                height: '100%',
+                                                                                width: '90%',
+                                                                                height: '90%',
                                                                                 backgroundImage: String('url(' + image_file.url + ')'),
                                                                                 backgroundSize: 'contain',
                                                                                 backgroundPosition: 'center center',
@@ -1132,24 +1120,27 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                             })}
                                                         </Grid>
                                                     </Box>
-                                                </Stack>
+                                                </Box>
                                                 <Box sx={{height: '10px', width: '100%'}}/>
                                             </div>
                                         }
                                         {other_files_selected[0].name.length > 0 &&
                                             <div>
-                                                <Stack spacing={2} display="flex" justifyContent="center"
-                                                       alignItems="center"
-                                                       sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '90%', height: '100%'}}>
+                                                <Box display="flex" justifyContent="start"
+                                                     alignItems="center"
+                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                             提示：单击附件调整顺序
                                                         </Typography>
                                                     </Box>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '90%'}}>
+                                                </Box>
+                                                <Box sx={{height: '10px', width: '100%'}}/>
+                                                <Box display="flex" justifyContent="start"
+                                                     alignItems="center"
+                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Stack display="flex" justifyContent="start" spacing={2}>
                                                             {other_files_selected.map((other_file, idx) => {
                                                                 return (
@@ -1173,7 +1164,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                             })}
                                                         </Stack>
                                                     </Box>
-                                                </Stack>
+                                                </Box>
                                                 <Box sx={{height: '10px', width: '100%'}}/>
                                             </div>
                                         }
@@ -1273,9 +1264,9 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
 
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
-            <Box sx={{height: '40px', width: '100%'}}/>
+            <Box sx={{height: '60px', width: '100%'}}/>
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Stack spacing={2} sx={{width: '80%'}}>
+                <Stack spacing={5} sx={{width: '80%'}}>
                     {page == 1 && (post.title.length > 0 ?
                         <Post handle_scroll={p.handle_scroll} post={post} cookies={p.cookies} setCookies={p.setCookies}
                               set_is_commenting_on_post={p.set_is_commenting_on_post}

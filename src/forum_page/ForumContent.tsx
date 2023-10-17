@@ -600,29 +600,32 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                         </Grid>
                                         {image_files_selected[0].name.length > 0 &&
                                             <div>
-                                                <Stack spacing={1} display="flex" justifyContent="center"
-                                                       alignItems="center"
-                                                       sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '90%', height: '100%'}}>
+                                                <Box display="flex" justifyContent="start"
+                                                     alignItems="center"
+                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                             提示：单击图片调整顺序
                                                         </Typography>
                                                     </Box>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '95%'}}>
-                                                        <Grid container spacing={0}>
+                                                </Box>
+                                                <Box sx={{height: '10px', width: '100%'}}/>
+                                                <Box display="flex" justifyContent="start"
+                                                     alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
+                                                        <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
                                                             {image_files_selected.map((image_file, idx) => {
                                                                 return (
                                                                     <Grid xs={image_files_selected.length > 1 ? 4 : 8}
-                                                                          display="flex" justifyContent="center"
+                                                                          display="flex" justifyContent="start"
                                                                           alignItems="center"
                                                                           sx={image_files_selected.length > 1 ? {height: '150px'} : {height: '300px'}}>
                                                                         <Badge
                                                                             badgeContent={image_files_order.indexOf(idx) + 1}
                                                                             color="primary"
-                                                                            sx={{width: '90%', height: '90%'}}
+                                                                            sx={{width: '100%', height: '100%'}}
                                                                             anchorOrigin={{
                                                                                 horizontal: 'left',
                                                                                 vertical: 'top'
@@ -631,8 +634,8 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                                  onClick={() => {
                                                                                      handleImageFileOrder(idx)
                                                                                  }} sx={{
-                                                                                width: '100%',
-                                                                                height: '100%',
+                                                                                width: '90%',
+                                                                                height: '90%',
                                                                                 backgroundImage: String('url(' + image_file.url + ')'),
                                                                                 backgroundSize: 'contain',
                                                                                 backgroundPosition: 'center center',
@@ -644,24 +647,27 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                             })}
                                                         </Grid>
                                                     </Box>
-                                                </Stack>
+                                                </Box>
                                                 <Box sx={{height: '10px', width: '100%'}}/>
                                             </div>
                                         }
                                         {other_files_selected[0].name.length > 0 &&
                                             <div>
-                                                <Stack spacing={2} display="flex" justifyContent="center"
-                                                       alignItems="center"
-                                                       sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '90%', height: '100%'}}>
+                                                <Box display="flex" justifyContent="start"
+                                                     alignItems="center"
+                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
                                                             提示：单击附件调整顺序
                                                         </Typography>
                                                     </Box>
-                                                    <Box display="flex" justifyContent="start" alignItems="center"
-                                                         sx={{width: '90%'}}>
+                                                </Box>
+                                                <Box sx={{height: '10px', width: '100%'}}/>
+                                                <Box display="flex" justifyContent="start"
+                                                     alignItems="center"
+                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                    <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Stack display="flex" justifyContent="start" spacing={2}>
                                                             {other_files_selected.map((other_file, idx) => {
                                                                 return (
@@ -685,7 +691,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                             })}
                                                         </Stack>
                                                     </Box>
-                                                </Stack>
+                                                </Box>
                                                 <Box sx={{height: '10px', width: '100%'}}/>
                                             </div>
                                         }
