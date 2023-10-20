@@ -11,6 +11,10 @@ import LoginPage from './login_page/LoginPage';
 import ForumPage from './forum_page/ForumPage';
 import PostPage from './post_page/PostPage';
 import UserPage from './user_page/UserPage';
+import SlsMemberPage from './sls_member_page/SlsMemberPage';
+import AdminLoginPage from './admin_login_page/AdminLoginPage';
+import AdminPage from './admin_page/AdminPage';
+import AdminErrorPage from './error_page/AdminErrorPage';
 
 // 定义多页面的路由
 const router = createBrowserRouter([
@@ -42,6 +46,22 @@ const router = createBrowserRouter([
     {
         path: "/user/:student_id",
         element: <UserPage/>,
+    },
+    {
+        path: "/sls_member/:student_id",
+        element: <SlsMemberPage/>,
+    },
+    {
+        path: "/admin_login",
+        element: <AdminLoginPage/>,
+    },
+    {
+        path: "/admin/:tab",
+        element: <AdminPage/>,
+    },
+    {
+        path: "/admin_error",
+        element: <AdminErrorPage/>,
     },
 ]);
 

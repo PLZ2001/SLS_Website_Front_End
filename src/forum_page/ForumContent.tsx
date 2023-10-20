@@ -7,7 +7,7 @@ import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
 import Grid from "@mui/material/Grid";
 import TextField from '@mui/material/TextField';
@@ -27,6 +27,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import Post from './Post';
+import Link from "@mui/material/Link";
+
 
 function Search(p: { set_search: (value: (((prevState: string) => string) | string)) => void, category: string, set_category: (value: (((prevState: string) => string) | string)) => void, setPage: (value: (((prevState: number) => number) | number)) => void }) {
 
@@ -557,12 +559,9 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                         {user_profile.name}
                                                                     </Typography>
                                                                     :
-                                                                    <Link to={'/login'}
-                                                                          style={{textDecoration: "none"}}>
-                                                                        <Typography
-                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                            发帖需先登录
-                                                                        </Typography>
+                                                                    <Link href={'/login'} underline="hover"
+                                                                          sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                        发帖需先登录
                                                                     </Link>
                                                                 }
                                                             </Box>

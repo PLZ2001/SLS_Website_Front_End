@@ -461,6 +461,137 @@ const api_get_sls_member_profile = async () => {
     }
 }
 
+const api_submit_sls_member_profile_update = async (email: string, phone_number: string, url:string, introduction: string, paper_years: string[], papers:string[][]) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_sls_member_profile_update',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"email": email, "phone_number": phone_number, "url": url, "introduction": introduction, "paper_years":paper_years, "papers":papers})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_get_sls_member_profile_with_student_id = async (student_id: string) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_sls_member_profile_with_student_id/' + student_id, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_sls_member_image = async (files: { name: string, url: string, file: File }[], files_order: number[]) => {
+    try {
+        const form_data = new FormData();
+        for (let i = 0; i < files_order.length; i++) {
+            form_data.append(files[files_order[i]].name, files[files_order[i]].file);
+        }
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_sls_member_image',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: form_data
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_admin_login_info = async (student_id: string, password: string) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_admin_login_info',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"student_id": student_id, "password": password})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_new_sls_member = async (sls_member_category: string, name: string, student_id: string, description:string) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_new_sls_member/'+ sls_member_category,
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"name": name, "student_id": student_id, "description": description})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
 export {
     api_submit_files,
     api_get_user_profile_with_student_id,
@@ -479,5 +610,10 @@ export {
     api_submit_an_action,
     api_get_posts_with_student_id,
     api_get_favorite_posts_with_student_id,
-    api_get_sls_member_profile
+    api_get_sls_member_profile,
+    api_submit_sls_member_profile_update,
+    api_get_sls_member_profile_with_student_id,
+    api_submit_sls_member_image,
+    api_submit_admin_login_info,
+    api_submit_new_sls_member,
 }

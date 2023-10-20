@@ -6,28 +6,52 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import {API_STATUS} from '../config';
-import {useNavigate} from 'react-router-dom'
+import {_getDate, API_STATUS} from '../config';
 import CircularProgress from "@mui/material/CircularProgress";
 import {api_get_sls_members, api_read_image_files_in_folder} from "../api/api";
+import {useNavigate} from "react-router-dom";
+import Link from "@mui/material/Link";
 
-function SlsMembersGrid(p: { sls_members_list: { image: string, name: string, description: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string }) {
+
+function SlsMembersGrid(p: { sls_members_list: { image: string, name: string, description: string, url: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string }) {
+    const [formatted_time, set_formatted_time] = useState("")
+    const [time_stamp, set_time_stamp] = useState(0)
+    const get_time_now = () => {
+        const date = new Date();
+        const time_stamp = date.getTime() / 1000;
+        const formatted_time = _getDate(time_stamp);
+        return {"formatted_time": formatted_time, "time_stamp": time_stamp};
+    }
+    setInterval(() => {
+        const result = get_time_now();
+        set_formatted_time(result.formatted_time);
+        set_time_stamp(result.time_stamp);
+    }, 1000)
+
+    const [counter_for_image_updating, set_counter_for_image_updating] = useState(0);
+
+    useEffect(()=>{
+        set_counter_for_image_updating(time_stamp);
+    }, [])
+
     return (
         <Grid container spacing={0}>
             {p.sls_members_list.map((item) => (
                 <Grid xs={12 / p.col}>
                     <Stack display="flex" justifyContent="center" alignItems="center" spacing={0} sx={{padding: '5%'}}>
-                        <img
-                            src={item.image}
-                            alt={item.name}
-                            style={{paddingTop: '3%', paddingBottom: '3%', borderRadius: "40px"}}
-                            width={p.photo_width}
-                            loading="lazy"
-                        />
-                        <Typography textAlign="center"
-                                    sx={{fontWeight: 'bold', fontSize: String(p.name_font_size), letterSpacing: 6}}>
+                        <Link href={item.url} underline="hover" display="flex" justifyContent="center" alignItems="center" sx={{width:'100%', height:'100%'}}>
+                            <img
+                                src={item.image+"?counter="+counter_for_image_updating}
+                                alt={item.name}
+                                style={{paddingTop: '3%', paddingBottom: '3%'}}
+                                width={p.photo_width}
+                                loading="lazy"
+                            />
+                        </Link>
+                        <Link href={item.url} underline="hover"
+                              sx={{fontWeight: 'bold', fontSize: String(p.name_font_size), letterSpacing: 6}}>
                             {item.name}
-                        </Typography>
+                        </Link>
                         <Typography textAlign="center" sx={{fontSize: String(p.description_font_size)}}>
                             {item.description}
                         </Typography>
@@ -42,21 +66,9 @@ function SlsMembers() {
     const navigate = useNavigate()
 
     const [sls_members, set_sls_members] = useState({
-        teachers: [{
-            name: "",
-            description: "",
-            image: ""
-        }],
-        students: [{
-            name: "",
-            description: "",
-            image: ""
-        }],
-        graduates: [{
-            name: "",
-            description: "",
-            image: ""
-        }],
+        teachers: [{name: "", description: "", image: "", student_id: "", introduction: "", email: "", phone_number: "", papers:[[""]], paper_years:[""], url:""}],
+        students: [{name: "", description: "", image: "", student_id: "", introduction: "", email: "", phone_number: "", papers:[[""]], paper_years:[""], url:""}],
+        graduates: [{name: "", description: "", image: "", student_id: "", introduction: "", email: "", phone_number: "", papers:[[""]], paper_years:[""], url:""}],
     });
 
 

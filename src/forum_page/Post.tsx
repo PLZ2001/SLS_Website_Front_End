@@ -35,7 +35,7 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
 
     const handleClickingPost = (post_id: string) => {
         api_submit_an_action("watch", true, post_id)
-        navigate(`/post/` + post_id, {replace: false})
+        window.open(`/post/` + post_id, '_blank')
     }
 
     return (

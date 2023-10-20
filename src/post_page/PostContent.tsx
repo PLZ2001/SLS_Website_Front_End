@@ -16,7 +16,7 @@ import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
 import Grid from "@mui/material/Grid";
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
@@ -47,6 +47,7 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Avatar from "@mui/material/Avatar";
+import Link from "@mui/material/Link";
 
 function Post(p: { handle_scroll: () => void, post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[], category: string }, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
@@ -149,10 +150,9 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                 </Avatar>}
                             <Box alignItems="center">
                                 {post_user_profile.name.length > 0 ?
-                                    <Link to={`/user/` + post_user_profile.student_id} style={{textDecoration: "none"}}>
-                                        <Typography sx={{fontSize: 'subtitle1.fontSize'}}>
-                                            {post_user_profile.name}
-                                        </Typography>
+                                    <Link href={`/user/` + post_user_profile.student_id} underline="hover"
+                                          sx={{fontSize: 'subtitle1.fontSize'}}>
+                                        {post_user_profile.name}
                                     </Link>
                                     :
                                     <CircularProgress size="10px" color="secondary"/>
@@ -230,12 +230,10 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                                     return (
                                                         <Box display="flex" justifyContent="start"
                                                              alignItems="center">
-                                                            <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name}>
-                                                                <Typography
-                                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                    {other_file.name}
-                                                                </Typography>
-                                                            </a>
+                                                            <Link href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name} underline="hover"
+                                                                  sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                                {other_file.name}
+                                                            </Link>
                                                         </Box>
                                                     )
                                                 })}
@@ -458,11 +456,9 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                             </Avatar>}
                                         <Box alignItems="center">
                                             {comment_user_profile.name.length > 0 ?
-                                                <Link to={`/user/` + comment_user_profile.student_id}
-                                                      style={{textDecoration: "none"}}>
-                                                    <Typography sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                        {comment_user_profile.name}
-                                                    </Typography>
+                                                <Link href={`/user/` + comment_user_profile.student_id} underline="hover"
+                                                      sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                    {comment_user_profile.name}
                                                 </Link>
                                                 :
                                                 <CircularProgress size="10px" color="secondary"/>
@@ -554,12 +550,10 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                                         return (
                                                             <Box display="flex" justifyContent="start"
                                                                  alignItems="center">
-                                                                <a href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name}>
-                                                                    <Typography
-                                                                        sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                        {other_file.name}
-                                                                    </Typography>
-                                                                </a>
+                                                                <Link href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name} underline="hover"
+                                                                      sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                    {other_file.name}
+                                                                </Link>
                                                             </Box>
                                                         )
                                                     })}
@@ -1057,12 +1051,9 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                                         {user_profile.name}
                                                                     </Typography>
                                                                     :
-                                                                    <Link to={'/login'}
-                                                                          style={{textDecoration: "none"}}>
-                                                                        <Typography
-                                                                            sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                            评论需先登录
-                                                                        </Typography>
+                                                                    <Link href={'/login'} underline="hover"
+                                                                          sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                        评论需先登录
                                                                     </Link>
                                                                 }
                                                             </Box>
