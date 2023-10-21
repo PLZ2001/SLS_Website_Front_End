@@ -592,6 +592,107 @@ const api_submit_new_sls_member = async (sls_member_category: string, name: stri
     }
 }
 
+const api_get_admin_profile = async () => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_admin_profile', {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_sls_member_removing = async (sls_member_category: string, student_ids: string[]) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_sls_member_removing/'+ sls_member_category,
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"student_ids": student_ids})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_post_removing = async (post_ids: string[]) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_post_removing',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"post_ids": post_ids})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_comment_removing = async (comment_ids: string[]) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_comment_removing',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"comment_ids": comment_ids})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
 export {
     api_submit_files,
     api_get_user_profile_with_student_id,
@@ -616,4 +717,8 @@ export {
     api_submit_sls_member_image,
     api_submit_admin_login_info,
     api_submit_new_sls_member,
+    api_get_admin_profile,
+    api_submit_sls_member_removing,
+    api_submit_post_removing,
+    api_submit_comment_removing
 }

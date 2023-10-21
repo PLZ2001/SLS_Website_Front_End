@@ -10,18 +10,13 @@ import AdminLoginContent from "./AdminLoginContent";
 
 
 function AdminLoginPage() {
-    const [cookies, setCookies] = Cookie.useCookies(["token"])
-
+    const [cookies, setCookies] = Cookie.useCookies(["admin_token"])
 
     return (
         <ThemeProvider theme={THEME}>
             <Box sx={{width: '100%', backgroundColor: '#ffffff'}}>
-                {/*顶部栏*/}
-                <TopBar cookies={cookies} setCookies={setCookies}/>
                 {/*登录面板*/}
                 <AdminLoginContent setCookies={setCookies}/>
-                {/*底部栏*/}
-                <BottomBar/>
             </Box>
         </ThemeProvider>
     );

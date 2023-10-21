@@ -668,7 +668,7 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                                                             helperText={paper_years_error_texts[idx_of_paper_years]}
                                                         />
                                                         <Box sx={{width:'10px'}}/>
-                                                        <IconButton color="warning" onClick={()=>handle_year_removing(idx_of_paper_years)}>
+                                                        <IconButton color="error" onClick={()=>handle_year_removing(idx_of_paper_years)}>
                                                             <RemoveCircleOutlineIcon />
                                                         </IconButton>
                                                     </Box>
@@ -708,7 +708,7 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                                                                     helperText={papers_error_texts[idx_of_paper_years][idx_of_papers]}
                                                                 />
                                                                 <Box sx={{width:'10px'}}/>
-                                                                <IconButton color="warning" onClick={()=>handle_paper_removing(idx_of_paper_years, idx_of_papers)}>
+                                                                <IconButton color="error" onClick={()=>handle_paper_removing(idx_of_paper_years, idx_of_papers)}>
                                                                     <RemoveCircleOutlineIcon />
                                                                 </IconButton>
                                                             </Box>

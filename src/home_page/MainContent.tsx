@@ -48,7 +48,7 @@ function SlsMembersGrid(p: { sls_members_list: { image: string, name: string, de
                                 loading="lazy"
                             />
                         </Link>
-                        <Link href={item.url} underline="hover"
+                        <Link href={item.url} underline="hover" textAlign="center"
                               sx={{fontWeight: 'bold', fontSize: String(p.name_font_size), letterSpacing: 6}}>
                             {item.name}
                         </Link>
