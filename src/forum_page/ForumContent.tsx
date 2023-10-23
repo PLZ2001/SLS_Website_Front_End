@@ -153,8 +153,18 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
         }
     }, [p.cookies.token])
 
-    const [image_files_selected, set_image_files_selected] = useState([{name: "", url: "", file: new File([], "")}])
-    const [other_files_selected, set_other_files_selected] = useState([{name: "", url: "", file: new File([], "")}])
+    const [image_files_selected, set_image_files_selected] = useState([{
+        name: "",
+        display_name: "",
+        url: "",
+        file: new File([], "")
+    }])
+    const [other_files_selected, set_other_files_selected] = useState([{
+        name: "",
+        display_name: "",
+        url: "",
+        file: new File([], "")
+    }])
 
     const [image_files_order, set_image_files_order] = useState([0])
     const [other_files_order, set_other_files_order] = useState([0])
@@ -166,14 +176,24 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 let _image_files_order = [];
                 for (let i = 0; i < files.length; i++) {
                     _image_files_selected.push({
-                        name: files[i].name,
+                        name: _hash(files[i].name + time_stamp) + "-" + files[i].name.replaceAll(" ", "+"),
+                        display_name: files[i].name,
                         url: URL.createObjectURL(files[i]),
                         file: files[i]
                     })
-                    _image_files_order.push(i);
+                    if (image_files_selected[0].name.length > 0) {
+                        _image_files_order.push(i + image_files_order.length);
+                    } else {
+                        _image_files_order.push(i);
+                    }
                 }
-                set_image_files_selected(_image_files_selected)
-                set_image_files_order(_image_files_order)
+                if (image_files_selected[0].name.length > 0) {
+                    set_image_files_selected(image_files_selected.concat(_image_files_selected))
+                    set_image_files_order(image_files_order.concat(_image_files_order))
+                } else {
+                    set_image_files_selected(_image_files_selected)
+                    set_image_files_order(_image_files_order)
+                }
             }
         }
     }
@@ -185,14 +205,24 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 let _other_files_order = [];
                 for (let i = 0; i < files.length; i++) {
                     _other_files_selected.push({
-                        name: files[i].name,
+                        name: _hash(files[i].name + time_stamp) + "-" + files[i].name.replaceAll(" ", "+"),
+                        display_name: files[i].name,
                         url: URL.createObjectURL(files[i]),
                         file: files[i]
                     })
-                    _other_files_order.push(i);
+                    if (other_files_selected[0].name.length > 0) {
+                        _other_files_order.push(i + other_files_order.length);
+                    } else {
+                        _other_files_order.push(i);
+                    }
                 }
-                set_other_files_selected(_other_files_selected)
-                set_other_files_order(_other_files_order)
+                if (other_files_selected[0].name.length > 0) {
+                    set_other_files_selected(_other_files_selected.concat(_other_files_selected))
+                    set_other_files_order(other_files_order.concat(_other_files_order))
+                } else {
+                    set_other_files_selected(_other_files_selected)
+                    set_other_files_order(_other_files_order)
+                }
             }
         }
     }
@@ -231,12 +261,20 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
         let _files = []
         if (image_files_selected[0].name.length > 0) {
             for (let i = 0; i < image_files_order.length; i++) {
-                _files.push({category: "image", name: image_files_selected[image_files_order[i]].name})
+                _files.push({
+                    category: "image",
+                    name: image_files_selected[image_files_order[i]].name,
+                    display_name: image_files_selected[image_files_order[i]].display_name
+                })
             }
         }
         if (other_files_selected[0].name.length > 0) {
             for (let i = 0; i < other_files_order.length; i++) {
-                _files.push({category: "other", name: other_files_selected[other_files_order[i]].name})
+                _files.push({
+                    category: "other",
+                    name: other_files_selected[other_files_order[i]].name,
+                    display_name: other_files_selected[other_files_order[i]].display_name
+                })
             }
         }
         set_files(_files)
@@ -256,7 +294,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
     const [title_error_text, set_title_error_text] = useState("");
     const [content, set_content] = useState("");
     const [content_error_text, set_content_error_text] = useState("");
-    const [files, set_files] = useState([{category: "", name: ""}]);
+    const [files, set_files] = useState([{category: "", name: "", display_name: ""}]);
     const [submit_clicked, set_submit_clicked] = useState(false);
 
     const check_post_title = (post_title: string) => {
@@ -601,11 +639,11 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                             <div>
                                                 <Box display="flex" justifyContent="start"
                                                      alignItems="center"
-                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                     sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                            提示：单击图片调整顺序
+                                                            提示：单击图片调整顺序，未选中项不会提交
                                                         </Typography>
                                                     </Box>
                                                 </Box>
@@ -614,7 +652,8 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                      alignItems="center"
                                                      sx={{width: '100%'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
-                                                        <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                        <Grid container spacing={0}
+                                                              sx={{paddingLeft: '20px', paddingRight: '20px'}}>
                                                             {image_files_selected.map((image_file, idx) => {
                                                                 return (
                                                                     <Grid xs={image_files_selected.length > 1 ? 4 : 8}
@@ -639,6 +678,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                                 backgroundSize: 'contain',
                                                                                 backgroundPosition: 'center center',
                                                                                 backgroundRepeat: 'no-repeat',
+                                                                                opacity: `${image_files_order.indexOf(idx) + 1 == 0 ? 0.5 : 1}`
                                                                             }}/>
                                                                         </Badge>
                                                                     </Grid>
@@ -654,18 +694,18 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                             <div>
                                                 <Box display="flex" justifyContent="start"
                                                      alignItems="center"
-                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                     sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                            提示：单击附件调整顺序
+                                                            提示：单击附件调整顺序，未选中项不会提交
                                                         </Typography>
                                                     </Box>
                                                 </Box>
                                                 <Box sx={{height: '10px', width: '100%'}}/>
                                                 <Box display="flex" justifyContent="start"
                                                      alignItems="center"
-                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                     sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Stack display="flex" justifyContent="start" spacing={2}>
                                                             {other_files_selected.map((other_file, idx) => {
@@ -679,10 +719,11 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                                         <Box onClick={() => {
                                                                             handleOtherFileOrder(idx)
                                                                         }} display="flex" justifyContent="start"
-                                                                             alignItems="center">
+                                                                             alignItems="center"
+                                                                             sx={{opacity: `${other_files_order.indexOf(idx) + 1 == 0 ? 0.5 : 1}`}}>
                                                                             <Typography
                                                                                 sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                                {other_file.name}
+                                                                                {other_file.display_name}
                                                                             </Typography>
                                                                         </Box>
                                                                     </Badge>
@@ -737,18 +778,6 @@ function Forum(p: { submit_success: boolean }) {
         category: "",
     }]);
     const [num_posts, set_num_posts] = useState(0);
-
-    // useEffect(() => {
-    //     api_get_posts(POST_PIECES, page, search).then((result) => {
-    //         if (result.status == API_STATUS.SUCCESS) {
-    //             set_posts(result.data);
-    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
-    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: null}})
-    //         }
-    //     })
-    // }, [page, p.submit_success, search])
 
     useEffect(() => {
         api_get_posts(MAX_PIECES, 1, search, category).then((result) => {

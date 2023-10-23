@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
-import {_getDate, _hash, API_STATUS, MAX_PIECES, POST_PIECES, SERVER_PORT, SERVER_URL} from "../config";
+import {API_STATUS, MAX_PIECES, SERVER_PORT, SERVER_URL, USER_POST_PIECES} from "../config";
 import TopMenu from "../home_page/TopMenu";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -12,11 +12,12 @@ import {CookieSetOptions} from "universal-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     api_get_favorite_posts_with_student_id,
-    api_get_posts_with_student_id, api_get_user_profile,
-    api_get_user_profile_with_student_id,
+    api_get_posts_with_student_id,
     api_get_sls_member_profile,
-    api_submit_sls_member_profile_update,
+    api_get_user_profile,
+    api_get_user_profile_with_student_id,
     api_submit_sls_member_image,
+    api_submit_sls_member_profile_update,
 } from "../api/api";
 import Post from '../forum_page/Post';
 import Divider from "@mui/material/Divider";
@@ -60,57 +61,57 @@ function UserProfile(p: { student_id: string }) {
             </Box>
             <Box sx={{height: '20px', width: '100%'}}/>
             {user_profile.name.length > 0 ?
-            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
-                       sx={{width: '80%'}}>
-                    <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                账号
-                            </Typography>
-                        </Box>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                            <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                {user_profile.student_id}
-                            </Typography>
-                        </Box>
-                    </Stack>
-                    <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                昵称
-                            </Typography>
-                        </Box>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                            <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                {user_profile.name}
-                            </Typography>
-                        </Box>
-                    </Stack>
-                    <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                山林寺身份认证
-                            </Typography>
-                        </Box>
-                        <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                            {user_profile.sls_verification ?
-                                <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                    已认证
+                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                    <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
+                           sx={{width: '80%'}}>
+                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                    账号
                                 </Typography>
-                                :
+                            </Box>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                                 <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                    未认证
+                                    {user_profile.student_id}
                                 </Typography>
-                            }
-                        </Box>
+                            </Box>
+                        </Stack>
+                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                    昵称
+                                </Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                    {user_profile.name}
+                                </Typography>
+                            </Box>
+                        </Stack>
+                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                    山林寺身份认证
+                                </Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                                {user_profile.sls_verification ?
+                                    <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                        已认证
+                                    </Typography>
+                                    :
+                                    <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                        未认证
+                                    </Typography>
+                                }
+                            </Box>
+                        </Stack>
                     </Stack>
-                </Stack>
-            </Box>
-            :
-            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                <CircularProgress color="primary"/>
-            </Box>
+                </Box>
+                :
+                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                    <CircularProgress color="primary"/>
+                </Box>
             }
             <Box sx={{height: '40px', width: '100%'}}/>
         </Paper>
@@ -120,27 +121,18 @@ function UserProfile(p: { student_id: string }) {
 function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     const navigate = useNavigate()
 
-    const [formatted_time, set_formatted_time] = useState("")
-    const [time_stamp, set_time_stamp] = useState(0)
-    const get_time_now = () => {
-        const date = new Date();
-        const time_stamp = date.getTime() / 1000;
-        const formatted_time = _getDate(time_stamp);
-        return {"formatted_time": formatted_time, "time_stamp": time_stamp};
-    }
-    setInterval(() => {
-        const result = get_time_now();
-        set_formatted_time(result.formatted_time);
-        set_time_stamp(result.time_stamp);
-    }, 1000)
-
-    const [counter_for_image_updating, set_counter_for_image_updating] = useState(0);
-
-    useEffect(()=>{
-        set_counter_for_image_updating(time_stamp);
-    }, [])
-
-    const [sls_member_profile, set_sls_member_profile] = useState({name: "", description: "", image: "", student_id: "", introduction: "", email: "", phone_number: "", papers:[[""]], paper_years:[""], url:""});
+    const [sls_member_profile, set_sls_member_profile] = useState({
+        name: "",
+        description: "",
+        image: "",
+        student_id: "",
+        introduction: "",
+        email: "",
+        phone_number: "",
+        papers: [[""]],
+        paper_years: [""],
+        url: ""
+    });
 
 
     const [update_submitted, set_update_submitted] = useState(false);
@@ -162,7 +154,7 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
     const [url, set_url] = useState("");
     const [url_error_text, set_url_error_text] = useState("");
     const check_url = (url: string) => {
-        if (url.length==0) {
+        if (url.length == 0) {
             set_url_error_text("个人主页不能为空")
         } else {
             set_url_error_text("")
@@ -188,7 +180,7 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
     const [papers_error_texts, set_papers_error_texts] = useState([[""]]);
     const check_papers = (papers: string[][]) => {
         set_papers_error_texts(papers.map((value) => {
-            return value.map((value)=>{
+            return value.map((value) => {
                 if (value.length == 0) {
                     return "论文不能为空";
                 } else {
@@ -223,38 +215,33 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                 }
             })
         } else {
-            set_sls_member_profile({name: "", description: "", image: "", student_id: "", introduction: "", email: "", phone_number: "", papers:[[""]], paper_years:[""], url:""});
+            set_sls_member_profile({
+                name: "",
+                description: "",
+                image: "",
+                student_id: "",
+                introduction: "",
+                email: "",
+                phone_number: "",
+                papers: [[""]],
+                paper_years: [""],
+                url: ""
+            });
         }
     }, [p.cookies.token, update_success, image_success])
 
-    const handle_year_removing = (idx_of_paper_years:number) => {
-        set_paper_years(paper_years.filter((val_of_paper_years_looking_for, idx_of_paper_years_looking_for)=>{
-            if (idx_of_paper_years_looking_for == idx_of_paper_years) {
-                return false;
-            } else {
-                return true;
-            }
+    const handle_year_removing = (idx_of_paper_years: number) => {
+        set_paper_years(paper_years.filter((val_of_paper_years_looking_for, idx_of_paper_years_looking_for) => {
+            return idx_of_paper_years_looking_for != idx_of_paper_years;
         }));
-        check_paper_years(paper_years.filter((val_of_paper_years_looking_for, idx_of_paper_years_looking_for)=>{
-            if (idx_of_paper_years_looking_for == idx_of_paper_years) {
-                return false;
-            } else {
-                return true;
-            }
+        check_paper_years(paper_years.filter((val_of_paper_years_looking_for, idx_of_paper_years_looking_for) => {
+            return idx_of_paper_years_looking_for != idx_of_paper_years;
         }));
-        set_papers(papers.filter((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
-            if (idx_of_papers_of_specific_year == idx_of_paper_years) {
-                return false;
-            } else {
-                return true;
-            }
+        set_papers(papers.filter((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
+            return idx_of_papers_of_specific_year != idx_of_paper_years;
         }));
-        check_papers(papers.filter((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
-            if (idx_of_papers_of_specific_year == idx_of_paper_years) {
-                return false;
-            } else {
-                return true;
-            }
+        check_papers(papers.filter((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
+            return idx_of_papers_of_specific_year != idx_of_paper_years;
         }));
     };
 
@@ -265,15 +252,15 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
         check_papers(papers.concat([[]]));
     };
 
-    const handle_paper_adding = (idx_of_paper_years:number) => {
-        set_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
+    const handle_paper_adding = (idx_of_paper_years: number) => {
+        set_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
             if (idx_of_papers_of_specific_year == idx_of_paper_years) {
                 return val_of_papers_of_specific_year.concat([""]);
             } else {
                 return val_of_papers_of_specific_year;
             }
         }));
-        check_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
+        check_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
             if (idx_of_papers_of_specific_year == idx_of_paper_years) {
                 return val_of_papers_of_specific_year.concat([""]);
             } else {
@@ -282,23 +269,15 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
         }));
     };
 
-    const handle_paper_removing = (idx_of_paper_years:number, idx_of_papers:number) => {
-        set_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
-            return val_of_papers_of_specific_year.filter((val_of_papers_looking_for, idx_of_papers_looking_for)=>{
-                if (idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for) {
-                    return false;
-                } else {
-                    return true;
-                }
+    const handle_paper_removing = (idx_of_paper_years: number, idx_of_papers: number) => {
+        set_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
+            return val_of_papers_of_specific_year.filter((val_of_papers_looking_for, idx_of_papers_looking_for) => {
+                return !(idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for);
             })
         }));
-        check_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
-            return val_of_papers_of_specific_year.filter((val_of_papers_looking_for, idx_of_papers_looking_for)=>{
-                if (idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for) {
-                    return false;
-                } else {
-                    return true;
-                }
+        check_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
+            return val_of_papers_of_specific_year.filter((val_of_papers_looking_for, idx_of_papers_looking_for) => {
+                return !(idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for);
             })
         }));
     };
@@ -311,7 +290,6 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                 for (let i = 0; i < files.length; i++) {
                     _image_files_selected.push({
                         name: files[i].name,
-                        url: URL.createObjectURL(files[i]),
                         file: files[i]
                     })
                     _image_files_order.push(i);
@@ -319,7 +297,6 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                 set_update_submitted(true);
                 const result = await api_submit_sls_member_image(_image_files_selected, _image_files_order);
                 if (result.status == API_STATUS.SUCCESS) {
-                    set_counter_for_image_updating(time_stamp);
                     set_image_success(true);
                     set_update_submitted(false);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
@@ -389,431 +366,486 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                 </Box>
                 <Box sx={{height: '20px', width: '100%'}}/>
                 {sls_member_profile.name.length > 0 ?
-                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Stack display="flex" justifyContent="center" alignItems="center" spacing={5} sx={{width: '100%'}}>
-                        <Grid container spacing={0} sx={{width:"80%"}} display="flex" justifyContent="center" alignItems="center">
-                            <Grid xs={3}>
-                                <Stack display="flex" justifyContent="center" alignItems="center" spacing={0} sx={{padding: '5%'}}>
-                                    <img
-                                        src={sls_member_profile.image+"?counter="+counter_for_image_updating}
-                                        alt={sls_member_profile.name}
-                                        style={{paddingTop: '3%', paddingBottom: '3%'}}
-                                        width="80%"
-                                        loading="lazy"
-                                    />
-                                    {image_success ?
-                                        <Box display="flex" justifyContent="center" alignItems="center"
-                                             sx={{width: '80%'}}>
-                                            <Typography
-                                                textAlign="center"
-                                                sx={{
-                                                    fontWeight: 'bold',
-                                                    fontSize: 'subtitle1.fontSize',
-                                                }}>
-                                                更换成功
-                                            </Typography>
-                                        </Box>
-                                        :
-                                        <Button variant="outlined"
-                                                sx={{fontSize: 'subtitle1.fontSize', height: '30px'}}>
-                                            更换照片
-                                            <input
-                                                title=""
-                                                type="file"
-                                                style={{
-                                                    position: 'absolute',
-                                                    opacity: 0,
-                                                    left: "0",
-                                                    bottom: "0",
-                                                    width: "100%",
-                                                    height: "100%"
-                                                }}
-                                                accept='image/png'
-                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                    handleImageFile(event.target.files);
-                                                }}
-                                            />
-                                        </Button>
-                                    }
-                                </Stack>
-                            </Grid>
-                            <Grid xs={9}>
-                                <Stack display="flex" justifyContent="center" alignItems="center" spacing={5} sx={{width: '100%'}}>
-                                    <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
-                                           sx={{width: '100%'}}>
-                                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                    姓名
-                                                </Typography>
-                                            </Box>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                                    {sls_member_profile.name}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                    学号
-                                                </Typography>
-                                            </Box>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                                    {sls_member_profile.student_id}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                    简介
-                                                </Typography>
-                                            </Box>
-                                            <Box display="flex" justifyContent="center" alignItems="center"
-                                                 sx={{width: '100%'}}>
-                                                <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                                    {sls_member_profile.description}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                    </Stack>
-                                    <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
-                                           sx={{width: '100%'}}>
-                                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                    电子邮件
-                                                </Typography>
-                                            </Box>
-                                            {is_editing ?
-                                                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                                                    <TextField
-                                                        id="outlined-multiline-flexible"
-                                                        value={email}
-                                                        multiline
-                                                        minRows={1}
-                                                        maxRows={1}
-                                                        sx={{width:"90%"}}
-                                                        size="small"
-                                                        color="primary"
-                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                            set_email(event.target.value);
-                                                            check_email(event.target.value);
-                                                        }}
-                                                        error={email_error_text.length != 0}
-                                                        helperText={email_error_text}
-                                                    />
-                                                </Box>
-                                                :
-                                                <Box display="flex" justifyContent="center" alignItems="center"
-                                                     sx={{width: '100%'}}>
-                                                    <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                                        {sls_member_profile.email}
-                                                    </Typography>
-                                                </Box>
-                                            }
-                                        </Stack>
-                                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                    电话号码
-                                                </Typography>
-                                            </Box>
-                                            {is_editing ?
-                                                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                                                    <TextField
-                                                        id="outlined-multiline-flexible"
-                                                        value={phone_number}
-                                                        multiline
-                                                        minRows={1}
-                                                        maxRows={1}
-                                                        sx={{width:"90%"}}
-                                                        size="small"
-                                                        color="primary"
-                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                            set_phone_number(event.target.value);
-                                                            check_phone_number(event.target.value);
-                                                        }}
-                                                        error={phone_number_error_text.length != 0}
-                                                        helperText={phone_number_error_text}
-                                                    />
-                                                </Box>
-                                                :
-                                                <Box display="flex" justifyContent="center" alignItems="center"
-                                                     sx={{width: '100%'}}>
-                                                    <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                                        {sls_member_profile.phone_number}
-                                                    </Typography>
-                                                </Box>
-                                            }
-                                        </Stack>
-                                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '33.3%'}}>
-                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                                <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                    个人主页
-                                                </Typography>
-                                            </Box>
-                                            {is_editing ?
-                                                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                                                    <TextField
-                                                        id="outlined-multiline-flexible"
-                                                        value={url}
-                                                        multiline
-                                                        minRows={1}
-                                                        maxRows={1}
-                                                        sx={{width:"90%"}}
-                                                        size="small"
-                                                        color="primary"
-                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                            set_url(event.target.value);
-                                                            check_url(event.target.value);
-                                                        }}
-                                                        error={url_error_text.length != 0}
-                                                        helperText={url_error_text}
-                                                    />
-                                                </Box>
-                                                :
-                                                <Box display="flex" justifyContent="center" alignItems="center"
-                                                     sx={{width: '100%'}}>
-                                                    <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                                        {sls_member_profile.url}
-                                                    </Typography>
-                                                </Box>
-                                            }
-                                        </Stack>
-                                    </Stack>
-                                </Stack>
-                            </Grid>
-                        </Grid>
-                        <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
-                               sx={{width: '80%'}}>
-                            <Stack display="flex" justifyContent="center" alignItems="center" spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '100%'}}>
-                                <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                    <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                        个人介绍
-                                    </Typography>
-                                </Box>
-                                {is_editing ?
-                                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                                        <TextField
-                                            id="outlined-multiline-flexible"
-                                            value={introduction}
-                                            multiline
-                                            minRows={1}
-                                            maxRows={5}
-                                            sx={{width: "90%"}}
-                                            size="small"
-                                            color="primary"
-                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                set_introduction(event.target.value);
-                                                check_introduction(event.target.value);
-                                            }}
-                                            error={introduction_error_text.length != 0}
-                                            helperText={introduction_error_text}
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                        <Stack display="flex" justifyContent="center" alignItems="center" spacing={5}
+                               sx={{width: '100%'}}>
+                            <Grid container spacing={0} sx={{width: "80%"}} display="flex" justifyContent="center"
+                                  alignItems="center">
+                                <Grid xs={4}>
+                                    <Stack display="flex" justifyContent="center" alignItems="center" spacing={0}
+                                           sx={{paddingRight: '20%'}}>
+                                        <img
+                                            src={sls_member_profile.image + "?counter=" + Math.random()}
+                                            alt={sls_member_profile.name}
+                                            style={{paddingTop: '3%', paddingBottom: '3%'}}
+                                            width="100%"
+                                            loading="lazy"
                                         />
-                                    </Box>
-                                    :
-                                    <Box display="flex" justifyContent="start" alignItems="center" sx={{width: '90%'}}>
-                                        <Typography color="text.secondary"
-                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
-                                            {sls_member_profile.introduction}
-                                        </Typography>
-                                    </Box>
-                                }
-                            </Stack>
-                        </Stack>
-                        <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
-                               sx={{width: '80%'}}>
-                            <Stack display="flex" justifyContent="center" alignItems="center" spacing={1} divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '100%'}}>
-                                <Box display="flex" justifyContent="center" alignItems="center" sx={{width:'100%'}}>
-                                    <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                        论文
-                                    </Typography>
-                                </Box>
-                                {is_editing ?
-                                    <Stack spacing={1} sx={{width: '100%'}}>
-                                        {paper_years.map((val_of_paper_years, idx_of_paper_years) => {
-                                            return (
-                                                <Stack display="flex" justifyContent="center" alignItems="center"
-                                                       spacing={1} sx={{width: '100%'}}>
-                                                    <Box display="flex" justifyContent="start" alignItems="center" sx={{width: '100%'}}>
+                                        {image_success ?
+                                            <Box display="flex" justifyContent="center" alignItems="center"
+                                                 sx={{width: '80%'}}>
+                                                <Typography
+                                                    textAlign="center"
+                                                    sx={{
+                                                        fontWeight: 'bold',
+                                                        fontSize: 'subtitle1.fontSize',
+                                                    }}>
+                                                    更换成功
+                                                </Typography>
+                                            </Box>
+                                            :
+                                            <Button variant="outlined"
+                                                    sx={{fontSize: 'subtitle1.fontSize', height: '30px'}}>
+                                                更换照片
+                                                <input
+                                                    title=""
+                                                    type="file"
+                                                    style={{
+                                                        position: 'absolute',
+                                                        opacity: 0,
+                                                        left: "0",
+                                                        bottom: "0",
+                                                        width: "100%",
+                                                        height: "100%"
+                                                    }}
+                                                    accept='image/png'
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        handleImageFile(event.target.files);
+                                                    }}
+                                                />
+                                            </Button>
+                                        }
+                                    </Stack>
+                                </Grid>
+                                <Grid xs={8}>
+                                    <Stack display="flex" justifyContent="center" alignItems="center" spacing={5}
+                                           sx={{width: '100%'}}>
+                                        <Stack display="flex" justifyContent="center" alignItems="start" direction="row"
+                                               spacing={0}
+                                               sx={{width: '100%'}}>
+                                            <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>}
+                                                   sx={{width: '33.3%'}}>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography color="text.secondary"
+                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                        姓名
+                                                    </Typography>
+                                                </Box>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography
+                                                        sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                                        {sls_member_profile.name}
+                                                    </Typography>
+                                                </Box>
+                                            </Stack>
+                                            <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>}
+                                                   sx={{width: '33.3%'}}>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography color="text.secondary"
+                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                        学号
+                                                    </Typography>
+                                                </Box>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography
+                                                        sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                                        {sls_member_profile.student_id}
+                                                    </Typography>
+                                                </Box>
+                                            </Stack>
+                                            <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>}
+                                                   sx={{width: '33.3%'}}>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography color="text.secondary"
+                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                        简介
+                                                    </Typography>
+                                                </Box>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography
+                                                        sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                                        {sls_member_profile.description}
+                                                    </Typography>
+                                                </Box>
+                                            </Stack>
+                                        </Stack>
+                                        <Stack display="flex" justifyContent="center" alignItems="start" direction="row"
+                                               spacing={0}
+                                               sx={{width: '100%'}}>
+                                            <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>}
+                                                   sx={{width: '33.3%'}}>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography color="text.secondary"
+                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                        电子邮件
+                                                    </Typography>
+                                                </Box>
+                                                {is_editing ?
+                                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                                         sx={{width: '100%'}}>
                                                         <TextField
                                                             id="outlined-multiline-flexible"
-                                                            value={val_of_paper_years}
+                                                            value={email}
                                                             multiline
                                                             minRows={1}
-                                                            maxRows={5}
-                                                            sx={{width: "20%"}}
+                                                            maxRows={1}
+                                                            sx={{width: "90%"}}
                                                             size="small"
                                                             color="primary"
                                                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                                set_paper_years(paper_years.map((val_of_paper_years_looking_for, idx_of_paper_years_looking_for)=>{
-                                                                    if (idx_of_paper_years_looking_for == idx_of_paper_years) {
-                                                                        return event.target.value;
-                                                                    } else {
-                                                                        return val_of_paper_years_looking_for;
-                                                                    }
-                                                                }));
-                                                                check_paper_years(paper_years.map((val_of_paper_years_looking_for, idx_of_paper_years_looking_for)=>{
-                                                                    if (idx_of_paper_years_looking_for == idx_of_paper_years) {
-                                                                        return event.target.value;
-                                                                    } else {
-                                                                        return val_of_paper_years_looking_for;
-                                                                    }
-                                                                }));
+                                                                set_email(event.target.value);
+                                                                check_email(event.target.value);
                                                             }}
-                                                            error={paper_years_error_texts[idx_of_paper_years].length != 0}
-                                                            helperText={paper_years_error_texts[idx_of_paper_years]}
+                                                            error={email_error_text.length != 0}
+                                                            helperText={email_error_text}
                                                         />
-                                                        <Box sx={{width:'10px'}}/>
-                                                        <IconButton color="error" onClick={()=>handle_year_removing(idx_of_paper_years)}>
-                                                            <RemoveCircleOutlineIcon />
-                                                        </IconButton>
                                                     </Box>
-                                                    {papers[idx_of_paper_years].map((val_of_papers, idx_of_papers) => {
-                                                        return (
-                                                            <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                                                                <TextField
-                                                                    id="outlined-multiline-flexible"
-                                                                    value={val_of_papers}
-                                                                    multiline
-                                                                    minRows={1}
-                                                                    maxRows={2}
-                                                                    sx={{width: "80%"}}
-                                                                    size="small"
-                                                                    color="primary"
-                                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                                        set_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
-                                                                            return val_of_papers_of_specific_year.map((val_of_papers_looking_for, idx_of_papers_looking_for)=>{
-                                                                                if (idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for) {
-                                                                                    return event.target.value;
-                                                                                } else {
-                                                                                    return val_of_papers_looking_for;
-                                                                                }
-                                                                            })
-                                                                        }));
-                                                                        check_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year)=>{
-                                                                            return val_of_papers_of_specific_year.map((val_of_papers_looking_for, idx_of_papers_looking_for)=>{
-                                                                                if (idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for) {
-                                                                                    return event.target.value;
-                                                                                } else {
-                                                                                    return val_of_papers_looking_for;
-                                                                                }
-                                                                            })
-                                                                        }));
-                                                                    }}
-                                                                    error={papers_error_texts[idx_of_paper_years][idx_of_papers].length != 0}
-                                                                    helperText={papers_error_texts[idx_of_paper_years][idx_of_papers]}
-                                                                />
-                                                                <Box sx={{width:'10px'}}/>
-                                                                <IconButton color="error" onClick={()=>handle_paper_removing(idx_of_paper_years, idx_of_papers)}>
-                                                                    <RemoveCircleOutlineIcon />
-                                                                </IconButton>
-                                                            </Box>
-                                                        )
-                                                    })}
-                                                    <Box display="flex" justifyContent="start" alignItems="center" sx={{width: '90%'}}>
-                                                        <IconButton color="primary" onClick={()=>handle_paper_adding(idx_of_paper_years)}>
-                                                            <AddCircleOutlineIcon />
-                                                        </IconButton>
+                                                    :
+                                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                                         sx={{width: '100%'}}>
+                                                        <Typography
+                                                            sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                                            {sls_member_profile.email}
+                                                        </Typography>
                                                     </Box>
-                                                </Stack>
-                                            )
-                                        })}
-                                        <Box display="flex" justifyContent="start" alignItems="center" sx={{width: '100%'}}>
-                                            <IconButton color="primary" onClick={()=>handle_year_adding()}>
-                                                <AddCircleOutlineIcon />
-                                            </IconButton>
-                                        </Box>
-                                    </Stack>
-                                    :
-                                    sls_member_profile.paper_years.length > 0 ?
-                                        <Stack spacing={0} sx={{width: '100%'}}>
-                                            {sls_member_profile.paper_years.map((val, idx) => {
-                                                return (
-                                                    <Stack display="flex" justifyContent="center" alignItems="center"
-                                                           spacing={0} sx={{width: '100%'}}>
-                                                        <Box display="flex" justifyContent="start" alignItems="center"
-                                                             sx={{width: '100%'}}>
-                                                            <Typography color="text.secondary" sx={{
-                                                                fontWeight: 'bold',
-                                                                fontSize: 'subtitle1.fontSize'
-                                                            }}>
-                                                                {val + "："}
-                                                            </Typography>
-                                                        </Box>
-                                                        {sls_member_profile.papers[idx].map((val, idx) => {
-                                                            return (
-                                                                <Box display="flex" justifyContent="start"
-                                                                     alignItems="center" sx={{width: '90%'}}>
-                                                                    <Typography color="text.secondary"
-                                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                        {"[" + (idx + 1) + "]" + " " + val}
-                                                                    </Typography>
-                                                                </Box>
-                                                            )
-                                                        })}
-                                                    </Stack>
-                                                )
-                                            })}
+                                                }
+                                            </Stack>
+                                            <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>}
+                                                   sx={{width: '33.3%'}}>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography color="text.secondary"
+                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                        电话号码
+                                                    </Typography>
+                                                </Box>
+                                                {is_editing ?
+                                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                                         sx={{width: '100%'}}>
+                                                        <TextField
+                                                            id="outlined-multiline-flexible"
+                                                            value={phone_number}
+                                                            multiline
+                                                            minRows={1}
+                                                            maxRows={1}
+                                                            sx={{width: "90%"}}
+                                                            size="small"
+                                                            color="primary"
+                                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                set_phone_number(event.target.value);
+                                                                check_phone_number(event.target.value);
+                                                            }}
+                                                            error={phone_number_error_text.length != 0}
+                                                            helperText={phone_number_error_text}
+                                                        />
+                                                    </Box>
+                                                    :
+                                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                                         sx={{width: '100%'}}>
+                                                        <Typography
+                                                            sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                                            {sls_member_profile.phone_number}
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                            </Stack>
+                                            <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>}
+                                                   sx={{width: '33.3%'}}>
+                                                <Box display="flex" justifyContent="center" alignItems="center"
+                                                     sx={{width: '100%'}}>
+                                                    <Typography color="text.secondary"
+                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                        个人主页
+                                                    </Typography>
+                                                </Box>
+                                                {is_editing ?
+                                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                                         sx={{width: '100%'}}>
+                                                        <TextField
+                                                            id="outlined-multiline-flexible"
+                                                            value={url}
+                                                            multiline
+                                                            minRows={1}
+                                                            maxRows={1}
+                                                            sx={{width: "90%"}}
+                                                            size="small"
+                                                            color="primary"
+                                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                set_url(event.target.value);
+                                                                check_url(event.target.value);
+                                                            }}
+                                                            error={url_error_text.length != 0}
+                                                            helperText={url_error_text}
+                                                        />
+                                                    </Box>
+                                                    :
+                                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                                         sx={{width: '100%'}}>
+                                                        <Typography
+                                                            sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
+                                                            {sls_member_profile.url}
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                            </Stack>
                                         </Stack>
+                                    </Stack>
+                                </Grid>
+                            </Grid>
+                            <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
+                                   sx={{width: '80%'}}>
+                                <Stack display="flex" justifyContent="center" alignItems="center" spacing={1}
+                                       divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '100%'}}>
+                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                         sx={{width: '100%'}}>
+                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                            个人介绍
+                                        </Typography>
+                                    </Box>
+                                    {is_editing ?
+                                        <Box display="flex" justifyContent="center" alignItems="center"
+                                             sx={{width: '100%'}}>
+                                            <TextField
+                                                id="outlined-multiline-flexible"
+                                                value={introduction}
+                                                multiline
+                                                minRows={1}
+                                                maxRows={5}
+                                                sx={{width: "90%"}}
+                                                size="small"
+                                                color="primary"
+                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                    set_introduction(event.target.value);
+                                                    check_introduction(event.target.value);
+                                                }}
+                                                error={introduction_error_text.length != 0}
+                                                helperText={introduction_error_text}
+                                            />
+                                        </Box>
                                         :
                                         <Box display="flex" justifyContent="start" alignItems="center"
                                              sx={{width: '90%'}}>
-                                            <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                小僧正在努力中~
+                                            <Typography color="text.secondary"
+                                                        sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                {sls_member_profile.introduction}
                                             </Typography>
                                         </Box>
-                                }
+                                    }
+                                </Stack>
                             </Stack>
-                        </Stack>
-                        {is_editing ?
-                            <Grid container spacing={0} sx={{width: "80%"}}>
-                                <Grid xs={9.8}>
-                                    <Button fullWidth variant="outlined" color="primary" onClick={()=>{handle_submit_sls_member_profile_update()}}
-                                            sx={{fontSize: 'subtitle1.fontSize', height: '30px', letterSpacing: 3}}>
-                                        保存
-                                    </Button>
+                            <Stack display="flex" justifyContent="center" alignItems="start" direction="row" spacing={0}
+                                   sx={{width: '80%'}}>
+                                <Stack display="flex" justifyContent="center" alignItems="center" spacing={1}
+                                       divider={<Divider orientation="horizontal" flexItem/>} sx={{width: '100%'}}>
+                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                         sx={{width: '100%'}}>
+                                        <Typography color="text.secondary" sx={{fontSize: 'subtitle1.fontSize'}}>
+                                            论文
+                                        </Typography>
+                                    </Box>
+                                    {is_editing ?
+                                        <Stack spacing={1} sx={{width: '100%'}}>
+                                            {paper_years.map((val_of_paper_years, idx_of_paper_years) => {
+                                                return (
+                                                    <Stack display="flex" justifyContent="center" alignItems="center"
+                                                           spacing={1} sx={{width: '100%'}}>
+                                                        <Box display="flex" justifyContent="start" alignItems="center"
+                                                             sx={{width: '100%'}}>
+                                                            <TextField
+                                                                id="outlined-multiline-flexible"
+                                                                value={val_of_paper_years}
+                                                                multiline
+                                                                minRows={1}
+                                                                maxRows={5}
+                                                                sx={{width: "20%"}}
+                                                                size="small"
+                                                                color="primary"
+                                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    set_paper_years(paper_years.map((val_of_paper_years_looking_for, idx_of_paper_years_looking_for) => {
+                                                                        if (idx_of_paper_years_looking_for == idx_of_paper_years) {
+                                                                            return event.target.value;
+                                                                        } else {
+                                                                            return val_of_paper_years_looking_for;
+                                                                        }
+                                                                    }));
+                                                                    check_paper_years(paper_years.map((val_of_paper_years_looking_for, idx_of_paper_years_looking_for) => {
+                                                                        if (idx_of_paper_years_looking_for == idx_of_paper_years) {
+                                                                            return event.target.value;
+                                                                        } else {
+                                                                            return val_of_paper_years_looking_for;
+                                                                        }
+                                                                    }));
+                                                                }}
+                                                                error={paper_years_error_texts[idx_of_paper_years].length != 0}
+                                                                helperText={paper_years_error_texts[idx_of_paper_years]}
+                                                            />
+                                                            <Box sx={{width: '10px'}}/>
+                                                            <IconButton color="error"
+                                                                        onClick={() => handle_year_removing(idx_of_paper_years)}>
+                                                                <RemoveCircleOutlineIcon/>
+                                                            </IconButton>
+                                                        </Box>
+                                                        {papers[idx_of_paper_years].map((val_of_papers, idx_of_papers) => {
+                                                            return (
+                                                                <Box display="flex" justifyContent="center"
+                                                                     alignItems="center" sx={{width: '100%'}}>
+                                                                    <TextField
+                                                                        id="outlined-multiline-flexible"
+                                                                        value={val_of_papers}
+                                                                        multiline
+                                                                        minRows={1}
+                                                                        maxRows={2}
+                                                                        sx={{width: "80%"}}
+                                                                        size="small"
+                                                                        color="primary"
+                                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                                            set_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
+                                                                                return val_of_papers_of_specific_year.map((val_of_papers_looking_for, idx_of_papers_looking_for) => {
+                                                                                    if (idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for) {
+                                                                                        return event.target.value;
+                                                                                    } else {
+                                                                                        return val_of_papers_looking_for;
+                                                                                    }
+                                                                                })
+                                                                            }));
+                                                                            check_papers(papers.map((val_of_papers_of_specific_year, idx_of_papers_of_specific_year) => {
+                                                                                return val_of_papers_of_specific_year.map((val_of_papers_looking_for, idx_of_papers_looking_for) => {
+                                                                                    if (idx_of_papers_of_specific_year == idx_of_paper_years && idx_of_papers == idx_of_papers_looking_for) {
+                                                                                        return event.target.value;
+                                                                                    } else {
+                                                                                        return val_of_papers_looking_for;
+                                                                                    }
+                                                                                })
+                                                                            }));
+                                                                        }}
+                                                                        error={papers_error_texts[idx_of_paper_years][idx_of_papers].length != 0}
+                                                                        helperText={papers_error_texts[idx_of_paper_years][idx_of_papers]}
+                                                                    />
+                                                                    <Box sx={{width: '10px'}}/>
+                                                                    <IconButton color="error"
+                                                                                onClick={() => handle_paper_removing(idx_of_paper_years, idx_of_papers)}>
+                                                                        <RemoveCircleOutlineIcon/>
+                                                                    </IconButton>
+                                                                </Box>
+                                                            )
+                                                        })}
+                                                        <Box display="flex" justifyContent="start" alignItems="center"
+                                                             sx={{width: '90%'}}>
+                                                            <IconButton color="primary"
+                                                                        onClick={() => handle_paper_adding(idx_of_paper_years)}>
+                                                                <AddCircleOutlineIcon/>
+                                                            </IconButton>
+                                                        </Box>
+                                                    </Stack>
+                                                )
+                                            })}
+                                            <Box display="flex" justifyContent="start" alignItems="center"
+                                                 sx={{width: '100%'}}>
+                                                <IconButton color="primary" onClick={() => handle_year_adding()}>
+                                                    <AddCircleOutlineIcon/>
+                                                </IconButton>
+                                            </Box>
+                                        </Stack>
+                                        :
+                                        sls_member_profile.paper_years.length > 0 ?
+                                            <Stack spacing={0} sx={{width: '100%'}}>
+                                                {sls_member_profile.paper_years.map((val, idx) => {
+                                                    return (
+                                                        <Stack display="flex" justifyContent="center"
+                                                               alignItems="center"
+                                                               spacing={0} sx={{width: '100%'}}>
+                                                            <Box display="flex" justifyContent="start"
+                                                                 alignItems="center"
+                                                                 sx={{width: '100%'}}>
+                                                                <Typography color="text.secondary" sx={{
+                                                                    fontWeight: 'bold',
+                                                                    fontSize: 'subtitle1.fontSize'
+                                                                }}>
+                                                                    {val + "："}
+                                                                </Typography>
+                                                            </Box>
+                                                            {sls_member_profile.papers[idx].map((val, idx) => {
+                                                                return (
+                                                                    <Box display="flex" justifyContent="start"
+                                                                         alignItems="center" sx={{width: '90%'}}>
+                                                                        <Typography color="text.secondary"
+                                                                                    sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                                            {"[" + (idx + 1) + "]" + " " + val}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                )
+                                                            })}
+                                                        </Stack>
+                                                    )
+                                                })}
+                                            </Stack>
+                                            :
+                                            <Box display="flex" justifyContent="start" alignItems="center"
+                                                 sx={{width: '90%'}}>
+                                                <Typography color="text.secondary"
+                                                            sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                    小僧正在努力中~
+                                                </Typography>
+                                            </Box>
+                                    }
+                                </Stack>
+                            </Stack>
+                            {is_editing ?
+                                <Grid container spacing={0} sx={{width: "80%"}}>
+                                    <Grid xs={9.8}>
+                                        <Button fullWidth variant="outlined" color="primary" onClick={() => {
+                                            handle_submit_sls_member_profile_update()
+                                        }}
+                                                sx={{fontSize: 'subtitle1.fontSize', height: '30px', letterSpacing: 3}}>
+                                            保存
+                                        </Button>
+                                    </Grid>
+                                    <Grid xs={0.2}/>
+                                    <Grid xs={2}>
+                                        <Button fullWidth variant="outlined" color="error" onClick={() => {
+                                            set_is_editing(false)
+                                        }}
+                                                sx={{fontSize: 'subtitle1.fontSize', height: '30px', letterSpacing: 3}}>
+                                            取消
+                                        </Button>
+                                    </Grid>
                                 </Grid>
-                                <Grid xs={0.2}/>
-                                <Grid xs={2}>
-                                    <Button fullWidth variant="outlined" color="warning" onClick={()=>{set_is_editing(false)}}
-                                            sx={{fontSize: 'subtitle1.fontSize', height: '30px', letterSpacing: 3}}>
-                                        取消
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                            :
-                            update_success ?
-                                <Box display="flex" justifyContent="center" alignItems="center"
-                                     sx={{width: '80%'}}>
-                                    <Typography
-                                        textAlign="center"
-                                        sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>
-                                        保存成功
-                                    </Typography>
-                                </Box>
                                 :
-                                <Button onClick={() => {
-                                    set_is_editing(true)
-                                }} fullWidth variant="outlined"
-                                        sx={{
-                                            fontSize: 'subtitle1.fontSize',
-                                            height: '30px',
-                                            width: "80%",
-                                            letterSpacing: 3
-                                        }}>
-                                    编辑
-                                </Button>
-                        }
-                    </Stack>
-                </Box>
-                :
-                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <CircularProgress color="primary"/>
-                </Box>
+                                update_success ?
+                                    <Box display="flex" justifyContent="center" alignItems="center"
+                                         sx={{width: '80%'}}>
+                                        <Typography
+                                            textAlign="center"
+                                            sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>
+                                            保存成功
+                                        </Typography>
+                                    </Box>
+                                    :
+                                    <Button onClick={() => {
+                                        set_is_editing(true)
+                                    }} fullWidth variant="outlined"
+                                            sx={{
+                                                fontSize: 'subtitle1.fontSize',
+                                                height: '30px',
+                                                width: "80%",
+                                                letterSpacing: 3
+                                            }}>
+                                        编辑
+                                    </Button>
+                            }
+                        </Stack>
+                    </Box>
+                    :
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                        <CircularProgress color="primary"/>
+                    </Box>
                 }
                 <Box sx={{height: '40px', width: '100%'}}/>
             </Paper>
@@ -845,22 +877,10 @@ function UserPosts(p: { student_id: string }) {
     }]);
     const [num_posts, set_num_posts] = useState(0);
 
-    // useEffect(() => {
-    //     api_get_posts_with_student_id(USER_POST_PIECES, page, p.student_id).then((result) => {
-    //         if (result.status == API_STATUS.SUCCESS) {
-    //             set_posts(result.data);
-    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
-    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: null}})
-    //         }
-    //     })
-    // }, [page])
-
     useEffect(() => {
         api_get_posts_with_student_id(MAX_PIECES, 1, p.student_id).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
-                set_num_posts(Math.ceil(result.data.length / POST_PIECES));
+                set_num_posts(Math.ceil(result.data.length / USER_POST_PIECES));
                 set_posts(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
@@ -887,7 +907,7 @@ function UserPosts(p: { student_id: string }) {
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Stack spacing={2} sx={{width: '80%'}}>
                     {posts.length > 0 ? posts[0].post_id.length > 0 ?
-                            posts.slice((page - 1) * POST_PIECES, page * POST_PIECES).map((post) => {
+                            posts.slice((page - 1) * USER_POST_PIECES, page * USER_POST_PIECES).map((post) => {
                                 return <Post post={post} page={page}/>
                             })
                             :
@@ -937,22 +957,10 @@ function UserFavoritePosts(p: { student_id: string }) {
     }]);
     const [num_posts, set_num_posts] = useState(0);
 
-    // useEffect(() => {
-    //     api_get_favorite_posts_with_student_id(USER_POST_PIECES, page, p.student_id).then((result) => {
-    //         if (result.status == API_STATUS.SUCCESS) {
-    //             set_posts(result.data);
-    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
-    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: null}})
-    //         }
-    //     })
-    // }, [page])
-
     useEffect(() => {
         api_get_favorite_posts_with_student_id(MAX_PIECES, 1, p.student_id).then((result) => {
             if (result.status == API_STATUS.SUCCESS) {
-                set_num_posts(Math.ceil(result.data.length / POST_PIECES));
+                set_num_posts(Math.ceil(result.data.length / USER_POST_PIECES));
                 set_posts(result.data);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
@@ -979,7 +987,7 @@ function UserFavoritePosts(p: { student_id: string }) {
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Stack spacing={2} sx={{width: '80%'}}>
                     {posts.length > 0 ? posts[0].post_id.length > 0 ?
-                            posts.slice((page - 1) * POST_PIECES, page * POST_PIECES).map((post) => {
+                            posts.slice((page - 1) * USER_POST_PIECES, page * USER_POST_PIECES).map((post) => {
                                 return <Post post={post} page={page}/>
                             })
                             :
@@ -1056,7 +1064,8 @@ function UserContent(p: { cookies: { token?: any }, setCookies: (name: "token", 
                         <Box sx={{height: '10px', width: '100%'}}/>
                         {p.student_id && <UserProfile student_id={p.student_id}/>}
                         {user_profile.sls_verification && <Box sx={{height: '10px', width: '100%'}}/>}
-                        {user_profile.sls_verification && <SlsMemberProfile cookies={p.cookies} setCookies={p.setCookies}/>}
+                        {user_profile.sls_verification &&
+                            <SlsMemberProfile cookies={p.cookies} setCookies={p.setCookies}/>}
                         <Box sx={{height: '10px', width: '100%'}}/>
                         {p.student_id && <UserPosts student_id={p.student_id}/>}
                         <Box sx={{height: '10px', width: '100%'}}/>

@@ -28,7 +28,7 @@ function AdminErrorPage() {
                 sx={{flexGrow: 1, bgcolor: 'background.default', p: 3}}
             >
                 <Toolbar/>
-                <Typography>{error?error:"抱歉，出了些问题"}</Typography>
+                <Typography>{error ? error : "抱歉，出了些问题"}</Typography>
             </Box>
         </Box>
     );

@@ -15,6 +15,8 @@ import SlsMemberPage from './sls_member_page/SlsMemberPage';
 import AdminLoginPage from './admin_login_page/AdminLoginPage';
 import AdminPage from './admin_page/AdminPage';
 import AdminErrorPage from './error_page/AdminErrorPage';
+import AnnualPage from './annual_page/AnnualPage';
+import ContactPage from './contact_page/ContactPage';
 
 // 定义多页面的路由
 const router = createBrowserRouter([
@@ -62,6 +64,14 @@ const router = createBrowserRouter([
     {
         path: "/admin_error",
         element: <AdminErrorPage/>,
+    },
+    {
+        path: "/annual",
+        element: <AnnualPage/>,
+    },
+    {
+        path: "/contact",
+        element: <ContactPage/>,
     },
 ]);
 

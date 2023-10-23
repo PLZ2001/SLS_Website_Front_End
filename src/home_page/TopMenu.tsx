@@ -12,13 +12,18 @@ function TopMenu() {
                 <Button color='secondary'
                         sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, height: "30px"}}>首页</Button>
             </Link>
-            <Button color='secondary' sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>课题组概况</Button>
-            <Button color='secondary' sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>研究成果</Button>
+            <Link to={`/annual`}>
+                <Button color='secondary'
+                        sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, height: "30px"}}>山林寺课题组</Button>
+            </Link>
             <Link to={`/forum`}>
                 <Button color='secondary'
                         sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, height: "30px"}}>山林寺论坛</Button>
             </Link>
-            <Button color='secondary' sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>联系我们</Button>
+            <Link to={`/contact`}>
+                <Button color='secondary'
+                        sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, height: "30px"}}>联系我们</Button>
+            </Link>
         </Stack>
     )
 }

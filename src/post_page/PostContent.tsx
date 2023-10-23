@@ -49,7 +49,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Avatar from "@mui/material/Avatar";
 import Link from "@mui/material/Link";
 
-function Post(p: { handle_scroll: () => void, post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[], category: string }, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
+function Post(p: { handle_scroll: () => void, post: { post_id: string, title: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string, display_name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[], category: string }, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
 
     const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
@@ -184,7 +184,8 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                     <div>
                                         <Box display="flex" justifyContent="start" alignItems="center"
                                              sx={{width: '100%'}}>
-                                            <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                            <Grid container spacing={0}
+                                                  sx={{paddingLeft: '20px', paddingRight: '20px'}}>
                                                 {p.post.files.filter((val) => {
                                                     return val.category == "image"
                                                 }).map((image_file) => {
@@ -198,10 +199,10 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                                                   return val.category == "image"
                                                               }).length > 1 ? {height: '150px'} : {height: '300px'}}>
                                                             <Box border="1px solid grey"
-                                                                onClick={() => {
-                                                                set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name);
-                                                                set_image_clicked(true);
-                                                            }} sx={{
+                                                                 onClick={() => {
+                                                                     set_image_src_clicked('http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name);
+                                                                     set_image_clicked(true);
+                                                                 }} sx={{
                                                                 width: '90%',
                                                                 height: '90%',
                                                                 backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + image_file.name + ')'),
@@ -222,7 +223,7 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                     }).length > 0 &&
                                     <div>
                                         <Box display="flex" justifyContent="start" alignItems="center"
-                                             sx={{width: '100%', paddingLeft:"20px", paddingRight:"20px"}}>
+                                             sx={{width: '100%', paddingLeft: "20px", paddingRight: "20px"}}>
                                             <Stack display="flex" justifyContent="start" spacing={2}>
                                                 {p.post.files.filter((val) => {
                                                     return val.category == "other"
@@ -230,9 +231,11 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                                     return (
                                                         <Box display="flex" justifyContent="start"
                                                              alignItems="center">
-                                                            <Link href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name} underline="hover"
-                                                                  sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                                {other_file.name}
+                                                            <Link
+                                                                href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.post.post_id + '/' + other_file.name}
+                                                                underline="hover"
+                                                                sx={{fontSize: 'subtitle1.fontSize'}}>
+                                                                {other_file.display_name}
                                                             </Link>
                                                         </Box>
                                                     )
@@ -315,7 +318,7 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
     )
 }
 
-function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, depth: string, idx: number, comment: { comment_id: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, submit_success: boolean, page: number, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
+function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void, depth: string, idx: number, comment: { comment_id: string, content: string, user_id: string, time: number, stat: { watch: number, like: number, favorite: number, comment: number }, files: { category: string, name: string, display_name: string }[], comment_ids: string[], watch_ids: string[], like_ids: string[], favorite_ids: string[] }, set_is_commenting_on_post: (value: (((prevState: boolean) => boolean) | boolean)) => void, set_post_or_comment_id_commented_on: (value: (((prevState: (string | undefined)) => (string | undefined)) | string | undefined)) => void, submit_success: boolean, page: number, action: number, set_action: (value: (((prevState: number) => number) | number)) => void }) {
     const navigate = useNavigate()
 
     const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
@@ -363,27 +366,13 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
         user_id: "",
         time: 0,
         stat: {watch: 0, like: 0, favorite: 0, comment: 0},
-        files: [{category: "", name: ""}],
+        files: [{category: "", name: "", display_name: ""}],
         comment_ids: [""],
         watch_ids: [""],
         like_ids: [""],
         favorite_ids: [""]
     }]);
     const [num_comments, set_num_comments] = useState(0);
-
-    //
-    // useEffect(() => {
-    //     api_get_comments_of_comments(p.comment.comment_id, COMMENT_OF_COMMENT_PIECES, page).then((result) => {
-    //         if (result.status == API_STATUS.SUCCESS) {
-    //             set_comments(result.data);
-    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
-    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: null}})
-    //         }
-    //     })
-    // }, [page, p.page, p.submit_success, p.comment])
-
 
     useEffect(() => {
         api_get_comments_of_comments(p.comment.comment_id, MAX_PIECES, 1).then((result) => {
@@ -456,7 +445,8 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                             </Avatar>}
                                         <Box alignItems="center">
                                             {comment_user_profile.name.length > 0 ?
-                                                <Link href={`/user/` + comment_user_profile.student_id} underline="hover"
+                                                <Link href={`/user/` + comment_user_profile.student_id}
+                                                      underline="hover"
                                                       sx={{fontSize: 'subtitle2.fontSize'}}>
                                                     {comment_user_profile.name}
                                                 </Link>
@@ -504,7 +494,8 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                         <div>
                                             <Box display="flex" justifyContent="start" alignItems="center"
                                                  sx={{width: '100%'}}>
-                                                <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                <Grid container spacing={0}
+                                                      sx={{paddingLeft: '20px', paddingRight: '20px'}}>
                                                     {p.comment.files.filter((val) => {
                                                         return val.category == "image"
                                                     }).map((image_file) => {
@@ -542,7 +533,7 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                         }).length > 0 &&
                                         <div>
                                             <Box display="flex" justifyContent="start" alignItems="center"
-                                                 sx={{width: '100%', paddingLeft:"20px", paddingRight:"20px"}}>
+                                                 sx={{width: '100%', paddingLeft: "20px", paddingRight: "20px"}}>
                                                 <Stack display="flex" justifyContent="start" spacing={2}>
                                                     {p.comment.files.filter((val) => {
                                                         return val.category == "other"
@@ -550,9 +541,11 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                                         return (
                                                             <Box display="flex" justifyContent="start"
                                                                  alignItems="center">
-                                                                <Link href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name} underline="hover"
-                                                                      sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                    {other_file.name}
+                                                                <Link
+                                                                    href={'http://' + SERVER_URL + ':' + SERVER_PORT + '/files/' + p.comment.comment_id + '/' + other_file.name}
+                                                                    underline="hover"
+                                                                    sx={{fontSize: 'subtitle2.fontSize'}}>
+                                                                    {other_file.display_name}
                                                                 </Link>
                                                             </Box>
                                                         )
@@ -727,8 +720,18 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
         }
     }, [p.cookies.token])
 
-    const [image_files_selected, set_image_files_selected] = useState([{name: "", url: "", file: new File([], "")}])
-    const [other_files_selected, set_other_files_selected] = useState([{name: "", url: "", file: new File([], "")}])
+    const [image_files_selected, set_image_files_selected] = useState([{
+        name: "",
+        display_name: "",
+        url: "",
+        file: new File([], "")
+    }])
+    const [other_files_selected, set_other_files_selected] = useState([{
+        name: "",
+        display_name: "",
+        url: "",
+        file: new File([], "")
+    }])
 
     const [image_files_order, set_image_files_order] = useState([0])
     const [other_files_order, set_other_files_order] = useState([0])
@@ -740,14 +743,24 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                 let _image_files_order = [];
                 for (let i = 0; i < files.length; i++) {
                     _image_files_selected.push({
-                        name: files[i].name,
+                        name: _hash(files[i].name + time_stamp) + "-" + files[i].name.replaceAll(" ", "+"),
+                        display_name: files[i].name,
                         url: URL.createObjectURL(files[i]),
                         file: files[i]
                     })
-                    _image_files_order.push(i);
+                    if (image_files_selected[0].name.length > 0) {
+                        _image_files_order.push(i + image_files_order.length);
+                    } else {
+                        _image_files_order.push(i);
+                    }
                 }
-                set_image_files_selected(_image_files_selected)
-                set_image_files_order(_image_files_order)
+                if (image_files_selected[0].name.length > 0) {
+                    set_image_files_selected(image_files_selected.concat(_image_files_selected))
+                    set_image_files_order(image_files_order.concat(_image_files_order))
+                } else {
+                    set_image_files_selected(_image_files_selected)
+                    set_image_files_order(_image_files_order)
+                }
             }
         }
     }
@@ -759,14 +772,24 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                 let _other_files_order = [];
                 for (let i = 0; i < files.length; i++) {
                     _other_files_selected.push({
-                        name: files[i].name,
+                        name: _hash(files[i].name + time_stamp) + "-" + files[i].name.replaceAll(" ", "+"),
+                        display_name: files[i].name,
                         url: URL.createObjectURL(files[i]),
                         file: files[i]
                     })
-                    _other_files_order.push(i);
+                    if (other_files_selected[0].name.length > 0) {
+                        _other_files_order.push(i + other_files_order.length);
+                    } else {
+                        _other_files_order.push(i);
+                    }
                 }
-                set_other_files_selected(_other_files_selected)
-                set_other_files_order(_other_files_order)
+                if (other_files_selected[0].name.length > 0) {
+                    set_other_files_selected(_other_files_selected.concat(_other_files_selected))
+                    set_other_files_order(other_files_order.concat(_other_files_order))
+                } else {
+                    set_other_files_selected(_other_files_selected)
+                    set_other_files_order(_other_files_order)
+                }
             }
         }
     }
@@ -805,12 +828,20 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
         let _files = []
         if (image_files_selected[0].name.length > 0) {
             for (let i = 0; i < image_files_order.length; i++) {
-                _files.push({category: "image", name: image_files_selected[image_files_order[i]].name})
+                _files.push({
+                    category: "image",
+                    name: image_files_selected[image_files_order[i]].name,
+                    display_name: image_files_selected[image_files_order[i]].display_name
+                })
             }
         }
         if (other_files_selected[0].name.length > 0) {
             for (let i = 0; i < other_files_order.length; i++) {
-                _files.push({category: "other", name: other_files_selected[other_files_order[i]].name})
+                _files.push({
+                    category: "other",
+                    name: other_files_selected[other_files_order[i]].name,
+                    display_name: other_files_selected[other_files_order[i]].display_name
+                })
             }
         }
         set_files(_files)
@@ -823,7 +854,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
 
     const [content, set_content] = useState("");
     const [content_error_text, set_content_error_text] = useState("");
-    const [files, set_files] = useState([{category: "", name: ""}]);
+    const [files, set_files] = useState([{category: "", name: "", display_name: ""}]);
     const [submit_clicked, set_submit_clicked] = useState(false);
 
     const check_comment_content = (comment_content: string) => {
@@ -1065,12 +1096,12 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                         {image_files_selected[0].name.length > 0 &&
                                             <div>
                                                 <Box display="flex" justifyContent="start"
-                                                       alignItems="center"
-                                                       sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                     alignItems="center"
+                                                     sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                            提示：单击图片调整顺序
+                                                            提示：单击图片调整顺序，未选中项不会提交
                                                         </Typography>
                                                     </Box>
                                                 </Box>
@@ -1079,7 +1110,8 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                      alignItems="center"
                                                      sx={{width: '100%'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
-                                                        <Grid container spacing={0} sx={{paddingLeft:'20px', paddingRight:'20px'}}>
+                                                        <Grid container spacing={0}
+                                                              sx={{paddingLeft: '20px', paddingRight: '20px'}}>
                                                             {image_files_selected.map((image_file, idx) => {
                                                                 return (
                                                                     <Grid xs={image_files_selected.length > 1 ? 4 : 8}
@@ -1104,6 +1136,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                                                 backgroundSize: 'contain',
                                                                                 backgroundPosition: 'center center',
                                                                                 backgroundRepeat: 'no-repeat',
+                                                                                opacity: `${image_files_order.indexOf(idx) + 1 == 0 ? 0.5 : 1}`
                                                                             }}/>
                                                                         </Badge>
                                                                     </Grid>
@@ -1119,18 +1152,18 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                             <div>
                                                 <Box display="flex" justifyContent="start"
                                                      alignItems="center"
-                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                     sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Typography color="text.secondary"
                                                                     sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                            提示：单击附件调整顺序
+                                                            提示：单击附件调整顺序，未选中项不会提交
                                                         </Typography>
                                                     </Box>
                                                 </Box>
                                                 <Box sx={{height: '10px', width: '100%'}}/>
                                                 <Box display="flex" justifyContent="start"
                                                      alignItems="center"
-                                                     sx={{width: '100%', paddingLeft:'20px', paddingRight:'20px'}}>
+                                                     sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                     <Box alignItems="center" sx={{width: '100%'}}>
                                                         <Stack display="flex" justifyContent="start" spacing={2}>
                                                             {other_files_selected.map((other_file, idx) => {
@@ -1144,10 +1177,11 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                                         <Box onClick={() => {
                                                                             handleOtherFileOrder(idx)
                                                                         }} display="flex" justifyContent="start"
-                                                                             alignItems="center">
+                                                                             alignItems="center"
+                                                                             sx={{opacity: `${other_files_order.indexOf(idx) + 1 == 0 ? 0.5 : 1}`}}>
                                                                             <Typography
                                                                                 sx={{fontSize: 'subtitle2.fontSize'}}>
-                                                                                {other_file.name}
+                                                                                {other_file.display_name}
                                                                             </Typography>
                                                                         </Box>
                                                                     </Badge>
@@ -1191,7 +1225,7 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
         user_id: "",
         time: 0,
         stat: {watch: 0, like: 0, favorite: 0, comment: 0},
-        files: [{category: "", name: ""}],
+        files: [{category: "", name: "", display_name: ""}],
         comment_ids: [""],
         watch_ids: [""],
         like_ids: [""],
@@ -1204,7 +1238,7 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
         user_id: "",
         time: 0,
         stat: {watch: 0, like: 0, favorite: 0, comment: 0},
-        files: [{category: "", name: ""}],
+        files: [{category: "", name: "", display_name: ""}],
         comment_ids: [""],
         watch_ids: [""],
         like_ids: [""],
@@ -1226,19 +1260,6 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
             }
         })
     }, [action])
-
-    // useEffect(() => {
-    //     api_get_comments(p.post_id, COMMENT_PIECES, page).then((result) => {
-    //         if (result.status == API_STATUS.SUCCESS) {
-    //             set_comments(result.data);
-    //         } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: result.reasons}})
-    //         } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-    //             navigate(`/error`, {replace: false, state: {error: null}})
-    //         }
-    //     })
-    // }, [page, p.submit_success, action])
-
 
     useEffect(() => {
         api_get_comments(p.post_id, MAX_PIECES, 1).then((result) => {

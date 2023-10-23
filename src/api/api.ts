@@ -70,7 +70,7 @@ const api_get_user_profile = async () => {
     }
 }
 
-const api_submit_new_post = async (post_id: string, title: string, content: string, time: number, files: { category: string, name: string }[], category: string) => {
+const api_submit_new_post = async (post_id: string, title: string, content: string, time: number, files: { category: string, name: string, display_name: string }[], category: string) => {
     try {
         const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_new_post/' + post_id,
             {
@@ -155,9 +155,9 @@ const api_get_sls_members = async () => {
     }
 }
 
-const api_read_image_files_in_folder = async () => {
+const api_read_image_files_in_folder = async (folder_category: string) => {
     try {
-        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/read_image_files_in_folder', {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/read_image_files_in_folder/' + folder_category, {
             method: 'GET',
             mode: 'cors',
             credentials: 'include'
@@ -461,7 +461,7 @@ const api_get_sls_member_profile = async () => {
     }
 }
 
-const api_submit_sls_member_profile_update = async (email: string, phone_number: string, url:string, introduction: string, paper_years: string[], papers:string[][]) => {
+const api_submit_sls_member_profile_update = async (email: string, phone_number: string, url: string, introduction: string, paper_years: string[], papers: string[][]) => {
     try {
         const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_sls_member_profile_update',
             {
@@ -473,7 +473,14 @@ const api_submit_sls_member_profile_update = async (email: string, phone_number:
                     'Access-Control-Allow-Origin': '*',
                 },
                 credentials: 'include',
-                body: JSON.stringify({"email": email, "phone_number": phone_number, "url": url, "introduction": introduction, "paper_years":paper_years, "papers":papers})
+                body: JSON.stringify({
+                    "email": email,
+                    "phone_number": phone_number,
+                    "url": url,
+                    "introduction": introduction,
+                    "paper_years": paper_years,
+                    "papers": papers
+                })
             })
         const result = await response.json()
         if (result.status == "SUCCESS") {
@@ -508,7 +515,7 @@ const api_get_sls_member_profile_with_student_id = async (student_id: string) =>
     }
 }
 
-const api_submit_sls_member_image = async (files: { name: string, url: string, file: File }[], files_order: number[]) => {
+const api_submit_sls_member_image = async (files: { name: string, file: File }[], files_order: number[]) => {
     try {
         const form_data = new FormData();
         for (let i = 0; i < files_order.length; i++) {
@@ -565,9 +572,9 @@ const api_submit_admin_login_info = async (student_id: string, password: string)
     }
 }
 
-const api_submit_new_sls_member = async (sls_member_category: string, name: string, student_id: string, description:string) => {
+const api_submit_new_sls_member = async (sls_member_category: string, name: string, student_id: string, description: string) => {
     try {
-        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_new_sls_member/'+ sls_member_category,
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_new_sls_member/' + sls_member_category,
             {
                 method: 'POST',
                 mode: 'cors',
@@ -614,7 +621,7 @@ const api_get_admin_profile = async () => {
 
 const api_submit_sls_member_removing = async (sls_member_category: string, student_ids: string[]) => {
     try {
-        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_sls_member_removing/'+ sls_member_category,
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_sls_member_removing/' + sls_member_category,
             {
                 method: 'POST',
                 mode: 'cors',
@@ -693,6 +700,140 @@ const api_submit_comment_removing = async (comment_ids: string[]) => {
     }
 }
 
+const api_submit_sls_member_moving = async (sls_member_category: string, sls_member_category_target: string, student_ids: string[]) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_sls_member_moving/' + sls_member_category,
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    "sls_member_category_target": sls_member_category_target,
+                    "student_ids": student_ids
+                })
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_photo_removing = async (file_paths: string[]) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_photo_removing',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"file_paths": file_paths})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_images = async (files: { name: string, file: File }[], files_order: number[], folder_category: string) => {
+    try {
+        const form_data = new FormData();
+        for (let i = 0; i < files_order.length; i++) {
+            form_data.append(files[files_order[i]].name, files[files_order[i]].file);
+        }
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_images/' + folder_category,
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: form_data
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_get_text = async (category: string) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_text/' + category, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include'
+        })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
+const api_submit_new_text = async (text: string, time: number, category: string) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_new_text/' + category,
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"text": text, "time": time})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
 export {
     api_submit_files,
     api_get_user_profile_with_student_id,
@@ -720,5 +861,10 @@ export {
     api_get_admin_profile,
     api_submit_sls_member_removing,
     api_submit_post_removing,
-    api_submit_comment_removing
+    api_submit_comment_removing,
+    api_submit_sls_member_moving,
+    api_submit_photo_removing,
+    api_submit_images,
+    api_get_text,
+    api_submit_new_text,
 }

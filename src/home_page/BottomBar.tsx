@@ -6,7 +6,7 @@ import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import {Link as Link_MUI, useNavigate} from "react-router-dom";
+import {Link as Link_MUI} from "react-router-dom";
 
 function BottomBar() {
     return (
