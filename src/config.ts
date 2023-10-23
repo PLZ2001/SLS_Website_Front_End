@@ -2,7 +2,8 @@ import {createTheme} from "@mui/material/styles";
 import * as CryptoJS from "crypto-js";
 
 // 域名
-const SERVER_URL = '127.0.0.1';
+// const SERVER_URL = '127.0.0.1'; // 调试
+const SERVER_URL = 'psplhl-pc.dynv6.net'; // 部署
 const SERVER_PORT = '4000';
 
 // API返回状态
