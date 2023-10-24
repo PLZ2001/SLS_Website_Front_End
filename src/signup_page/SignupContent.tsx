@@ -10,8 +10,9 @@ import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
 import SendIcon from '@mui/icons-material/Send';
 import CircularProgress from '@mui/material/CircularProgress';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {api_submit_signup_info} from '../api/api';
+import Link from "@mui/material/Link";
 
 function SignUp() {
     const navigate = useNavigate()
@@ -101,7 +102,7 @@ function SignUp() {
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Link to={`/login`}>
+                    <Link href={'/login'} underline="hover">
                         <Button variant="contained"
                                 sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>马上登录</Button>
                     </Link>

@@ -142,7 +142,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 if (result.status == API_STATUS.SUCCESS) {
                     set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    p.setCookies("token", "", {path: "/"})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: null}})

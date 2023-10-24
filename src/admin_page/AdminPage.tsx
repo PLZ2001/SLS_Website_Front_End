@@ -1581,7 +1581,7 @@ function AdminPage() {
                 if (result.status == API_STATUS.SUCCESS) {
                     set_admin_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    setCookies("admin_token", "", {path: "/", sameSite: 'none', secure: true})
+                    setCookies("admin_token", "", {path: "/"})
                     navigate(`/admin_error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/admin_error`, {replace: false, state: {error: null}})
@@ -1641,7 +1641,7 @@ function AdminPage() {
                     {["返回网站"].map((text) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton onClick={() => {
-                                setCookies("admin_token", "", {path: "/", sameSite: 'none', secure: true});
+                                setCookies("admin_token", "", {path: "/"});
                                 navigate(`/`, {replace: false})
                             }}>
                                 <ListItemText primary={text}/>

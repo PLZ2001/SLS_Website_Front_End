@@ -60,7 +60,7 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                 if (result.status == API_STATUS.SUCCESS) {
                     set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    p.setCookies("token", "", {path: "/"})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: null}})
@@ -329,7 +329,7 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                 if (result.status == API_STATUS.SUCCESS) {
                     set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    p.setCookies("token", "", {path: "/"})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: null}})
@@ -709,7 +709,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                 if (result.status == API_STATUS.SUCCESS) {
                     set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    p.setCookies("token", "", {path: "/"})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: null}})

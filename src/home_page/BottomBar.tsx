@@ -6,7 +6,6 @@ import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import {Link as Link_MUI} from "react-router-dom";
 
 function BottomBar() {
     return (
@@ -34,11 +33,11 @@ function BottomBar() {
                 </Grid>
                 <Grid xs={2.5} display="flex" justifyContent="end">
                     <Box sx={{paddingTop: '5px', height: '30px'}}>
-                        <Link_MUI to={`/admin_login`}>
+                        <Link href={'/admin_login'} underline="hover">
                             <Button variant="outlined" sx={{fontSize: 'subtitle1.fontSize', height: '30px'}}>
                                 管理员登录
                             </Button>
-                        </Link_MUI>
+                        </Link>
                     </Box>
                 </Grid>
                 <Grid xs={0.25}/>

@@ -208,7 +208,7 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                     set_papers(result.data.papers);
                     check_papers(result.data.papers);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    p.setCookies("token", "", {path: "/"})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: null}})
@@ -1030,7 +1030,7 @@ function UserContent(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 if (result.status == API_STATUS.SUCCESS) {
                     set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    p.setCookies("token", "", {path: "/"})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: null}})

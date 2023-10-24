@@ -9,9 +9,10 @@ import TextField from "@mui/material/TextField";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
 import CircularProgress from '@mui/material/CircularProgress';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {CookieSetOptions} from 'universal-cookie';
 import {api_submit_admin_login_info} from "../api/api";
+import Link from "@mui/material/Link";
 
 function Login(p: { setCookies: (name: "admin_token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     const navigate = useNavigate()
@@ -47,7 +48,7 @@ function Login(p: { setCookies: (name: "admin_token", value: any, options?: (Coo
             set_login_clicked(true);
             const result = await api_submit_admin_login_info(student_id, _hash(password));
             if (result.status == API_STATUS.SUCCESS) {
-                p.setCookies("admin_token", result.data.token, {path: "/", sameSite: 'none', secure: true})
+                p.setCookies("admin_token", result.data.token, {path: "/"})
                 set_login_success(true);
                 set_login_clicked(false);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
@@ -86,7 +87,7 @@ function Login(p: { setCookies: (name: "admin_token", value: any, options?: (Coo
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Link to={`/admin/0`}>
+                    <Link href={'/admin/0'} underline="hover">
                         <Button variant="contained"
                                 sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>进入管理系统</Button>
                     </Link>

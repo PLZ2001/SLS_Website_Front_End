@@ -5,12 +5,13 @@ import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
 import {CookieSetOptions} from "universal-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
 import {api_get_user_profile} from "../api/api";
 import Avatar from '@mui/material/Avatar';
+import Link from "@mui/material/Link";
 
 
 function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
@@ -24,7 +25,7 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                 if (result.status == API_STATUS.SUCCESS) {
                     set_user_profile(result.data);
                 } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                    p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true})
+                    p.setCookies("token", "", {path: "/"})
                     navigate(`/error`, {replace: false, state: {error: result.reasons}})
                 } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
                     navigate(`/error`, {replace: false, state: {error: null}})
@@ -67,7 +68,7 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                                         山林寺认证
                                     </Avatar>}
                                 <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{height: '30px'}}>
-                                    <Link to={`/user/` + user_profile.student_id}>
+                                    <Link href={`/user/` + user_profile.student_id} underline="hover">
                                         <Button sx={{
                                             fontSize: 'subtitle1.fontSize',
                                             letterSpacing: 3,
@@ -79,7 +80,7 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                                         letterSpacing: 3,
                                         height: "30px"
                                     }} onClick={() => {
-                                        p.setCookies("token", "", {path: "/", sameSite: 'none', secure: true});
+                                        p.setCookies("token", "", {path: "/"});
                                     }}>退出登录</Button>
                                 </ButtonGroup>
                             </Stack>
@@ -87,14 +88,14 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                             <CircularProgress size="30px" color="primary"/>
                         :
                         <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{height: '30px'}}>
-                            <Link to={`/login`}>
+                            <Link href={'/login'} underline="hover">
                                 <Button sx={{
                                     fontSize: 'subtitle1.fontSize',
                                     letterSpacing: 3,
                                     height: "30px"
                                 }}>登录</Button>
                             </Link>
-                            <Link to={`/signup`}>
+                            <Link href={'/signup'} underline="hover">
                                 <Button sx={{
                                     fontSize: 'subtitle1.fontSize',
                                     letterSpacing: 3,
