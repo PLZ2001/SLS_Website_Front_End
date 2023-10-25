@@ -11,10 +11,11 @@ import Button from "@mui/material/Button";
 import SendIcon from '@mui/icons-material/Send';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useNavigate} from "react-router-dom";
-import {api_submit_signup_info} from '../api/api';
+import {api_submit_login_info, api_submit_signup_info} from '../api/api';
 import Link from "@mui/material/Link";
+import {CookieSetOptions} from "universal-cookie";
 
-function SignUp() {
+function SignUp(p: { setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     const navigate = useNavigate()
 
     const [student_id, set_student_id] = useState("");
@@ -81,6 +82,22 @@ function SignUp() {
         }
     }
 
+    const handleLoginInfo = async () => {
+        check_student_id(student_id)
+        check_password(password)
+        // 检查合法，是否允许登录
+        if (student_id_error_text.length == 0 && password_error_text.length == 0 && student_id.length > 0 && password.length > 0) {
+            const result = await api_submit_login_info(student_id, _hash(password));
+            if (result.status == API_STATUS.SUCCESS) {
+                p.setCookies("token", result.data.token, {path: "/"})
+            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                navigate(`/error`, {replace: false, state: {error: result.reasons}})
+            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                navigate(`/error`, {replace: false, state: {error: null}})
+            }
+        }
+    }
+
 
     if (signup_success) {
         return (
@@ -102,9 +119,11 @@ function SignUp() {
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Link href={'/login'} underline="hover">
-                        <Button variant="contained"
-                                sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>马上登录</Button>
+                    <Link href={'/'} underline="hover">
+                        <Button variant="contained" onClick={() => {
+                            handleLoginInfo()
+                        }}
+                                sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>立即登录</Button>
                     </Link>
                 </Box>
                 <Box sx={{height: '40px', width: '100%'}}/>
@@ -203,12 +222,13 @@ function SignUp() {
     }
 }
 
-function SignupContent() {
+function SignupContent(p: { setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     return (
         <Box sx={{
             width: '100%',
             background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            height: 'calc(100% - 46px)'
         }}>
             <Box sx={{
                 width: '100%',
@@ -225,7 +245,7 @@ function SignupContent() {
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                     <Stack spacing={2} sx={{width: '80%'}}>
                         <Box sx={{height: '10px', width: '100%'}}/>
-                        <SignUp/>
+                        <SignUp setCookies={p.setCookies}/>
                         <Box sx={{height: '50px', width: '100%'}}/>
                     </Stack>
                 </Box>

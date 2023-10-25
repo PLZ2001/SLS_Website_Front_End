@@ -120,7 +120,7 @@ function SlsMembers() {
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
                     {sls_teachers.length > 0 ? sls_teachers[0].name.length > 0 ?
-                            <SlsMembersGrid sls_members_list={sls_teachers} photo_width={"50%"} col={2}
+                            <SlsMembersGrid sls_members_list={sls_teachers} photo_width={"50%"} col={3}
                                             name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
                             :
                             <CircularProgress color="primary"/>
@@ -147,7 +147,7 @@ function SlsMembers() {
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
                     {sls_students.length > 0 ? sls_students[0].name.length > 0 ?
-                            <SlsMembersGrid sls_members_list={sls_students} photo_width={"80%"} col={6}
+                            <SlsMembersGrid sls_members_list={sls_students} photo_width={"80%"} col={5}
                                             name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
                             :
                             <CircularProgress color="primary"/>
@@ -174,7 +174,7 @@ function SlsMembers() {
             <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
                     {sls_graduates.length > 0 ? sls_graduates[0].name.length > 0 ?
-                            <SlsMembersGrid sls_members_list={sls_graduates} photo_width={"90%"} col={8}
+                            <SlsMembersGrid sls_members_list={sls_graduates} photo_width={"90%"} col={6}
                                             name_font_size={"h6.fontSize"} description_font_size={"subtitle1.fontSize"}/>
                             :
                             <CircularProgress color="primary"/>
@@ -430,7 +430,8 @@ function MainContent() {
             background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
             width: '100%',
             borderBottomLeftRadius: '20px',
-            borderBottomRightRadius: '20px'
+            borderBottomRightRadius: '20px',
+            height: 'calc(100% - 46px)'
         }}>
             <Stack spacing={2} sx={{width: '80%'}}>
                 <Box sx={{height: '10px', width: '100%'}}/>

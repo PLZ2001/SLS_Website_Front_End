@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ThemeProvider} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import * as Cookie from "react-cookie";
@@ -8,6 +8,10 @@ import AdminLoginContent from "./AdminLoginContent";
 
 function AdminLoginPage() {
     const [, setCookies] = Cookie.useCookies(["admin_token"])
+
+    useEffect(() => {
+        document.title = `管理员登录 - 山林寺课题组`
+    }, [])
 
     return (
         <ThemeProvider theme={THEME}>

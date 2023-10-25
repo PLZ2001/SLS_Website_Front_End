@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ThemeProvider} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 
@@ -12,6 +12,10 @@ import * as Cookie from "react-cookie";
 
 function HomePage() {
     const [cookies, setCookies] = Cookie.useCookies(["token"])
+
+    useEffect(() => {
+        document.title = `首页 - 山林寺课题组`
+    }, [])
 
     return (
         <ThemeProvider theme={THEME}>

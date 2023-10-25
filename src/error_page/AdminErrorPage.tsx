@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Box from '@mui/material/Box';
 import {useLocation} from 'react-router-dom';
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,6 +9,10 @@ import Typography from "@mui/material/Typography";
 
 function AdminErrorPage() {
     const {state: {error}} = useLocation()
+
+    useEffect(() => {
+        document.title = `错误 - 山林寺课题组网站管理系统`
+    }, [])
 
     return (
         <Box sx={{display: 'flex'}}>

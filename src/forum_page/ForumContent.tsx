@@ -31,8 +31,6 @@ import Link from "@mui/material/Link";
 
 
 function Search(p: { set_search: (value: (((prevState: string) => string) | string)) => void, category: string, set_category: (value: (((prevState: string) => string) | string)) => void, setPage: (value: (((prevState: number) => number) | number)) => void }) {
-
-
     const handleSelect = (event: SelectChangeEvent) => {
         p.set_category(event.target.value);
         p.setPage(1);
@@ -217,7 +215,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                     }
                 }
                 if (other_files_selected[0].name.length > 0) {
-                    set_other_files_selected(_other_files_selected.concat(_other_files_selected))
+                    set_other_files_selected(other_files_selected.concat(_other_files_selected))
                     set_other_files_order(other_files_order.concat(_other_files_order))
                 } else {
                     set_other_files_selected(_other_files_selected)
@@ -845,7 +843,8 @@ function ForumContent(p: { cookies: { token?: any }, setCookies: (name: "token",
         <Box sx={{
             width: '100%',
             background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            height: 'calc(100% - 46px)'
         }}>
             <Box sx={{
                 width: '100%',

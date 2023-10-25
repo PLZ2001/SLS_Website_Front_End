@@ -66,7 +66,8 @@ function ContactContent() {
         <Box sx={{
             width: '100%',
             background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            height: 'calc(100% - 46px)'
         }}>
             <Box sx={{
                 width: '100%',

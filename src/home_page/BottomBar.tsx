@@ -9,7 +9,7 @@ import Link from "@mui/material/Link";
 
 function BottomBar() {
     return (
-        <Box sx={{width: '100%', backgroundColor: '#ffffff'}}>
+        <Box sx={{position: 'fixed', bottom: 0, width: '100%', backgroundColor: '#ffffff'}}>
             <Box sx={{height: '3px', width: '100%'}}/>
             <Grid container spacing={0}>
                 <Grid xs={0.25}/>

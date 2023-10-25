@@ -39,6 +39,10 @@ function SlsMemberProfile(p: { student_id: string }) {
         })
     }, [])
 
+    useEffect(() => {
+        document.title = `山林寺个人主页 - ${sls_member_profile.name} - 山林寺课题组`
+    }, [sls_member_profile])
+
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}} color={"p"}>
             <Box sx={{height: '40px', width: '100%'}}/>
@@ -255,7 +259,8 @@ function SlsMemberContent(p: { student_id: string | undefined }) {
         <Box sx={{
             width: '100%',
             background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            height: 'calc(100% - 46px)'
         }}>
             <Box sx={{
                 width: '100%',

@@ -1598,6 +1598,18 @@ function AdminPage() {
 
     const tabs = ['山林寺成员管理', '山林寺论坛帖子管理', '“照片墙”管理', '“山林寺年报”管理', '“山林寺课题组介绍”管理', '“联系我们”管理'];
 
+    useEffect(() => {
+        document.title =
+            (tab == "0" ? tabs[0] :
+                tab == "1" ? tabs[1] :
+                    tab == "2" ? tabs[2] :
+                        tab == "3" ? tabs[3] :
+                            tab == "4" ? tabs[4] :
+                                tab == "5" ? tabs[5] :
+                                    "错误")
+            + ` - 山林寺课题组网站管理系统`
+    }, [])
+
     return (
         <Box sx={{display: 'flex'}}>
             <CssBaseline/>

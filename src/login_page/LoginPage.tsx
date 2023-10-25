@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ThemeProvider} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import * as Cookie from "react-cookie";
@@ -12,6 +12,9 @@ import LoginContent from "./LoginContent";
 function LoginPage() {
     const [cookies, setCookies] = Cookie.useCookies(["token"])
 
+    useEffect(() => {
+        document.title = `登录 - 山林寺课题组`
+    }, [])
 
     return (
         <ThemeProvider theme={THEME}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ThemeProvider} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 
@@ -14,6 +14,11 @@ function ErrorPage() {
     const [cookies, setCookies] = Cookie.useCookies(["token"])
     // 页面有输入参数error
     const {state: {error}} = useLocation()
+
+    useEffect(() => {
+        document.title = `错误 - 山林寺课题组`
+    }, [])
+
     return (
         <ThemeProvider theme={THEME}>
             <Box sx={{width: '100%', backgroundColor: '#ffffff'}}>

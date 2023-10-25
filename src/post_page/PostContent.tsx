@@ -37,6 +37,7 @@ import {
     api_get_comments,
     api_get_comments_of_comments,
     api_get_post_with_id,
+    api_get_sls_member_profile_with_student_id,
     api_get_user_profile,
     api_get_user_profile_with_student_id,
     api_submit_an_action,
@@ -101,6 +102,33 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
         p.handle_scroll()
     }
 
+    const [sls_member_profile, set_sls_member_profile] = useState({
+        name: "",
+        description: "",
+        image: "",
+        student_id: "",
+        introduction: "",
+        email: "",
+        phone_number: "",
+        papers: [[""]],
+        paper_years: [""],
+        url: ""
+    });
+
+    useEffect(() => {
+        if (post_user_profile.sls_verification) {
+            api_get_sls_member_profile_with_student_id(post_user_profile.student_id).then((result) => {
+                if (result.status == API_STATUS.SUCCESS) {
+                    set_sls_member_profile(result.data);
+                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                    navigate(`/error`, {replace: false, state: {error: result.reasons}})
+                } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                    navigate(`/error`, {replace: false, state: {error: null}})
+                }
+            })
+        }
+    }, [post_user_profile])
+
     return (
         <div style={{width: '100%'}}>
             <Backdrop
@@ -140,14 +168,17 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                         </Box>
                         <Stack display="flex" justifyContent="end" direction="row" alignItems="center" spacing={1}>
                             {post_user_profile.sls_verification &&
-                                <Avatar sx={{
-                                    bgcolor: "#1463d8",
-                                    height: "24px",
-                                    width: "96px",
-                                    fontSize: "subtitle2.fontSize"
-                                }} variant="rounded">
-                                    山林寺认证
-                                </Avatar>}
+                                <Link href={sls_member_profile.url} underline="hover">
+                                    <Avatar sx={{
+                                        bgcolor: "#1463d8",
+                                        height: "24px",
+                                        width: "96px",
+                                        fontSize: "subtitle2.fontSize"
+                                    }} variant="rounded">
+                                        山林寺认证
+                                    </Avatar>
+                                </Link>
+                            }
                             <Box alignItems="center">
                                 {post_user_profile.name.length > 0 ?
                                     <Link href={`/user/` + post_user_profile.student_id} underline="hover"
@@ -406,6 +437,33 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
         p.handle_scroll()
     }
 
+    const [sls_member_profile, set_sls_member_profile] = useState({
+        name: "",
+        description: "",
+        image: "",
+        student_id: "",
+        introduction: "",
+        email: "",
+        phone_number: "",
+        papers: [[""]],
+        paper_years: [""],
+        url: ""
+    });
+
+    useEffect(() => {
+        if (comment_user_profile.sls_verification) {
+            api_get_sls_member_profile_with_student_id(comment_user_profile.student_id).then((result) => {
+                if (result.status == API_STATUS.SUCCESS) {
+                    set_sls_member_profile(result.data);
+                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                    navigate(`/error`, {replace: false, state: {error: result.reasons}})
+                } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                    navigate(`/error`, {replace: false, state: {error: null}})
+                }
+            })
+        }
+    }, [comment_user_profile])
+
     return (
         <div style={{width: '100%'}}>
             <Backdrop
@@ -435,14 +493,17 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                     <Stack display="flex" justifyContent="start" direction="row" alignItems="center"
                                            spacing={1}>
                                         {comment_user_profile.sls_verification &&
-                                            <Avatar sx={{
-                                                bgcolor: "#1463d8",
-                                                height: "24px",
-                                                width: "96px",
-                                                fontSize: "subtitle2.fontSize"
-                                            }} variant="rounded">
-                                                山林寺认证
-                                            </Avatar>}
+                                            <Link href={sls_member_profile.url} underline="hover">
+                                                <Avatar sx={{
+                                                    bgcolor: "#1463d8",
+                                                    height: "24px",
+                                                    width: "96px",
+                                                    fontSize: "subtitle2.fontSize"
+                                                }} variant="rounded">
+                                                    山林寺认证
+                                                </Avatar>
+                                            </Link>
+                                        }
                                         <Box alignItems="center">
                                             {comment_user_profile.name.length > 0 ?
                                                 <Link href={`/user/` + comment_user_profile.student_id}
@@ -784,7 +845,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                     }
                 }
                 if (other_files_selected[0].name.length > 0) {
-                    set_other_files_selected(_other_files_selected.concat(_other_files_selected))
+                    set_other_files_selected(other_files_selected.concat(_other_files_selected))
                     set_other_files_order(other_files_order.concat(_other_files_order))
                 } else {
                     set_other_files_selected(_other_files_selected)
@@ -1274,6 +1335,10 @@ function PostAndItsComments(p: { handle_scroll: () => void, post_id: string, coo
         })
     }, [page, p.submit_success, action])
 
+    useEffect(() => {
+        document.title = `帖子 - ${post.title} - 山林寺课题组`
+    }, [post])
+
     return (
         <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
             <Box sx={{height: '60px', width: '100%'}}/>
@@ -1347,7 +1412,8 @@ function PostContent(p: { post_id: string | undefined, cookies: { token?: any },
         <Box sx={{
             width: '100%',
             background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            height: 'calc(100% - 46px)'
         }}>
             <Box sx={{
                 width: '100%',

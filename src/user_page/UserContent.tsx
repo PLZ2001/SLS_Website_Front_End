@@ -381,40 +381,26 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                                             width="100%"
                                             loading="lazy"
                                         />
-                                        {image_success ?
-                                            <Box display="flex" justifyContent="center" alignItems="center"
-                                                 sx={{width: '80%'}}>
-                                                <Typography
-                                                    textAlign="center"
-                                                    sx={{
-                                                        fontWeight: 'bold',
-                                                        fontSize: 'subtitle1.fontSize',
-                                                    }}>
-                                                    更换成功
-                                                </Typography>
-                                            </Box>
-                                            :
-                                            <Button variant="outlined"
-                                                    sx={{fontSize: 'subtitle1.fontSize', height: '30px'}}>
-                                                更换照片
-                                                <input
-                                                    title=""
-                                                    type="file"
-                                                    style={{
-                                                        position: 'absolute',
-                                                        opacity: 0,
-                                                        left: "0",
-                                                        bottom: "0",
-                                                        width: "100%",
-                                                        height: "100%"
-                                                    }}
-                                                    accept='image/png'
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                        handleImageFile(event.target.files);
-                                                    }}
-                                                />
-                                            </Button>
-                                        }
+                                        <Button variant="outlined"
+                                                sx={{fontSize: 'subtitle1.fontSize', height: '30px'}}>
+                                            更换照片
+                                            <input
+                                                title=""
+                                                type="file"
+                                                style={{
+                                                    position: 'absolute',
+                                                    opacity: 0,
+                                                    left: "0",
+                                                    bottom: "0",
+                                                    width: "100%",
+                                                    height: "100%"
+                                                }}
+                                                accept='image/png'
+                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                    handleImageFile(event.target.files);
+                                                }}
+                                            />
+                                        </Button>
                                     </Stack>
                                 </Grid>
                                 <Grid xs={8}>
@@ -818,27 +804,17 @@ function SlsMemberProfile(p: { cookies: { token?: any }, setCookies: (name: "tok
                                     </Grid>
                                 </Grid>
                                 :
-                                update_success ?
-                                    <Box display="flex" justifyContent="center" alignItems="center"
-                                         sx={{width: '80%'}}>
-                                        <Typography
-                                            textAlign="center"
-                                            sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>
-                                            保存成功
-                                        </Typography>
-                                    </Box>
-                                    :
-                                    <Button onClick={() => {
-                                        set_is_editing(true)
-                                    }} fullWidth variant="outlined"
-                                            sx={{
-                                                fontSize: 'subtitle1.fontSize',
-                                                height: '30px',
-                                                width: "80%",
-                                                letterSpacing: 3
-                                            }}>
-                                        编辑
-                                    </Button>
+                                <Button onClick={() => {
+                                    set_is_editing(true)
+                                }} fullWidth variant="outlined"
+                                        sx={{
+                                            fontSize: 'subtitle1.fontSize',
+                                            height: '30px',
+                                            width: "80%",
+                                            letterSpacing: 3
+                                        }}>
+                                    编辑
+                                </Button>
                             }
                         </Stack>
                     </Box>
@@ -1041,11 +1017,16 @@ function UserContent(p: { cookies: { token?: any }, setCookies: (name: "token", 
         }
     }, [p.cookies.token])
 
+    useEffect(() => {
+        document.title = `用户中心 - ${user_profile.name} - 山林寺课题组`
+    }, [user_profile])
+
     return (
         <Box sx={{
             width: '100%',
             background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            height: 'calc(100% - 46px)'
         }}>
             <Box sx={{
                 width: '100%',
