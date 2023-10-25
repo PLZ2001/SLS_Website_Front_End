@@ -6,12 +6,13 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import {API_STATUS} from '../config';
+import {API_STATUS, SERVER_PORT, SERVER_URL} from '../config';
 import CircularProgress from "@mui/material/CircularProgress";
 import {api_get_sls_members, api_read_image_files_in_folder} from "../api/api";
 import {useNavigate} from "react-router-dom";
 import Link from "@mui/material/Link";
 import Backdrop from "@mui/material/Backdrop";
+import TopMenu from "./TopMenu";
 
 
 function SlsMembersGrid(p: { sls_members_list: { image: string, name: string, description: string, url: string }[], photo_width: string, col: number, name_font_size: string, description_font_size: string }) {
@@ -426,25 +427,43 @@ function ResearchAchievements() {
 
 function MainContent() {
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" sx={{
-            background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
+        <Box sx={{
             width: '100%',
-            borderBottomLeftRadius: '20px',
-            borderBottomRightRadius: '20px',
-            height: 'calc(100% - 46px)'
+            background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
+            borderRadius: '20px',
+            minHeight: 'calc(100vh - 92px)'
         }}>
-            <Stack spacing={2} sx={{width: '80%'}}>
+            <Box sx={{
+                width: '100%',
+                backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.webp' + ')'),
+                backgroundSize: '100% auto',
+                backgroundRepeat: 'no-repeat',
+                borderRadius: '20px',
+                minHeight: 'calc(100vh - 92px)'
+            }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
-                {/*山林寺成员*/}
-                <SlsMembers/>
-                <Box sx={{height: '10px', width: '100%'}}/>
-                {/*照片墙*/}
-                <PhotoWall/>
-                <Box sx={{height: '10px', width: '100%'}}/>
-                {/*研究成果*/}
-                <ResearchAchievements/>
-                <Box sx={{height: '50px', width: '100%'}}/>
-            </Stack>
+                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                    <TopMenu/>
+                </Box>
+                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                    <img src={"http://" + SERVER_URL + ":" + SERVER_PORT + "/images/others/home_slslogo_1.webp"}
+                         alt="山林寺logo" loading="lazy" width="30%" style={{paddingTop: '5%', paddingBottom: '3%'}}/>
+                </Box>
+                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+                    <Stack spacing={2} sx={{width: '80%'}}>
+                        <Box sx={{height: '10px', width: '100%'}}/>
+                        {/*山林寺成员*/}
+                        <SlsMembers/>
+                        <Box sx={{height: '10px', width: '100%'}}/>
+                        {/*照片墙*/}
+                        <PhotoWall/>
+                        <Box sx={{height: '10px', width: '100%'}}/>
+                        {/*研究成果*/}
+                        <ResearchAchievements/>
+                        <Box sx={{height: '50px', width: '100%'}}/>
+                    </Stack>
+                </Box>
+            </Box>
         </Box>
     )
 }

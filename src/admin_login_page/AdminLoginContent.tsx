@@ -178,7 +178,7 @@ function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, op
     return (
         <Box sx={{
             width: '100%',
-            background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
+            background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px'
         }}>
             <Box sx={{
@@ -186,7 +186,8 @@ function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, op
                 backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.webp' + ')'),
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
-                borderRadius: '20px'
+                borderRadius: '20px',
+                minHeight: 'calc(100vh - 92px)'
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

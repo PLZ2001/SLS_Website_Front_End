@@ -90,6 +90,7 @@ function SignUp(p: { setCookies: (name: "token", value: any, options?: (CookieSe
             const result = await api_submit_login_info(student_id, _hash(password));
             if (result.status == API_STATUS.SUCCESS) {
                 p.setCookies("token", result.data.token, {path: "/"})
+                navigate(`/`, {replace: false})
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
@@ -119,12 +120,10 @@ function SignUp(p: { setCookies: (name: "token", value: any, options?: (CookieSe
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Link href={'/'} underline="hover">
-                        <Button variant="contained" onClick={() => {
-                            handleLoginInfo()
-                        }}
-                                sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>立即登录</Button>
-                    </Link>
+                    <Button variant="contained" onClick={() => {
+                        handleLoginInfo()
+                    }}
+                            sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>立即登录</Button>
                 </Box>
                 <Box sx={{height: '40px', width: '100%'}}/>
             </Paper>
@@ -226,16 +225,17 @@ function SignupContent(p: { setCookies: (name: "token", value: any, options?: (C
     return (
         <Box sx={{
             width: '100%',
-            background: 'linear-gradient(to right, #B1B8BF, #B1B8BF, #ABB3BA, #A9B1B7, #AAB1B8)',
+            background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            height: 'calc(100% - 46px)'
+            minHeight: 'calc(100vh - 92px)'
         }}>
             <Box sx={{
                 width: '100%',
                 backgroundImage: String('url(' + 'http://' + SERVER_URL + ':' + SERVER_PORT + '/images/others/home_sls_1.webp' + ')'),
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
-                borderRadius: '20px'
+                borderRadius: '20px',
+                minHeight: 'calc(100vh - 92px)'
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
