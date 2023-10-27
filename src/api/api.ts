@@ -834,13 +834,20 @@ const api_submit_new_text = async (text: string, time: number, category: string)
     }
 }
 
-const api_get_fsmap = async () => {
+const api_get_fsmap = async (path: string) => {
     try {
-        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_fsmap', {
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'include'
-        })
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_fsmap',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"path": path})
+            })
         const result = await response.json()
         if (result.status == "SUCCESS") {
             return {"status": API_STATUS.SUCCESS, "data": result.data};

@@ -25,7 +25,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 
 
-function FTP(p:{FsMap:{rootFolderId:string, fileMap: {}}}) {
+function FTP(p:{FsMap:{rootFolderId:string, fileMap: {}}, path:string}) {
     const navigate = useNavigate()
 
     // @ts-ignore
@@ -76,7 +76,7 @@ function FTP(p:{FsMap:{rootFolderId:string, fileMap: {}}}) {
                     const { targetFile, files } = data.payload;
                     const fileToOpen = targetFile ?? files[0];
                     if (fileToOpen && FileHelper.isDirectory(fileToOpen)) {
-                        setCurrentFolderId(fileToOpen.id);
+                        window.location.href=`/ftp/${(p.path+fileToOpen.name+'/').replaceAll("/", ">")}`
                         return;
                     }
                     data.payload.files.map((f) => window.open(f.thumbnailUrl, `${f.id}`));
@@ -110,7 +110,7 @@ function FTP(p:{FsMap:{rootFolderId:string, fileMap: {}}}) {
     )
 }
 
-function FTPContent() {
+function FTPContent(p:{path:string}) {
     const navigate = useNavigate()
 
     const [FsMap, set_FsMap] = useState({rootFolderId:"", fileMap: {"": {
@@ -122,21 +122,23 @@ function FTPContent() {
             },}});
 
     useEffect(() => {
-        api_get_fsmap().then((result) => {
-            if (result.status == API_STATUS.SUCCESS) {
-                set_FsMap(result.data);
-            } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: result.reasons}})
-            } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                navigate(`/error`, {replace: false, state: {error: null}})
-            }
-        });
-    }, []);
+        if (p.path.length>0) {
+            api_get_fsmap(p.path).then((result) => {
+                if (result.status == API_STATUS.SUCCESS) {
+                    set_FsMap(result.data);
+                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                    navigate(`/error`, {replace: false, state: {error: result.reasons}})
+                } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                    navigate(`/error`, {replace: false, state: {error: null}})
+                }
+            });
+        }
+    }, [p.path]);
 
     return (
         <div style={{width:'100%', height:'100vh'}}>
-            {FsMap.rootFolderId.length>0 ?
-                <FTP FsMap={FsMap}/>
+            {FsMap.rootFolderId.length>0 && p.path.length>0?
+                <FTP FsMap={FsMap} path={p.path}/>
                 :
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%', height:'100vh'}}>
                     <CircularProgress color="primary"/>

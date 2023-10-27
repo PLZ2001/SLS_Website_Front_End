@@ -75,7 +75,7 @@ const router = createBrowserRouter([
         element: <ContactPage/>,
     },
     {
-        path: "/ftp",
+        path: "/ftp/:path_origin",
         element: <FTPPage/>,
     },
 ]);
