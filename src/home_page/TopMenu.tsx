@@ -20,6 +20,10 @@ function TopMenu() {
                 <Button color='secondary'
                         sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, height: "30px"}}>山林寺论坛</Button>
             </Link>
+            <Link href={'/ftp'} underline="hover">
+                <Button color='secondary'
+                        sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, height: "30px"}}>山林寺服务器</Button>
+            </Link>
             <Link href={'/contact'} underline="hover">
                 <Button color='secondary'
                         sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3, height: "30px"}}>联系我们</Button>

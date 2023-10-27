@@ -29,14 +29,18 @@ function ErrorBoard(p: { error: any }) {
                 </Box>
                 <Box sx={{height: '100px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Typography color='black' sx={{fontWeight: 'bold', fontSize: 'h3.fontSize'}}>
-                        {(isRouteErrorResponse(route_error) ? "错误：" + route_error.status + " " + route_error.statusText : p.error ? String(p.error) : "抱歉，出了些问题")}
-                    </Typography>
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
+                        <Typography color='black' sx={{fontWeight: 'bold', fontSize: 'h3.fontSize'}}>
+                            {(isRouteErrorResponse(route_error) ? "错误：" + route_error.status + " " + route_error.statusText : p.error ? String(p.error) : "抱歉，出了些问题")}
+                        </Typography>
+                    </Box>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Typography color='black' sx={{fontWeight: 'bold', fontSize: 'h5.fontSize'}}>
-                        {(isRouteErrorResponse(route_error) ? "详细信息：" + route_error.data : "")}
-                    </Typography>
+                    <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '80%'}}>
+                        <Typography color='black' sx={{fontWeight: 'bold', fontSize: 'h5.fontSize'}}>
+                            {(isRouteErrorResponse(route_error) ? "详细信息：" + route_error.data : "")}
+                        </Typography>
+                    </Box>
                 </Box>
                 <Box sx={{height: '150px', width: '100%'}}/>
             </Box>

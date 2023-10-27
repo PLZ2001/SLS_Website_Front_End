@@ -834,6 +834,26 @@ const api_submit_new_text = async (text: string, time: number, category: string)
     }
 }
 
+const api_get_fsmap = async () => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/get_fsmap', {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include'
+        })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
 export {
     api_submit_files,
     api_get_user_profile_with_student_id,
@@ -867,4 +887,5 @@ export {
     api_submit_images,
     api_get_text,
     api_submit_new_text,
+    api_get_fsmap,
 }
