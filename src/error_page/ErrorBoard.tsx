@@ -2,7 +2,7 @@ import React from 'react';
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {isRouteErrorResponse, useRouteError} from "react-router-dom";
-import {SERVER_PORT, SERVER_URL} from "../config";
+import {MIN_WIDTH, SERVER_PORT, SERVER_URL} from "../config";
 import TopMenu from "../home_page/TopMenu";
 
 function ErrorBoard(p: { error: any }) {
@@ -13,7 +13,7 @@ function ErrorBoard(p: { error: any }) {
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderTopLeftRadius: '20px',
             borderRadius: '20px',
-            minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+            minHeight: `calc(${window.innerHeight}px - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -21,7 +21,7 @@ function ErrorBoard(p: { error: any }) {
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+                minHeight: `calc(${window.innerHeight}px - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

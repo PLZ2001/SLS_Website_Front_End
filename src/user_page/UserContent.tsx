@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
-import {API_STATUS, MAX_PIECES, SERVER_PORT, SERVER_URL, USER_POST_PIECES} from "../config";
+import {API_STATUS, MAX_PIECES, MIN_WIDTH, SERVER_PORT, SERVER_URL, USER_POST_PIECES} from "../config";
 import TopMenu from "../home_page/TopMenu";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -13,7 +13,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
     api_get_favorite_posts_with_student_id,
     api_get_posts_with_student_id,
-    api_get_sls_member_profile, api_get_sls_member_profile_with_student_id,
+    api_get_sls_member_profile,
+    api_get_sls_member_profile_with_student_id,
     api_get_user_profile,
     api_get_user_profile_with_student_id,
     api_submit_sls_member_image,
@@ -1062,7 +1063,7 @@ function UserContent(p: { cookies: { token?: any }, setCookies: (name: "token", 
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+            minHeight: `calc(${window.innerHeight}px - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -1070,7 +1071,7 @@ function UserContent(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+                minHeight: `calc(${window.innerHeight}px - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

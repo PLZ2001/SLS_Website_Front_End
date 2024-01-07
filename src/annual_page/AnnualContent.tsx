@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
-import {API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
+import {API_STATUS, MIN_WIDTH, SERVER_PORT, SERVER_URL} from "../config";
 import TopMenu from "../home_page/TopMenu";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -133,7 +133,7 @@ function AnnualContent() {
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+            minHeight: `calc(${window.innerHeight}px - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -141,7 +141,7 @@ function AnnualContent() {
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+                minHeight: `calc(${window.innerHeight}px - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

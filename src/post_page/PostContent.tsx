@@ -6,7 +6,7 @@ import {
     API_STATUS,
     COMMENT_OF_COMMENT_PIECES,
     COMMENT_PIECES,
-    MAX_PIECES,
+    MAX_PIECES, MIN_WIDTH,
     SERVER_PORT,
     SERVER_URL
 } from "../config";
@@ -1413,7 +1413,7 @@ function PostContent(p: { post_id: string | undefined, cookies: { token?: any },
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+            minHeight: `calc(${window.innerHeight}px - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -1421,7 +1421,7 @@ function PostContent(p: { post_id: string | undefined, cookies: { token?: any },
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+                minHeight: `calc(${window.innerHeight}px - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

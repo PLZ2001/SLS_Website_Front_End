@@ -16,6 +16,9 @@ const COMMENT_PIECES = 5;
 const COMMENT_OF_COMMENT_PIECES = 1;
 const MAX_PIECES = 100000;
 
+// 比例
+const MIN_WIDTH = 800;
+
 // 主题
 const THEME = createTheme({
     // 调色板
@@ -82,5 +85,6 @@ export {
     COMMENT_PIECES,
     MAX_PIECES,
     COMMENT_OF_COMMENT_PIECES,
-    USER_POST_PIECES
+    USER_POST_PIECES,
+    MIN_WIDTH
 };

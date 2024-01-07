@@ -6,7 +6,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import {API_STATUS, SERVER_PORT, SERVER_URL} from '../config';
+import {API_STATUS, MIN_WIDTH, SERVER_PORT, SERVER_URL} from '../config';
 import CircularProgress from "@mui/material/CircularProgress";
 import {api_get_sls_members, api_read_image_files_in_folder} from "../api/api";
 import {useNavigate} from "react-router-dom";
@@ -431,7 +431,7 @@ function MainContent() {
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+            minHeight: `calc(${window.innerHeight}px - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -439,7 +439,7 @@ function MainContent() {
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
+                minHeight: `calc(${window.innerHeight}px - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

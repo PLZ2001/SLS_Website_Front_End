@@ -1,9 +1,6 @@
-import React, {useEffect, useState, useCallback, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import Box from "@mui/material/Box";
-import {API_STATUS, SERVER_PORT, SERVER_URL} from "../config";
-import TopMenu from "../home_page/TopMenu";
-import Stack from "@mui/material/Stack";
-import Paper from "@mui/material/Paper";
+import {API_STATUS} from "../config";
 import {useNavigate} from "react-router-dom";
 import {api_get_fsmap} from "../api/api";
 import {
@@ -19,10 +16,8 @@ import {
     FileToolbar,
     setChonkyDefaults,
 } from 'chonky';
-import { ChonkyIconFA } from 'chonky-icon-fontawesome';
-import Typography from "@mui/material/Typography";
+import {ChonkyIconFA} from 'chonky-icon-fontawesome';
 import CircularProgress from "@mui/material/CircularProgress";
-
 
 
 function FTP(p:{FsMap:{rootFolderId:string, fileMap: {}}, path:string}) {
