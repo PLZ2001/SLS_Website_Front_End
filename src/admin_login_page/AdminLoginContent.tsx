@@ -179,7 +179,8 @@ function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, op
         <Box sx={{
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -187,7 +188,7 @@ function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, op
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: `calc(100vh - 92px)`
+                minHeight: `calc(1500px / ${window.innerWidth} * ${window.innerHeight} - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
