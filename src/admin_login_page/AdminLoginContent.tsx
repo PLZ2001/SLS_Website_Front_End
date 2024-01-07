@@ -187,7 +187,7 @@ function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, op
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: 'calc(100vh - 92px)'
+                minHeight: `calc(100vh - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

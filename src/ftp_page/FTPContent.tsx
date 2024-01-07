@@ -136,11 +136,11 @@ function FTPContent(p:{path:string}) {
     }, [p.path]);
 
     return (
-        <div style={{width:'100%', height:'100vh'}}>
+        <div style={{width:'100%', height:`100vh`}}>
             {FsMap.rootFolderId.length>0 && p.path.length>0?
                 <FTP FsMap={FsMap} path={p.path}/>
                 :
-                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%', height:'100vh'}}>
+                <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%', height:`100vh`}}>
                     <CircularProgress color="primary"/>
                 </Box>
             }

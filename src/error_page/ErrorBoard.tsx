@@ -13,7 +13,7 @@ function ErrorBoard(p: { error: any }) {
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderTopLeftRadius: '20px',
             borderRadius: '20px',
-            minHeight: 'calc(100vh - 92px)'
+            minHeight: `calc(100vh - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -21,7 +21,7 @@ function ErrorBoard(p: { error: any }) {
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: 'calc(100vh - 92px)'
+                minHeight: `calc(100vh - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

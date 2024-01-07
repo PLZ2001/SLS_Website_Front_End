@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
 import {useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Unstable_Grid2";
 import TextField from '@mui/material/TextField';
 import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
 import FilePresentOutlinedIcon from '@mui/icons-material/FilePresentOutlined';
@@ -513,7 +513,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                     </Box>
                                                 </Box>
                                                 <Grid container spacing={0}>
-                                                    <Grid xs={4}>
+                                                    <Grid xs>
                                                         <Stack display="flex" justifyContent="start" direction="row"
                                                                spacing={1} sx={{height: '30px', padding: '20px'}}>
                                                             <IconButton aria-label="add photo" size="small">
@@ -578,7 +578,7 @@ function SendNewPost(p: { cookies: { token?: any }, setCookies: (name: "token", 
                                                             </IconButton>
                                                         </Stack>
                                                     </Grid>
-                                                    <Grid xs={8}>
+                                                    <Grid xs>
                                                         <Stack display="flex" justifyContent="end" direction="row"
                                                                spacing={1} sx={{height: '30px', padding: '20px'}}>
                                                             <Box display="flex" justifyContent="center"
@@ -844,7 +844,7 @@ function ForumContent(p: { cookies: { token?: any }, setCookies: (name: "token",
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            minHeight: 'calc(100vh - 92px)'
+            minHeight: `calc(100vh - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -852,7 +852,7 @@ function ForumContent(p: { cookies: { token?: any }, setCookies: (name: "token",
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: 'calc(100vh - 92px)'
+                minHeight: `calc(100vh - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

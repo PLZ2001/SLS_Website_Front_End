@@ -7,7 +7,7 @@ import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import Pagination from "@mui/material/Pagination";
 import {useNavigate} from "react-router-dom";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Unstable_Grid2";
 import {CookieSetOptions} from "universal-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
@@ -1062,7 +1062,7 @@ function UserContent(p: { cookies: { token?: any }, setCookies: (name: "token", 
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            minHeight: 'calc(100vh - 92px)'
+            minHeight: `calc(100vh - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -1070,7 +1070,7 @@ function UserContent(p: { cookies: { token?: any }, setCookies: (name: "token", 
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: 'calc(100vh - 92px)'
+                minHeight: `calc(100vh - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>

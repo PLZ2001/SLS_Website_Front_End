@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import {useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
 import {CardActionArea} from '@mui/material';
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Unstable_Grid2";
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -83,7 +83,7 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
                             </Box>
                         </Box>
                         <Grid container spacing={0}>
-                            <Grid xs={4}>
+                            <Grid xs>
                                 <Stack display="flex" justifyContent="start" direction="row" spacing={1}
                                        sx={{height: '30px', padding: '20px'}}>
                                     <IconButton aria-label="favorite" size="small">
@@ -136,7 +136,7 @@ function Post(p: { post: { post_id: string, title: string, content: string, user
                                     </IconButton>
                                 </Stack>
                             </Grid>
-                            <Grid xs={8}>
+                            <Grid xs>
                                 <Stack display="flex" justifyContent="end" direction="row" alignItems="center"
                                        spacing={1}
                                        sx={{height: '30px', padding: '20px'}}>

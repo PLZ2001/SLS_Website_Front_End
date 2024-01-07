@@ -18,7 +18,7 @@ import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
 import {useNavigate} from "react-router-dom";
 import Card from '@mui/material/Card';
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Unstable_Grid2";
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -216,7 +216,7 @@ function Post(p: { handle_scroll: () => void, post: { post_id: string, title: st
                                         <Box display="flex" justifyContent="start" alignItems="center"
                                              sx={{width: '100%'}}>
                                             <Grid container spacing={0}
-                                                  sx={{paddingLeft: '20px', paddingRight: '20px'}}>
+                                                  sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                 {p.post.files.filter((val) => {
                                                     return val.category == "image"
                                                 }).map((image_file) => {
@@ -556,7 +556,7 @@ function Comment(p: { handle_scroll: () => void, cookies: { token?: any }, setCo
                                             <Box display="flex" justifyContent="start" alignItems="center"
                                                  sx={{width: '100%'}}>
                                                 <Grid container spacing={0}
-                                                      sx={{paddingLeft: '20px', paddingRight: '20px'}}>
+                                                      sx={{width: '100%', paddingLeft: '20px', paddingRight: '20px'}}>
                                                     {p.comment.files.filter((val) => {
                                                         return val.category == "image"
                                                     }).map((image_file) => {
@@ -1061,7 +1061,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                     </Box>
                                                 </Box>
                                                 <Grid container spacing={0}>
-                                                    <Grid xs={4}>
+                                                    <Grid xs>
                                                         <Stack display="flex" justifyContent="start" direction="row"
                                                                spacing={1} sx={{height: '30px', padding: '20px'}}>
                                                             <IconButton aria-label="add photo" size="small">
@@ -1126,7 +1126,7 @@ function SendNewComment(p: { is_commenting_on_post: boolean, post_or_comment_id_
                                                             </IconButton>
                                                         </Stack>
                                                     </Grid>
-                                                    <Grid xs={8}>
+                                                    <Grid xs>
                                                         <Stack display="flex" justifyContent="end" direction="row"
                                                                spacing={1} sx={{height: '30px', padding: '20px'}}>
                                                             <Box display="flex" justifyContent="center"
@@ -1413,7 +1413,7 @@ function PostContent(p: { post_id: string | undefined, cookies: { token?: any },
             width: '100%',
             background: 'linear-gradient(to right, #ADB5BB, #ADB5BB, #ACB4BA, #ABB3B9, #AAB0B7)',
             borderRadius: '20px',
-            minHeight: 'calc(100vh - 92px)'
+            minHeight: `calc(100vh - 92px)`
         }}>
             <Box sx={{
                 width: '100%',
@@ -1421,7 +1421,7 @@ function PostContent(p: { post_id: string | undefined, cookies: { token?: any },
                 backgroundSize: '100% auto',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '20px',
-                minHeight: 'calc(100vh - 92px)'
+                minHeight: `calc(100vh - 92px)`
             }}>
                 <Box sx={{height: '10px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
