@@ -82,7 +82,7 @@ function Login(p: { setCookies: (name: "token", value: any, options?: (CookieSet
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
-                        You've Logined Successfully
+                        You've Logged in Successfully
                     </Typography>
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>

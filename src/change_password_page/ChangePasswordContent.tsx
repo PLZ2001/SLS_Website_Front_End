@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Box from "@mui/material/Box";
 import {_hash, API_STATUS, SERVER_PORT, SERVER_URL, MIN_WIDTH} from "../config";
 import TopMenu from "../home_page/TopMenu";
@@ -11,63 +11,84 @@ import Button from "@mui/material/Button";
 import CircularProgress from '@mui/material/CircularProgress';
 import {useNavigate} from "react-router-dom";
 import {CookieSetOptions} from 'universal-cookie';
-import {api_submit_admin_login_info} from "../api/api";
+import {api_get_user_profile, api_submit_change_password_info} from "../api/api";
 import Link from "@mui/material/Link";
 
-function Login(p: { setCookies: (name: "admin_token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
+function ChangePassword(p: {cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     const navigate = useNavigate()
 
-    const [student_id, set_student_id] = useState("");
-    const [student_id_error_text, set_student_id_error_text] = useState("");
-    const [password, set_password] = useState("");
-    const [password_error_text, set_password_error_text] = useState("");
-    const [login_clicked, set_login_clicked] = useState(false);
-    const [login_success, set_login_success] = useState(false);
+    const [user_profile, set_user_profile] = useState({student_id: "", name: "", sls_verification: false});
 
-    const check_student_id = (name: string) => {
-        if (name.length == 0) {
-            set_student_id_error_text("账号不能为空")
+    useEffect(() => {
+        if (p.cookies.token) {
+            api_get_user_profile().then((result) => {
+                if (result.status == API_STATUS.SUCCESS) {
+                    set_user_profile(result.data);
+                } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
+                    p.setCookies("token", "", {path: "/"})
+                    navigate(`/error`, {replace: false, state: {error: result.reasons}})
+                } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
+                    navigate(`/error`, {replace: false, state: {error: null}})
+                }
+            })
         } else {
-            set_student_id_error_text("")
+            set_user_profile({student_id: "", name: "", sls_verification: false});
+            navigate(`/error`, {replace: false, state: {error: "抱歉，请登录后再试"}})
+        }
+    }, [p.cookies.token])
+
+    const [old_password, set_old_password] = useState("");
+    const [old_password_error_text, set_old_password_error_text] = useState("");
+    const [new_password, set_new_password] = useState("");
+    const [new_password_error_text, set_new_password_error_text] = useState("");
+    const [change_password_clicked, set_change_password_clicked] = useState(false);
+    const [change_password_success, set_change_password_success] = useState(false);
+
+    const check_old_pasword = (old_password: string) => {
+        if (old_password.length == 0) {
+            set_old_password_error_text("旧密码不能为空")
+        } else {
+            set_old_password_error_text("")
         }
     }
 
-    const check_password = (password: string) => {
-        if (password.length == 0) {
-            set_password_error_text("密码不能为空")
+    const check_new_password = (new_password: string) => {
+        if (new_password.length == 0) {
+            set_new_password_error_text("新密码不能为空")
+        } else if (new_password == old_password) {
+            set_new_password_error_text("新密码与旧密码不能相同")
         } else {
-            set_password_error_text("")
+            set_new_password_error_text("")
         }
     }
 
-    const handleLoginInfo = async () => {
-        check_student_id(student_id)
-        check_password(password)
-        // 检查合法，是否允许登录
-        if (student_id_error_text.length == 0 && password_error_text.length == 0 && student_id.length > 0 && password.length > 0) {
-            set_login_clicked(true);
-            const result = await api_submit_admin_login_info(student_id, _hash(password));
+    const handleChangePasswordInfo = async () => {
+        check_old_pasword(old_password)
+        check_new_password(new_password)
+        // 检查合法，是否允许修改密码
+        if (old_password_error_text.length == 0 && new_password_error_text.length == 0 && old_password.length > 0 && new_password.length > 0) {
+            set_change_password_clicked(true);
+            const result = await api_submit_change_password_info(user_profile.student_id, _hash(old_password), _hash(new_password));
             if (result.status == API_STATUS.SUCCESS) {
-                p.setCookies("admin_token", result.data.token, {path: "/"})
-                set_login_success(true);
-                set_login_clicked(false);
+                set_change_password_success(true);
+                set_change_password_clicked(false);
             } else if (result.status == API_STATUS.FAILURE_WITH_REASONS) {
-                set_login_success(false);
-                set_login_clicked(false);
+                set_change_password_success(false);
+                set_change_password_clicked(false);
                 navigate(`/error`, {replace: false, state: {error: result.reasons}})
             } else if (result.status == API_STATUS.FAILURE_WITHOUT_REASONS) {
-                set_login_success(false);
-                set_login_clicked(false);
+                set_change_password_success(false);
+                set_change_password_clicked(false);
                 navigate(`/error`, {replace: false, state: {error: null}})
             }
         } else {
-            set_login_success(false);
-            set_login_clicked(false);
+            set_change_password_success(false);
+            set_change_password_clicked(false);
         }
     }
 
 
-    if (login_success) {
+    if (change_password_success) {
         return (
             <Paper elevation={12} sx={{width: '100%', borderRadius: '20px'}}>
                 <Box sx={{height: '40px', width: '100%'}}/>
@@ -76,20 +97,20 @@ function Login(p: { setCookies: (name: "admin_token", value: any, options?: (Coo
                     <Typography
                         textAlign="center"
                         sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
-                        登录成功
+                        修改密码成功
                     </Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center"
                      sx={{width: '100%'}}>
                     <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
-                        You've Logged in Successfully
+                        You've Changed Your Password Successfully
                     </Typography>
                 </Box>
                 <Box sx={{height: '30px', width: '100%'}}/>
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
-                    <Link href={'/admin/0'} underline="hover">
+                    <Link href={'/'} underline="hover">
                         <Button variant="contained"
-                                sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>进入管理系统</Button>
+                                sx={{fontSize: 'subtitle1.fontSize', letterSpacing: 3}}>返回首页</Button>
                     </Link>
                 </Box>
                 <Box sx={{height: '40px', width: '100%'}}/>
@@ -100,7 +121,7 @@ function Login(p: { setCookies: (name: "admin_token", value: any, options?: (Coo
             <div>
                 <Backdrop
                     sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
-                    open={login_clicked}
+                    open={change_password_clicked}
                     onExited={() => {
                     }}
                 >
@@ -113,13 +134,13 @@ function Login(p: { setCookies: (name: "admin_token", value: any, options?: (Coo
                         <Typography
                             textAlign="center"
                             sx={{fontWeight: 'bold', fontSize: 'h5.fontSize', letterSpacing: 6}}>
-                            管理员登录
+                            修改密码
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="center" alignItems="center"
                          sx={{width: '100%'}}>
                         <Typography textAlign="center" sx={{fontSize: 'subtitle1.fontSize'}}>
-                            Administrator Login
+                            Change Your Password
                         </Typography>
                     </Box>
                     <Box sx={{height: '30px', width: '100%'}}/>
@@ -130,40 +151,40 @@ function Login(p: { setCookies: (name: "admin_token", value: any, options?: (Coo
                             <Stack display="flex" justifyContent="center" alignItems="center"
                                    sx={{width: '100%'}}>
                                 <TextField
-                                    required
-                                    id="outlined-required"
-                                    label="账号"
-                                    defaultValue=""
-                                    margin="normal"
-                                    fullWidth
-                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                        set_student_id(event.target.value);
-                                        check_student_id(event.target.value);
-                                    }}
-                                    error={student_id_error_text.length != 0}
-                                    helperText={student_id_error_text}
-                                />
-                                <TextField
                                     id="outlined-password-input"
-                                    label="密码"
+                                    label="旧密码"
                                     type="password"
                                     autoComplete="current-password"
                                     margin="normal"
                                     fullWidth
                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                        set_password(event.target.value);
-                                        check_password(event.target.value);
+                                        set_old_password(event.target.value);
+                                        check_old_pasword(event.target.value);
                                     }}
-                                    error={password_error_text.length != 0}
-                                    helperText={password_error_text}
+                                    error={old_password_error_text.length != 0}
+                                    helperText={old_password_error_text}
+                                />
+                                <TextField
+                                    id="outlined-password-input"
+                                    label="新密码"
+                                    type="password"
+                                    autoComplete="current-password"
+                                    margin="normal"
+                                    fullWidth
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                        set_new_password(event.target.value);
+                                        check_new_password(event.target.value);
+                                    }}
+                                    error={new_password_error_text.length != 0}
+                                    helperText={new_password_error_text}
                                 />
                                 <Box sx={{height: '30px', width: '100%'}}/>
                                 <Button onClick={() => {
-                                    handleLoginInfo()
+                                    handleChangePasswordInfo()
                                 }} variant="contained" sx={{
                                     fontSize: 'subtitle1.fontSize',
                                     letterSpacing: 3
-                                }}>登录</Button>
+                                }}>确认</Button>
                             </Stack>
                         </Box>
                     </Box>
@@ -174,7 +195,7 @@ function Login(p: { setCookies: (name: "admin_token", value: any, options?: (Coo
     }
 }
 
-function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
+function ChangePasswordContent(p: {cookies: { token?: any }, setCookies: (name: "token", value: any, options?: (CookieSetOptions | undefined)) => void }) {
     return (
         <Box sx={{
             width: '100%',
@@ -198,7 +219,7 @@ function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, op
                 <Box display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
                     <Stack spacing={2} sx={{width: '80%'}}>
                         <Box sx={{height: '10px', width: '100%'}}/>
-                        <Login setCookies={p.setCookies}/>
+                        <ChangePassword cookies={p.cookies} setCookies={p.setCookies}/>
                         <Box sx={{height: '50px', width: '100%'}}/>
                     </Stack>
                 </Box>
@@ -207,4 +228,4 @@ function AdminLoginContent(p: { setCookies: (name: "admin_token", value: any, op
     )
 }
 
-export default AdminLoginContent;
+export default ChangePasswordContent;

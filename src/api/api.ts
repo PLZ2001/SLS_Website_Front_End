@@ -861,6 +861,33 @@ const api_get_fsmap = async (path: string) => {
     }
 }
 
+const api_submit_change_password_info = async (student_id: string, old_password: string, new_password: string) => {
+    try {
+        const response = await fetch('http://' + SERVER_URL + ':' + SERVER_PORT + '/submit_change_password_info',
+            {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Request-Headers': 'content-type;access-control-allow-origin',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include',
+                body: JSON.stringify({"student_id": student_id, "old_password": old_password, "new_password": new_password})
+            })
+        const result = await response.json()
+        if (result.status == "SUCCESS") {
+            return {"status": API_STATUS.SUCCESS, "data": result.data};
+        } else if (result.status == "FAILURE_WITH_REASONS") {
+            return {"status": API_STATUS.FAILURE_WITH_REASONS, "reasons": result.reasons};
+        } else {
+            return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+        }
+    } catch (error: any) {
+        return {"status": API_STATUS.FAILURE_WITHOUT_REASONS};
+    }
+}
+
 export {
     api_submit_files,
     api_get_user_profile_with_student_id,
@@ -895,4 +922,5 @@ export {
     api_get_text,
     api_submit_new_text,
     api_get_fsmap,
+    api_submit_change_password_info,
 }

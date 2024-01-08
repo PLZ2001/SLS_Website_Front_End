@@ -18,6 +18,7 @@ import AdminErrorPage from './error_page/AdminErrorPage';
 import AnnualPage from './annual_page/AnnualPage';
 import ContactPage from './contact_page/ContactPage';
 import FTPPage from './ftp_page/FTPPage';
+import ChangePasswordPage from './change_password_page/ChangePasswordPage';
 
 // 定义多页面的路由
 const router = createBrowserRouter([
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
     {
         path: "/ftp/:path_origin",
         element: <FTPPage/>,
+    },
+    {
+        path: "/change_password",
+        element: <ChangePasswordPage/>,
     },
 ]);
 

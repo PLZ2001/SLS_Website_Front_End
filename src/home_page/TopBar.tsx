@@ -105,6 +105,13 @@ function TopBar(p: { cookies: { token?: any }, setCookies: (name: "token", value
                                             height: "30px"
                                         }}>{user_profile.name}</Button>
                                     </Link>
+                                    <Link href={`/change_password`} underline="hover">
+                                        <Button sx={{
+                                            fontSize: 'subtitle1.fontSize',
+                                            letterSpacing: 3,
+                                            height: "30px"
+                                        }}>修改密码</Button>
+                                    </Link>
                                     <Button sx={{
                                         fontSize: 'subtitle1.fontSize',
                                         letterSpacing: 3,

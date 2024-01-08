@@ -102,22 +102,6 @@ function SlsMemberProfile(p: { student_id: string }) {
                                                  sx={{width: '100%'}}>
                                                 <Typography color="text.secondary"
                                                             sx={{fontSize: 'subtitle1.fontSize'}}>
-                                                    学号
-                                                </Typography>
-                                            </Box>
-                                            <Box display="flex" justifyContent="center" alignItems="center"
-                                                 sx={{width: '100%'}}>
-                                                <Typography sx={{fontWeight: 'bold', fontSize: 'subtitle1.fontSize'}}>
-                                                    {sls_member_profile.student_id}
-                                                </Typography>
-                                            </Box>
-                                        </Stack>
-                                        <Stack spacing={1} divider={<Divider orientation="horizontal" flexItem/>}
-                                               sx={{width: '33.3%'}}>
-                                            <Box display="flex" justifyContent="center" alignItems="center"
-                                                 sx={{width: '100%'}}>
-                                                <Typography color="text.secondary"
-                                                            sx={{fontSize: 'subtitle1.fontSize'}}>
                                                     简介
                                                 </Typography>
                                             </Box>
